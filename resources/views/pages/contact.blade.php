@@ -122,11 +122,8 @@
 
 @section('content')
 <section class="page-header">
-
     <h1>Contact Us</h1>
-
     <p>We would love to hear from you.</p>
-
 </section>
 
 <section class="contact-section">
@@ -177,10 +174,10 @@
 
         <div class="social">
             <a href="https://www.facebook.com/share/14kCi4Q2iXW/" target="_blank" rel="noopener noreferrer">
-
+                
                 <i class="fab fa-facebook"></i>
-
             </a>
+
             <a href="https://youtube.com/@pastor-happymacxmkomekwa" target="_blank" rel="noopener noreferrer">
 
                 <i class="fab fa-youtube"></i>
@@ -202,17 +199,6 @@
 
     <div class="contact-form">
         <h2>Send Us a Message</h2>
-
-        <!-- <form action="#" method="POST">
-            <input type="text" name="name" placeholder="Full Name" required>
-            <input type="email" name="email" placeholder="Email Address" required>
-            <input type="tel" name="phone" placeholder="Phone Number">
-            <input type="text" name="subject" placeholder="Subject">
-            <textarea name="message" rows="7" placeholder="Write your message here..." required></textarea>
-            <button type="submit">
-                Send Message
-            </button> -->
-
 
             {{-- Success message --}}
             @if (session('success'))

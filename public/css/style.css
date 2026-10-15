@@ -9,11 +9,9 @@
     font-family: 'Poppins', sans-serif;
 }
 
-
 html {
     scroll-behavior: smooth;
 }
-
 
 body {
     background: #ffffff;
@@ -31,76 +29,59 @@ header {
     z-index: 1000;
 }
 .navbar {
-
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: #003366;
     box-shadow: 0 1px 1px rgba(251, 250, 250, 0.885);
     padding: 15px 8%;
-
 }
 
 .logo {
-
     display: flex;
     align-items: center;
     gap: 10px;
-
     color: white;
-
 }
-.logo img {
 
+.logo img {
     width: 55px;
     height: 55px;
     border-radius: 50%;
-
 }
 
 .logo h2 {
-
     font-size: 25px;
-
 }
 
 .nav-links {
-
     display: flex;
     list-style: none;
     gap: 25px;
-
 }
 
 .nav-links a {
-
     text-decoration: none;
     color: white;
     font-weight: 500;
     transition: .3s;
-
 }
 
 .nav-links a:hover,
 .nav-links a.active {
-
     color: #FFD700;
-
 }
 
 .menu {
-
     display: none;
     color: white;
     font-size: 28px;
     cursor: pointer;
-
 }
 
 /* =========================
    HERO SECTION
 ========================= */
-
 .hero {
     min-height: 90vh;
     background:
@@ -160,7 +141,6 @@ header {
 WELCOME
 ========================= */
 .welcome {
-
     padding: 70px 10%;
     text-align: center;
     /* min-height: 90vh;
@@ -171,162 +151,103 @@ WELCOME
 }
 
 .welcome h2 {
-
     color: #003366;
     font-size: 35px;
     margin-bottom: 20px;
-
 }
 
 .welcome p {
-
     line-height: 1.8;
     font-size: 18px;
-
 }
 
 /* =========================
 SERVICES
 ========================= */
 .services {
-
     padding: 60px 10%;
-
     background: #f5f5f5;
-
     text-align: center;
-
 }
 
 .services h2 {
-
     color: #003366;
-
     font-size: 35px;
-
 }
 
 .service-container {
-
     display: grid;
-
     grid-template-columns:
         repeat(3, 1fr);
-
     gap: 30px;
-
     margin-top: 40px;
-
 }
 
 .service-card {
-
     background: white;
-
     padding: 35px;
-
     border-radius: 15px;
-
     box-shadow:
         0 5px 15px rgba(0, 0, 0, .1);
-
     transition: .3s;
-
 }
 
 .service-card:hover {
-
     transform: translateY(-10px);
-
 }
 
 .service-card i {
-
     font-size: 40px;
-
     color: #FFD700;
-
     margin-bottom: 15px;
-
 }
 
 .service-card h3 {
-
     color: #003366;
-
 }
-
-
 /* =========================
 MISSION VISION
 ========================= */
 
-
 .mission {
-
     display: grid;
-
     grid-template-columns: repeat(2, 1fr);
-
     gap: 30px;
-
     padding: 70px 10%;
-
 }
 
 .mission div {
-
     padding: 35px;
-
     background: #003366;
-
     color: white;
-
     border-radius: 15px;
-
 }
 
 .mission h2 {
-
     color: #FFD700;
-
     margin-bottom: 15px;
-
 }
 
 /* =========================
 PASTOR
 ========================= */
 .pastor {
-
     display: flex;
-
     align-items: center;
-
     gap: 50px;
-
     padding: 70px 10%;
-
 }
 
 .pastor img {
-
     width: 300px;
-
     height: 300px;
-
     object-fit: cover;
-
     border-radius: 50%;
-
 }
 
 .pastor h2 {
-
     color: #003366;
-
     margin-bottom: 20px;
-
 }
 
 .pastor .btn {
@@ -349,67 +270,47 @@ PASTOR
 /* =========================
 EVENTS
 ========================= */
-
 .events {
-
     padding: 70px 10%;
     background: #f5f5f5;
     text-align: center;
-
 }
 
 .events h2 {
-
     color: #003366;
-
 }
 
 .event-container {
-
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 25px;
     margin-top: 30px;
-
 }
 
 .event-card {
-
     background: white;
-
     padding: 30px;
-
     border-radius: 10px;
-
     box-shadow:
         0 5px 15px rgba(0, 0, 0, .1);
-
 }
 
 .event-card h3 {
-
     color: #003366;
-
 }
 
 /* =========================
 BIBLE VERSE
 ========================= */
-
-
 .verse {
-
     background: #003366;
-
     color: white;
     font-size: 25px;
     padding: 60px;
     text-align: center;
-
 }
 
 .verse h2 {
-
     color: #FFD700;
     margin-bottom: 20px;
 }
@@ -420,10 +321,8 @@ BIBLE VERSE
     
 }
 .verse p {
-
     font-size: 26px;
     font-style: italic;
-
 }
 
 .announcement {
@@ -468,7 +367,6 @@ BIBLE VERSE
 
 /* Moving animation */
 @keyframes scroll {
-
     from {
         transform: translateX(0);
     }
@@ -476,42 +374,28 @@ BIBLE VERSE
     to {
         transform: translateX(-30%);
     }
-
 }
 
 /* Pause when mouse is over */
 .marquee-container:hover .marquee-content {
     animation-play-state: paused;
 }
-
-
 /* =========================
 FOOTER
 ========================= */
-
-
 footer {
-
     background: #111;
-
     color: white;
-
     text-align: center;
-
     padding: 40px;
-
 }
 
 footer h2 {
-
     color: #FFD700;
-
 }
 
 .social {
-
     margin: 20px;
-
 }
 
 
@@ -544,89 +428,60 @@ footer h2 {
     transform: scale(1.2);
 }
 
-
 /* =========================
 RESPONSIVE DESIGN
 ========================= */
 
 @media(max-width:900px) {
-
     .nav-links {
-
         position: absolute;
-
         top: 80px;
-
         left: -100%;
-
         background: #003366;
-
         width: 100%;
-
         flex-direction: column;
-
         text-align: center;
-
         padding: 30px;
-
         transition: .4s;
-
     }
-
-
 
     .nav-links.active {
-
         left: 0;
-
     }
 
-
     .menu {
-
         display: block;
-
     }
 
     .service-container,
     .event-container {
 
         grid-template-columns: 1fr;
-
     }
 
     .mission {
 
         grid-template-columns: 1fr;
-
     }
 
     .pastor {
-
         flex-direction: column;
-
         text-align: center;
-
     }
-
 
     .hero-content h1 {
 
         font-size: 30px;
-
     }
-
 
     .hero-content h2 {
 
         font-size: 25px;
-
     }
 
     /* ==========================
    Scroll Animation
 ========================== */
-
     section {
         opacity: 0;
         transform: translateY(40px);
@@ -641,87 +496,25 @@ RESPONSIVE DESIGN
     /* ==========================
    Back To Top Button
 ========================== */
-
     #topBtn {
-
         position: fixed;
-
         bottom: 25px;
-
         right: 25px;
-
         width: 50px;
-
         height: 50px;
-
         border: none;
-
         border-radius: 50%;
-
         background: #FFD700;
-
         color: #003366;
-
         font-size: 22px;
-
         cursor: pointer;
-
         box-shadow: 0 5px 15px rgba(0, 0, 0, .3);
-
         transition: .3s;
-
     }
 
     #topBtn:hover {
-
         background: #003366;
-
         color: white;
-
     }
 
 }
-
-/* About profile section */
-/* .about-profile {
-    display: flex;
-    gap: 40px;
-    align-items: center;
-    padding: 60px 10%;
-    max-width: 1100px;
-    margin: 0 auto;
-}
-
-.about-profile .profile-img {
-    width: 260px;
-    height: 260px;
-    object-fit: cover;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    flex-shrink: 0;
-}
-
-.about-profile .profile-text h3 {
-    color: #1368bd;
-    font-size: 28px;
-    margin-bottom: 8px;
-}
-
-.about-profile .profile-text p {
-    font-size: 18px;
-    line-height: 1.8;
-    color: #333;
-}
-
-@media(max-width:900px) {
-    .about-profile {
-        flex-direction: column;
-        padding: 40px 6%;
-        text-align: center;
-    }
-
-    .about-profile .profile-img {
-        width: 200px;
-        height: 200px;
-    }
-} */

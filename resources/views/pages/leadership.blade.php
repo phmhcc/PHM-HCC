@@ -90,7 +90,7 @@
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/secretary.jpg') }}" alt="Secretary Tumsifu Didas">
+            <img src="{{ asset('Images/Tumsifu.jpg') }}" alt="Secretary Tumsifu Didas">
 
             <h3> Tumsifu Didas</h3>
 
@@ -217,7 +217,7 @@
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/images.jpg') }}" alt="Deaconess Elizabeth">
+            <img src="{{ asset('Images/Elizabeth.jpg') }}" alt="Deaconess Elizabeth">
 
             <h3> Elizabeth Batista</h3>
 
@@ -234,7 +234,7 @@
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/images.jpg') }}" alt="Deacon Comfort">
+            <img src="{{ asset('Images/Comfort.jpg') }}" alt="Deacon Comfort">
 
             <h3>Comfort Edward</h3>
 
@@ -268,9 +268,9 @@
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/Tabiana.jpg') }}" alt="Deaconess Tabiana">
+            <img src="{{ asset('Images/Tabby.jpg') }}" alt="Deaconess Tabiana">
 
-            <h3>Tabiana Msaka</h3>
+            <h3>Tabiana Vitus</h3>
 
             <p class="position">
                 Deaconess

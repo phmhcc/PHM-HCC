@@ -30,7 +30,7 @@
     .mission h2 {
         font-size: 28px;
         margin-bottom: 15px;
-        color: #003366;
+        color:gold;
     }
 
     .mission p {

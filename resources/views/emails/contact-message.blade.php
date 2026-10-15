@@ -75,23 +75,7 @@
                                 </tr>
 
                                 <tr>
-                                    <td style="background-color:#f2f5f9; border:1px solid #e0e5eb; color:#003366; font-weight:bold;">
-                                        Phone
-                                    </td>
-                                    <td style="border:1px solid #e0e5eb;">
-                                        {{ $data['phone'] ?: 'Not provided' }}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td style="background-color:#f2f5f9; border:1px solid #e0e5eb; color:#003366; font-weight:bold;">
-                                        Subject
-                                    </td>
-                                    <td style="border:1px solid #e0e5eb;">
-                                        {{ $data['subject'] ?: 'General Inquiry' }}
-                                    </td>
-                                </tr>
-                            </table>
+                          
 
                             {{-- Message --}}
                             <h3 style="margin:25px 0 10px; color:#003366; font-size:18px;">

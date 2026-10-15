@@ -110,7 +110,6 @@
 
     <section class="announcement">
 
-
         <h2>Latest Announcements</h2>
 
         <div class="marquee-container">
