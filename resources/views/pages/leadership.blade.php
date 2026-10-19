@@ -251,7 +251,7 @@
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/Rebeca.jpg') }}" alt="Deaconess Rebecca">
+            <img src="{{ asset('Images/Rebecca.jpg') }}" alt="Deaconess Rebecca">
 
             <h3>Rebecca Sulley</h3>
 
