@@ -93,7 +93,7 @@
                 <i class="fab fa-facebook"></i>
             </a>
 
-            <a href="https://youtube.com/@pastor-happymacxmkomekwa?si=jhBkVVdFh4fTh8Oy"
+            <a href="https://youtube.com/@pastor-happymacxmkomekwa?si=2UKZ1chgQAFkT2FI"
                target="_blank" rel="noopener noreferrer"
                aria-label="YouTube">
                 <i class="fab fa-youtube"></i>
