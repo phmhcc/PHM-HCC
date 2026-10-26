@@ -181,7 +181,7 @@
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/images.jpg') }}" alt="Elder Mkomekwa">
+            <img src="{{ asset('Images/Kasian.jpg') }}" alt="Elder Kasian">
 
             <h3> Kasian Mkomekwa</h3>
 

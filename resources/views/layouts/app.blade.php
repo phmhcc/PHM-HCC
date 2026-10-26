@@ -61,7 +61,7 @@
                        class="{{ request()->routeIs('gallery') ? 'active' : '' }}">
                         Gallery
                     </a>
-                </li>
+                </li> 
 
                 <li>
                     <a href="{{ route('contact') }}"
