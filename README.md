@@ -7,6 +7,17 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## PHM HCC dashboard setup
+
+Set your chosen, non-empty `ADMIN_PASSWORD` in your local `.env` file. The administrator account is created for Tabiana (`tabianavitus@gmail.com`). Then run:
+
+```bash
+php artisan migrate
+php artisan db:seed --class=AdminUserSeeder
+```
+
+Sign in at `/login` to open the protected `/dashboard`. The sidebar provides create, edit, and delete screens for activities, announcements, duties, meetings, departments, reports, finance, and users. Finance and user management are restricted to the administrator account. Profile updates and announcement notifications are also available there. Role overview pages are available under `/dashboard/pastor`, `/dashboard/deacon`, `/dashboard/elder`, `/dashboard/department-leader`, and `/dashboard/treasurer`.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
