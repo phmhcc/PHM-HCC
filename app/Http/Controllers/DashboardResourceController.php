@@ -14,8 +14,11 @@ use App\Notifications\AnnouncementPublished;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use RuntimeException;
 
 class DashboardResourceController extends Controller
 {
@@ -39,12 +42,13 @@ class DashboardResourceController extends Controller
             ]],
             'reports' => ['title' => 'Reports', 'model' => Report::class, 'owner' => 'submitted_by', 'columns' => ['title', 'reporting_period', 'status'], 'fields' => [
                 'title' => ['Title', 'text', 'required|string|max:255'], 'department_id' => ['Department', 'department', 'nullable|exists:departments,id'], 'reporting_period' => ['Reporting period', 'date', 'nullable|date'], 'activities' => ['Activities', 'textarea', 'nullable|string'], 'achievements' => ['Achievements', 'textarea', 'nullable|string'], 'challenges' => ['Challenges', 'textarea', 'nullable|string'], 'recommendations' => ['Recommendations', 'textarea', 'nullable|string'], 'status' => ['Status', 'select', 'required|in:pending,reviewed,approved', ['pending', 'reviewed', 'approved']],
+                'attachment' => ['Attachment', 'file', 'nullable|file|mimes:pdf,xls,xlsx|extensions:pdf,xls,xlsx|max:10240'],
             ]],
-            'finance' => ['title' => 'Financial Transactions', 'model' => FinancialTransaction::class, 'owner' => 'recorded_by', 'admin' => true, 'columns' => ['transaction_date', 'type', 'category', 'amount', 'description'], 'fields' => [
+            'finance' => ['title' => 'Financial Transactions', 'model' => FinancialTransaction::class, 'roles' => ['admin', 'treasurer'], 'columns' => ['transaction_date', 'type', 'category', 'amount', 'description'], 'fields' => [
                 'transaction_date' => ['Date', 'date', 'required|date'], 'type' => ['Type', 'select', 'required|in:income,expense', ['income', 'expense']], 'category' => ['Category', 'text', 'required|string|max:255'], 'amount' => ['Amount', 'number', 'required|numeric|min:0.01'], 'description' => ['Description', 'textarea', 'nullable|string'], 'reference' => ['Reference', 'text', 'nullable|string|max:255'],
             ]],
-            'users' => ['title' => 'User Management', 'model' => User::class, 'admin' => true, 'columns' => ['name', 'email', 'created_at'], 'fields' => [
-                'name' => ['Name', 'text', 'required|string|max:255'], 'email' => ['Email', 'email', 'required|email|max:255'], 'password' => ['Password', 'password', 'required|string|min:1'],
+            'users' => ['title' => 'User Management', 'model' => User::class, 'roles' => ['admin'], 'columns' => ['name', 'email', 'role', 'created_at'], 'fields' => [
+                'name' => ['Name', 'text', 'required|string|max:255'], 'email' => ['Email', 'email', 'required|email|max:255'], 'role' => ['Role', 'select', 'required|in:pastor,deacon,elder,department_leader,treasurer,member', ['pastor', 'deacon', 'elder', 'department_leader', 'treasurer', 'member']], 'password' => ['Password', 'password', 'required|string|min:1'],
             ]],
         ];
     }
@@ -53,7 +57,10 @@ class DashboardResourceController extends Controller
     {
         abort_unless(isset($this->definitions()[$resource]), 404);
         $definition = $this->definitions()[$resource];
-        abort_if(($definition['admin'] ?? false) && auth()->user()->email !== config('admin.email'), 403);
+        abort_if(
+            isset($definition['roles']) && ! in_array(auth()->user()->role, $definition['roles'], true),
+            403
+        );
 
         return $definition;
     }
@@ -62,7 +69,7 @@ class DashboardResourceController extends Controller
     {
         $definition = $this->definition($resource);
         $query = $definition['model']::query()->latest('id');
-        if (isset($definition['owner'])) {
+        if (isset($definition['owner']) && ! isset($definition['roles'])) {
             $query->where($definition['owner'], auth()->id());
         }
 
@@ -76,15 +83,24 @@ class DashboardResourceController extends Controller
     public function store(Request $request, string $resource): RedirectResponse
     {
         $definition = $this->definition($resource);
+        $data = $this->validated($request, $definition);
+        $attachment = $data['attachment'] ?? null;
+        unset($data['attachment']);
         $record = new $definition['model'];
-        $record->fill($this->validated($request, $definition));
+        $record->fill($data);
         if (isset($definition['owner'])) {
             $record->{$definition['owner']} = auth()->id();
         }
         if ($resource === 'users') {
             $record->password = $request->input('password');
         }
+        if ($resource === 'finance') {
+            $record->recorded_by = auth()->id();
+        }
         $record->save();
+        if ($resource === 'reports' && $attachment instanceof UploadedFile) {
+            $this->storeReportAttachment($record, $attachment);
+        }
 
         if ($resource === 'announcements') {
             User::where('id', '!=', auth()->id())->each(fn (User $user) => $user->notify(new AnnouncementPublished($record)));
@@ -98,12 +114,30 @@ class DashboardResourceController extends Controller
         $definition = $this->definition($resource);
         $item = $this->findRecord($definition, $record);
         $data = $this->validated($request, $definition, $record);
-        if ($resource === 'users' && empty($data['password'])) {
-            unset($data['password']);
+        $attachment = $data['attachment'] ?? null;
+        unset($data['attachment']);
+        if ($resource === 'users') {
+            if (empty($data['password'])) {
+                unset($data['password']);
+            }
         }
         $item->fill($data)->save();
+        if ($resource === 'reports' && $attachment instanceof UploadedFile) {
+            $this->storeReportAttachment($item, $attachment);
+        }
 
         return back()->with('status', $definition['title'].' item updated.');
+    }
+
+    public function downloadReportAttachment(int $record)
+    {
+        $definition = $this->definition('reports');
+        $report = $this->findRecord($definition, $record);
+        $path = $this->reportAttachmentPath($report);
+
+        abort_unless($path !== null, 404);
+
+        return Storage::disk('local')->download($path);
     }
 
     public function destroy(string $resource, int $record): RedirectResponse
@@ -112,6 +146,9 @@ class DashboardResourceController extends Controller
         $item = $this->findRecord($definition, $record);
         abort_if($resource === 'users' && $item->is(auth()->user()), 422, 'You cannot delete your own account.');
         $item->delete();
+        if ($resource === 'reports') {
+            $this->deleteReportAttachment($item);
+        }
 
         return back()->with('status', $definition['title'].' item deleted.');
     }
@@ -135,10 +172,56 @@ class DashboardResourceController extends Controller
         if (isset($rules['password']) && $record !== null) {
             $rules['password'] = 'nullable|string';
         }
+        if (
+            isset($rules['role'])
+            && $record !== null
+            && $definition['model'] === User::class
+            && User::whereKey($record)->value('role') === 'admin'
+        ) {
+            $rules['role'] = 'required|in:admin';
+        }
         if (isset($rules['email'])) {
             $rules['email'] = ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($record)];
         }
 
         return $request->validate($rules);
+    }
+
+    private function storeReportAttachment(Report $report, UploadedFile $attachment): void
+    {
+        $extension = strtolower($attachment->getClientOriginalExtension());
+        $directory = 'reports/'.$report->getKey();
+        $path = $attachment->storeAs($directory, 'attachment.'.$extension, 'local');
+
+        if (! is_string($path)) {
+            throw new RuntimeException('The report attachment could not be saved.');
+        }
+
+        foreach (['pdf', 'xls', 'xlsx'] as $oldExtension) {
+            $oldPath = $directory.'/attachment.'.$oldExtension;
+            if ($oldPath !== $path && Storage::disk('local')->exists($oldPath)) {
+                Storage::disk('local')->delete($oldPath);
+            }
+        }
+    }
+
+    private function reportAttachmentPath(Report $report): ?string
+    {
+        foreach (['pdf', 'xls', 'xlsx'] as $extension) {
+            $path = 'reports/'.$report->getKey().'/attachment.'.$extension;
+            if (Storage::disk('local')->exists($path)) {
+                return $path;
+            }
+        }
+
+        return null;
+    }
+
+    private function deleteReportAttachment(Report $report): void
+    {
+        $path = $this->reportAttachmentPath($report);
+        if ($path !== null) {
+            Storage::disk('local')->delete($path);
+        }
     }
 }

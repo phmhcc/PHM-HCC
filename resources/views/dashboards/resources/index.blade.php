@@ -14,7 +14,7 @@
 
 <section class="content-box" style="margin-bottom: 24px;">
     <h2 class="resource-panel-title"><i class="fas fa-circle-plus"></i> Add a record</h2>
-    <form method="POST" action="{{ route('dashboard.resource.store', $resource) }}">
+    <form method="POST" action="{{ route('dashboard.resource.store', $resource) }}" enctype="multipart/form-data">
         @csrf
         <div class="resource-form-grid">
             @foreach($definition['fields'] as $name => $field)
@@ -25,9 +25,12 @@
                     @elseif($field[1] === 'select')
                         <select name="{{ $name }}" required>
                             @foreach($field[3] as $option)
-                                <option value="{{ $option }}" @selected(old($name, $option === ($field[3][0] ?? null) ? $option : '') === $option)>{{ ucfirst($option) }}</option>
+                                <option value="{{ $option }}" @selected(old($name, $option === ($field[3][0] ?? null) ? $option : '') === $option)>{{ str($option)->replace('_', ' ')->title() }}</option>
                             @endforeach
                         </select>
+                    @elseif($field[1] === 'file')
+                        <input type="file" name="{{ $name }}" accept=".pdf,.xls,.xlsx" {{ str_starts_with($field[2], 'required') ? 'required' : '' }}>
+                        <small>Attach one PDF or Excel file (up to 10 MB).</small>
                     @elseif($field[1] === 'department' || $field[1] === 'user')
                         @php
                             $options = $field[1] === 'department' ? $departments : $users;
@@ -59,6 +62,7 @@
             <thead>
                 <tr>
                     @foreach($definition['columns'] as $column)<th>{{ str($column)->replace('_', ' ')->title() }}</th>@endforeach
+                    @if($resource === 'reports')<th>Attachment</th>@endif
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -95,10 +99,21 @@
                                 @endif
                             </td>
                         @endforeach
+                        @if($resource === 'reports')
+                            <td>
+                                @if(\Illuminate\Support\Facades\Storage::disk('local')->exists('reports/'.$record->id.'/attachment.pdf')
+                                    || \Illuminate\Support\Facades\Storage::disk('local')->exists('reports/'.$record->id.'/attachment.xls')
+                                    || \Illuminate\Support\Facades\Storage::disk('local')->exists('reports/'.$record->id.'/attachment.xlsx'))
+                                    <a class="dashboard-action dashboard-action-secondary" href="{{ route('dashboard.reports.attachment', $record->id) }}">Download</a>
+                                @else
+                                    —
+                                @endif
+                            </td>
+                        @endif
                         <td>
                             <details>
                                 <summary class="dashboard-action dashboard-action-secondary">Edit</summary>
-                                <form method="POST" action="{{ route('dashboard.resource.update', [$resource, $record->id]) }}" class="resource-edit-form">
+                                <form method="POST" action="{{ route('dashboard.resource.update', [$resource, $record->id]) }}" class="resource-edit-form" enctype="multipart/form-data">
                                     @csrf
                                     @method('PUT')
                                     @foreach($definition['fields'] as $name => $field)
@@ -115,9 +130,22 @@
                                             @if($field[1] === 'textarea')
                                                 <textarea name="{{ $name }}" rows="3">{{ $value }}</textarea>
                                             @elseif($field[1] === 'select')
+                                                @php
+                                                    $selectOptions = $resource === 'users' && $record->role === 'admin'
+                                                        ? ['admin']
+                                                        : $field[3];
+                                                @endphp
                                                 <select name="{{ $name }}" required>
-                                                    @foreach($field[3] as $option)<option value="{{ $option }}" @selected($value === $option)>{{ ucfirst($option) }}</option>@endforeach
+                                                    @foreach($selectOptions as $option)<option value="{{ $option }}" @selected($value === $option)>{{ str($option)->replace('_', ' ')->title() }}</option>@endforeach
                                                 </select>
+                                            @elseif($field[1] === 'file')
+                                                <input type="file" name="{{ $name }}" accept=".pdf,.xls,.xlsx">
+                                                @if(\Illuminate\Support\Facades\Storage::disk('local')->exists('reports/'.$record->id.'/attachment.pdf')
+                                                    || \Illuminate\Support\Facades\Storage::disk('local')->exists('reports/'.$record->id.'/attachment.xls')
+                                                    || \Illuminate\Support\Facades\Storage::disk('local')->exists('reports/'.$record->id.'/attachment.xlsx'))
+                                                    <a href="{{ route('dashboard.reports.attachment', $record->id) }}">Download current attachment</a>
+                                                @endif
+                                                <small>Optional replacement, PDF or Excel up to 10 MB.</small>
                                             @elseif($field[1] === 'department' || $field[1] === 'user')
                                                 @php
                                                     $options = $field[1] === 'department' ? $departments : $users;
@@ -143,7 +171,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="{{ count($definition['columns']) + 1 }}">No records have been added.</td></tr>
+                    <tr><td colspan="{{ count($definition['columns']) + ($resource === 'reports' ? 2 : 1) }}">No records have been added.</td></tr>
                 @endforelse
             </tbody>
         </table>

@@ -75,7 +75,7 @@
 
 </div>
 
-@if(auth()->user()->email === config('admin.email'))
+@if(in_array(auth()->user()->role, ['admin', 'treasurer'], true))
 <div class="dashboard-cards finance-summary-cards">
     <article class="dashboard-card">
         <p class="card-label">Recorded income</p>
@@ -293,7 +293,7 @@
             <p>View church departments and leaders.</p>
         </a>
 
-        @if(auth()->user()->email === config('admin.email'))
+        @if(in_array(auth()->user()->role, ['admin', 'treasurer'], true))
             <a href="{{ route('dashboard.resource.index', 'finance') }}" class="dashboard-card quick-access-card">
                 <div class="card-icon icon-green">
                     <i class="fas fa-wallet"></i>

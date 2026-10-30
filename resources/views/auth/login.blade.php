@@ -6,7 +6,7 @@
 <style>
     .login-section {
         display: grid;
-        min-height: 65vh;
+        min-height: 100vh;
         place-items: center;
         padding: 50px 20px;
         background: #f4f7fb;
@@ -25,6 +25,15 @@
         margin-bottom: 16px;
         color: #c9a900;
         font-size: 38px;
+    }
+
+    .login-logo {
+        display: block;
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 16px;
+        border-radius: 50%;
+        object-fit: cover;
     }
 
     .login-card h1 {
@@ -54,6 +63,15 @@
         padding: 12px;
         border: 1px solid #ccd4df;
         border-radius: 6px;
+        font: inherit;
+    }
+
+    .login-form select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccd4df;
+        border-radius: 6px;
+        background: #fff;
         font: inherit;
     }
 
@@ -122,7 +140,7 @@
 @section('content')
 <section class="login-section">
     <div class="login-card">
-        <i class="fas fa-lock" aria-hidden="true"></i>
+        <img class="login-logo" src="{{ asset('Images/images.jpg') }}" alt="PHM HCC logo">
         <h1>Church Team Sign In</h1>
         <p>Sign in with the account provided by your church administrator.</p>
         <form class="login-form" method="POST" action="{{ route('login.store') }}">
@@ -130,6 +148,19 @@
             <label for="email">Email address</label>
             <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="username" required autofocus>
             @error('email')
+            <p class="login-error" role="alert">{{ $message }}</p>
+            @enderror
+
+            <label for="role">Sign in as</label>
+            <select id="role" name="role" required>
+                <option value="">Select your role</option>
+                @foreach(config('roles') as $roleValue => $roleLabel)
+                    @if($roleValue !== 'member')
+                        <option value="{{ $roleValue }}" @selected(old('role') === $roleValue)>{{ $roleLabel }}</option>
+                    @endif
+                @endforeach
+            </select>
+            @error('role')
             <p class="login-error" role="alert">{{ $message }}</p>
             @enderror
 

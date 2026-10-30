@@ -62,16 +62,12 @@
             border-bottom: 1px solid rgba(255,255,255,.15);
         }
 
-        .brand-icon {
-            width: 43px;
-            height: 43px;
-            background: #c9a900;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: #003366;
+        .brand-logo {
+            width: 55px;
+            height: 55px;
+            flex: 0 0 55px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .sidebar-brand h2 {
@@ -140,6 +136,45 @@
         .main-area {
             margin-left: 260px;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-content {
+            flex: 1;
+            width: 100%;
+        }
+
+        .site-footer {
+            width: 100%;
+            margin-top: 24px;
+            padding: 40px;
+            background: #111;
+            color: #fff;
+            text-align: center;
+        }
+
+        .site-footer h2 {
+            margin-bottom: 8px;
+            color: #ffd700;
+        }
+
+        .site-footer p {
+            line-height: 1.7;
+        }
+
+        .site-footer .social {
+            margin: 20px;
+        }
+
+        .site-footer .social a {
+            margin: 0 10px;
+            color: #fff;
+            font-size: 30px;
+        }
+
+        .site-footer .social a:hover {
+            color: #ffd700;
         }
 
         /* TOP NAVBAR */
@@ -154,7 +189,8 @@
             box-shadow: 0 2px 12px rgba(0,0,0,.05);
             position: sticky;
             top: 0;
-            z-index: 900;
+            z-index: 1200;
+            isolation: isolate;
         }
 
         .topbar-left {
@@ -207,9 +243,99 @@
         }
 
         .profile {
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-toggle {
             display: flex;
             align-items: center;
             gap: 10px;
+            padding: 5px;
+            border: 0;
+            border-radius: 9px;
+            background: transparent;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .profile-toggle:hover,
+        .profile-toggle[aria-expanded="true"] {
+            background: #f4f7fb;
+        }
+
+        .profile-chevron {
+            margin-left: 4px;
+            color: #718096;
+            font-size: 11px;
+            transition: transform .2s ease;
+        }
+
+        .profile-toggle[aria-expanded="true"] .profile-chevron {
+            transform: rotate(180deg);
+        }
+
+        .profile-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            z-index: 1300;
+            display: none;
+            width: 210px;
+            padding: 7px;
+            border: 1px solid #e8edf4;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 10px 28px rgba(25, 45, 75, .16);
+        }
+
+        .profile-menu.open {
+            display: block;
+        }
+
+        .profile-menu a,
+        .profile-menu button {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 12px;
+            border: 0;
+            border-radius: 7px;
+            background: transparent;
+            color: #34465c;
+            font: inherit;
+            font-size: 12px;
+            text-align: left;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .profile-menu a:hover,
+        .profile-menu button:hover {
+            background: #f4f7fb;
+            color: #003366;
+        }
+
+        .profile-menu i {
+            width: 17px;
+            color: #61758c;
+            text-align: center;
+        }
+
+        .profile-menu form {
+            margin: 0;
+            border-top: 1px solid #edf0f5;
+            padding-top: 6px;
+            margin-top: 5px;
+        }
+
+        .profile-menu form button {
+            color: #b42318;
+        }
+
+        .profile-menu form button i {
+            color: #b42318;
         }
 
         .profile-avatar {
@@ -1384,10 +1510,7 @@
     <aside class="sidebar" id="sidebar">
 
         <div class="sidebar-brand">
-            <div class="brand-icon">
-                <i class="fas fa-church"></i>
-            </div>
-
+            <img class="brand-logo" src="{{ asset('Images/images.jpg') }}" alt="PHM HCC logo">
             <div>
                 <h2>PHM HCC</h2>
                 <small>CHURCH MANAGEMENT</small>
@@ -1460,7 +1583,7 @@
                 </a>
             </li>
 
-            @if(auth()->user()->email === config('admin.email'))
+            @if(in_array(auth()->user()->role, ['admin', 'treasurer'], true))
                 <li>
                     <a href="{{ route('dashboard.resource.index', 'finance') }}"
                        class="{{ request()->is('dashboard/finance*') ? 'active' : '' }}">
@@ -1468,7 +1591,9 @@
                         Financial Statements
                     </a>
                 </li>
+            @endif
 
+            @if(auth()->user()->role === 'admin')
                 <li>
                     <a href="{{ route('dashboard.resource.index', 'users') }}"
                        class="{{ request()->is('dashboard/users*') ? 'active' : '' }}">
@@ -1480,57 +1605,25 @@
 
         </ul>
 
-        <p class="sidebar-label">Role dashboards</p>
+        <!-- <p class="sidebar-label">Role dashboards</p>
 
         <ul class="sidebar-menu">
-            <li><a href="{{ route('dashboard.pastor') }}" class="{{ request()->routeIs('dashboard.pastor') ? 'active' : '' }}"><i class="fas fa-cross"></i> Pastor</a></li>
-            <li><a href="{{ route('dashboard.deacon') }}" class="{{ request()->routeIs('dashboard.deacon') ? 'active' : '' }}"><i class="fas fa-hands-holding-circle"></i> Deacon</a></li>
-            <li><a href="{{ route('dashboard.elder') }}" class="{{ request()->routeIs('dashboard.elder') ? 'active' : '' }}"><i class="fas fa-book-bible"></i> Elder</a></li>
-            <li><a href="{{ route('dashboard.department-leader') }}" class="{{ request()->routeIs('dashboard.department-leader') ? 'active' : '' }}"><i class="fas fa-people-group"></i> Department Leader</a></li>
-            @if(auth()->user()->email === config('admin.email'))
+            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'pastor')
+                <li><a href="{{ route('dashboard.pastor') }}" class="{{ request()->routeIs('dashboard.pastor') ? 'active' : '' }}"><i class="fas fa-cross"></i> Pastor</a></li>
+            @endif
+            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'deacon')
+                <li><a href="{{ route('dashboard.deacon') }}" class="{{ request()->routeIs('dashboard.deacon') ? 'active' : '' }}"><i class="fas fa-hands-holding-circle"></i> Deacon</a></li>
+            @endif
+            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'elder')
+                <li><a href="{{ route('dashboard.elder') }}" class="{{ request()->routeIs('dashboard.elder') ? 'active' : '' }}"><i class="fas fa-book-bible"></i> Elder</a></li>
+            @endif
+            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'department_leader')
+                <li><a href="{{ route('dashboard.department-leader') }}" class="{{ request()->routeIs('dashboard.department-leader') ? 'active' : '' }}"><i class="fas fa-people-group"></i> Department Leader</a></li>
+            @endif
+            @if(in_array(auth()->user()->role, ['admin', 'treasurer'], true))
                 <li><a href="{{ route('dashboard.treasurer') }}" class="{{ request()->routeIs('dashboard.treasurer') ? 'active' : '' }}"><i class="fas fa-wallet"></i> Treasurer</a></li>
             @endif
-        </ul>
-
-        <p class="sidebar-label">Account</p>
-
-        <ul class="sidebar-menu">
-
-            <li>
-                <a href="{{ route('dashboard.profile') }}"
-                   class="{{ request()->is('dashboard/profile*') ? 'active' : '' }}">
-                    <i class="fas fa-user-circle"></i>
-                    My Profile
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ route('home') }}">
-                    <i class="fas fa-globe"></i>
-                    Visit Website
-                </a>
-            </li>
-
-            <li>
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button type="submit"
-                        style="width:100%; border:0; background:none; cursor:pointer;
-                        text-align:left; display:flex; align-items:center; gap:13px;
-                        padding:12px 14px; color:#d8e4f1; font-size:13px;
-                        font-family:inherit;">
-                        <i class="fas fa-right-from-bracket" style="width:20px;"></i>
-                        Logout
-                    </button>
-                </form>
-            </li>
-
-        </ul>
-
-        <div class="sidebar-footer">
-            &copy; {{ date('Y') }} PHM HCC
-            <br>Church Management System
-        </div>
+        </ul> -->
 
     </aside>
 
@@ -1567,16 +1660,30 @@
                 </a>
 
                 <div class="profile">
-
-                    <div class="profile-avatar">
-                        <i class="fas fa-user"></i>
+                    <button class="profile-toggle" id="profileToggle" type="button" aria-expanded="false" aria-controls="profileMenu" aria-label="Open account menu">
+                        <span class="profile-avatar">
+                            <i class="fas fa-user" aria-hidden="true"></i>
+                        </span>
+                        <span class="profile-info">
+                            <strong>{{ auth()->user()->name ?? 'Church Leader' }}</strong>
+                            <small>{{ str(auth()->user()->role)->replace('_', ' ')->title() }}</small>
+                        </span>
+                        <i class="fas fa-chevron-down profile-chevron" aria-hidden="true"></i>
+                    </button>
+                    <div class="profile-menu" id="profileMenu">
+                        <a href="{{ route('dashboard.profile') }}">
+                            <i class="fas fa-user-circle" aria-hidden="true"></i> My Profile
+                        </a>
+                        <a href="{{ route('home') }}">
+                            <i class="fas fa-globe" aria-hidden="true"></i> Visit Website
+                        </a>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit">
+                                <i class="fas fa-right-from-bracket" aria-hidden="true"></i> Logout
+                            </button>
+                        </form>
                     </div>
-
-                    <div class="profile-info">
-                        <strong>{{ auth()->user()->name ?? 'Church Leader' }}</strong>
-                        <small>Church Leadership</small>
-                    </div>
-
                 </div>
 
             </div>
@@ -1594,6 +1701,7 @@
 
         </main>
 
+        @include('layouts.partials.site-footer')
     </div>
 
 </div>
@@ -1610,6 +1718,30 @@
 
     menuToggle.addEventListener('click', toggleSidebar);
     overlay.addEventListener('click', toggleSidebar);
+
+    const profileToggle = document.getElementById('profileToggle');
+    const profileMenu = document.getElementById('profileMenu');
+
+    profileToggle.addEventListener('click', () => {
+        const isOpen = profileToggle.getAttribute('aria-expanded') === 'true';
+        profileToggle.setAttribute('aria-expanded', String(!isOpen));
+        profileMenu.classList.toggle('open', !isOpen);
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!profileToggle.contains(event.target) && !profileMenu.contains(event.target)) {
+            profileToggle.setAttribute('aria-expanded', 'false');
+            profileMenu.classList.remove('open');
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            profileToggle.setAttribute('aria-expanded', 'false');
+            profileMenu.classList.remove('open');
+            profileToggle.focus();
+        }
+    });
 </script>
 
 @stack('scripts')

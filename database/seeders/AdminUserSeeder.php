@@ -21,13 +21,14 @@ class AdminUserSeeder extends Seeder
             ['email' => 'tabianavitus@gmail.com'],
             [
                 'name' => 'Tabiana',
-                'password' => Hash::make($password),
+                'role' => 'admin',
+                'password' => Hash::make('phmhcc'),
                 'email_verified_at' => now(),
             ]
         );
 
-        if ($admin->name !== 'Tabiana') {
-            $admin->update(['name' => 'Tabiana']);
+        if ($admin->name !== 'Tabiana' || $admin->role !== 'admin') {
+            $admin->update(['name' => 'Tabiana', 'role' => 'admin']);
         }
     }
 }

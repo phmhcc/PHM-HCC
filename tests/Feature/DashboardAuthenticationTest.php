@@ -18,11 +18,22 @@ class DashboardAuthenticationTest extends TestCase
     {
         $this->get(route('login'))
             ->assertOk()
+            ->assertDontSee('<nav class="navbar">', false)
+            ->assertDontSee('<footer>', false)
             ->assertSee('id="password"', false)
             ->assertSee('id="togglePasswordButton"', false)
             ->assertSee('aria-label="Show password"', false)
             ->assertSee("password.type = isHidden ? 'text' : 'password'", false)
             ->assertSee('type="submit"', false);
+    }
+
+    public function test_public_pages_keep_the_navigation_and_footer(): void
+    {
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('<nav class="navbar">', false)
+            ->assertSee('<footer class="site-footer">', false)
+            ->assertSee('src="'.asset('Images/images.jpg').'"', false);
     }
 
     public function test_guests_are_redirected_to_sign_in_from_dashboard_pages(): void
@@ -72,6 +83,7 @@ class DashboardAuthenticationTest extends TestCase
     {
         $user = User::factory()->create([
             'email' => 'leader@example.com',
+            'role' => 'pastor',
             'password' => 'secure-password',
         ]);
 
@@ -80,9 +92,10 @@ class DashboardAuthenticationTest extends TestCase
             '_token' => self::CSRF_TOKEN,
             'email' => $user->email,
             'password' => 'secure-password',
-        ])->assertRedirect(route('dashboard'));
+            'role' => 'pastor',
+        ])->assertRedirect(route('dashboard.pastor'));
 
-        $this->get(route('dashboard'))
+        $this->get(route('dashboard.pastor'))
             ->assertOk()
             ->assertSeeText($user->name);
 
@@ -99,6 +112,7 @@ class DashboardAuthenticationTest extends TestCase
         User::factory()->create([
             'email' => 'leader@example.com',
             'password' => 'secure-password',
+            'role' => 'pastor',
         ]);
 
         $this->from(route('login'))
@@ -107,6 +121,7 @@ class DashboardAuthenticationTest extends TestCase
                 '_token' => self::CSRF_TOKEN,
                 'email' => 'leader@example.com',
                 'password' => 'incorrect-password',
+                'role' => 'pastor',
             ])
             ->assertRedirect(route('login'))
             ->assertSessionHasErrors('email');
@@ -121,10 +136,91 @@ class DashboardAuthenticationTest extends TestCase
         $this->assertDatabaseHas('users', [
             'name' => 'Tabiana',
             'email' => 'tabianavitus@gmail.com',
+            'role' => 'admin',
         ]);
         $this->assertTrue(Hash::check(
             'short',
             User::where('email', 'tabianavitus@gmail.com')->value('password')
         ));
+    }
+
+    public function test_users_can_sign_in_to_their_assigned_role_dashboard(): void
+    {
+        foreach ([
+            'pastor' => 'pastor',
+            'deacon' => 'deacon',
+            'elder' => 'elder',
+            'department_leader' => 'department-leader',
+            'treasurer' => 'treasurer',
+        ] as $role => $routeRole) {
+            $user = User::factory()->create([
+                'email' => $role.'@example.com',
+                'role' => $role,
+                'password' => 'secure-password',
+            ]);
+
+            $this->withSession(['_token' => self::CSRF_TOKEN])
+                ->post(route('login.store'), [
+                    '_token' => self::CSRF_TOKEN,
+                    'email' => $user->email,
+                    'password' => 'secure-password',
+                    'role' => $role,
+                ])
+                ->assertRedirect(route('dashboard.'.$routeRole));
+
+            $this->get(route('dashboard.'.$routeRole))->assertOk();
+            $this->post(route('logout'), ['_token' => self::CSRF_TOKEN])->assertRedirect(route('home'));
+        }
+    }
+
+    public function test_selected_role_must_match_the_account_role(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'deacon@example.com',
+            'role' => 'deacon',
+            'password' => 'secure-password',
+        ]);
+
+        $this->from(route('login'))
+            ->withSession(['_token' => self::CSRF_TOKEN])
+            ->post(route('login.store'), [
+                '_token' => self::CSRF_TOKEN,
+                'email' => $user->email,
+                'password' => 'secure-password',
+                'role' => 'pastor',
+            ])
+            ->assertRedirect(route('login'))
+            ->assertSessionHasErrors('email');
+
+        $this->assertGuest();
+    }
+
+    public function test_members_cannot_use_an_unavailable_member_role_login(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'member@example.com',
+            'role' => 'member',
+            'password' => 'secure-password',
+        ]);
+
+        $this->from(route('login'))
+            ->post(route('login.store'), [
+                'email' => $user->email,
+                'password' => 'secure-password',
+                'role' => 'member',
+            ])
+            ->assertRedirect(route('login'))
+            ->assertSessionHasErrors('role');
+
+        $this->assertGuest();
+    }
+
+    public function test_role_user_cannot_open_another_role_dashboard(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => 'deacon']));
+
+        $this->get(route('dashboard.deacon'))->assertOk();
+        $this->get(route('dashboard.pastor'))->assertForbidden();
+        $this->get(route('dashboard.treasurer'))->assertForbidden();
     }
 }

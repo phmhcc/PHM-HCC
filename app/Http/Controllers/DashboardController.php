@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\Duty;
 use App\Models\Event;
 use App\Models\Meeting;
@@ -29,7 +30,7 @@ class DashboardController extends Controller
         $pendingReports = Report::where('status', 'pending')->count();
         $upcomingMeetings = Meeting::whereDate('meeting_date', '>=', today())->count();
         $financeTotals = collect();
-        if (auth()->user()->email === config('admin.email')) {
+        if (in_array(Auth::user()->role, ['admin', 'treasurer'], true)) {
             $financeTotals = FinancialTransaction::query()
                 ->selectRaw('type, SUM(amount) as total')
                 ->groupBy('type')
