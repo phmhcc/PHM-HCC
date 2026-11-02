@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardNotificationController;
 use App\Http\Controllers\DashboardProfileController;
 use App\Http\Controllers\DashboardResourceController;
+use App\Http\Controllers\DashboardRolePermissionController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\RoleDashboardController;
 
@@ -52,6 +53,13 @@ Route::middleware(['auth', 'can:dashboard.view'])->group(function () {
         Route::patch('/notifications/{notification}/read', [DashboardNotificationController::class, 'read'])->name('notifications.read');
         Route::get('/profile', [DashboardProfileController::class, 'edit'])->name('profile');
         Route::put('/profile', [DashboardProfileController::class, 'update'])->name('profile.update');
+        Route::get('/roles', [DashboardRolePermissionController::class, 'index'])->name('roles.index');
+        Route::get('/roles/create', [DashboardRolePermissionController::class, 'create'])->name('roles.create');
+        Route::post('/roles', [DashboardRolePermissionController::class, 'store'])->name('roles.store');
+        Route::get('/roles/{role}', [DashboardRolePermissionController::class, 'show'])->whereNumber('role')->name('roles.show');
+        Route::get('/roles/{role}/edit', [DashboardRolePermissionController::class, 'edit'])->whereNumber('role')->name('roles.edit');
+        Route::put('/roles/{role}', [DashboardRolePermissionController::class, 'update'])->whereNumber('role')->name('roles.update');
+        Route::delete('/roles/{role}', [DashboardRolePermissionController::class, 'destroy'])->whereNumber('role')->name('roles.destroy');
         Route::get('/reports/{record}/attachment', [DashboardResourceController::class, 'downloadReportAttachment'])
             ->whereNumber('record')
             ->name('reports.attachment');

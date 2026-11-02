@@ -18,6 +18,14 @@
     </div>
 </header>
 
+@if($resource === 'users' && auth()->user()->role === 'admin')
+<div style="margin-bottom: 20px;">
+    <a class="dashboard-action dashboard-action-secondary" href="{{ route('dashboard.roles.index') }}">
+        <i class="fas fa-user-shield" aria-hidden="true"></i> Manage roles and permissions
+    </a>
+</div>
+@endif
+
 @if(auth()->user()->hasPermissionTo($resource.'.create'))
 <section class="content-box" style="margin-bottom: 24px;">
     <h2 class="resource-panel-title"><i class="fas fa-circle-plus"></i> Add a record</h2>

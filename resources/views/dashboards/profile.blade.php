@@ -20,11 +20,11 @@
         <div class="resource-form-grid">
             <label class="resource-field"><span>Name</span><input name="name" value="{{ old('name', auth()->user()->name) }}" required>@error('name')<small class="form-error">{{ $message }}</small>@enderror</label>
             <label class="resource-field"><span>Email</span><input type="email" name="email" value="{{ old('email', auth()->user()->email) }}" required>@error('email')<small class="form-error">{{ $message }}</small>@enderror</label>
-            <label class="resource-field"><span>Current password (required to change password)</span><input type="password" name="current_password" autocomplete="current-password">@error('current_password')<small class="form-error">{{ $message }}</small>@enderror</label>
+            <!-- <label class="resource-field"><span>Current password (required to change password)</span><input type="password" name="current_password" autocomplete="current-password">@error('current_password')<small class="form-error">{{ $message }}</small>@enderror</label>
             <label class="resource-field"><span>New password (optional)</span><input type="password" name="password" autocomplete="new-password">@error('password')<small class="form-error">{{ $message }}</small>@enderror</label>
-            <label class="resource-field"><span>Confirm new password</span><input type="password" name="password_confirmation" autocomplete="new-password"></label>
+            <label class="resource-field"><span>Confirm new password</span><input type="password" name="password_confirmation" autocomplete="new-password"></label> -->
         </div>
-        <button class="dashboard-action" type="submit">Save profile</button>
+        <!-- <button class="dashboard-action" type="submit">Save profile</button> -->
     </form>
     </section>
 </div>

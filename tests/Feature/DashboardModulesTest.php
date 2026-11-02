@@ -422,6 +422,128 @@ class DashboardModulesTest extends TestCase
         $this->get(route('dashboard.resource.index', 'announcements'))->assertOk();
     }
 
+    public function test_admin_can_manage_non_admin_role_permissions_from_user_management(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $role = Role::where('name', 'deacon')->firstOrFail();
+        $dashboardPermission = Permission::where('name', 'dashboard.view')->firstOrFail();
+        $eventsPermission = Permission::where('name', 'events.view')->firstOrFail();
+        $financePermission = Permission::where('name', 'finance.*')->firstOrFail();
+
+        $this->actingAs($admin)
+            ->get(route('dashboard.resource.index', 'users'))
+            ->assertOk()
+            ->assertSee(route('dashboard.roles.index'));
+
+        $this->get(route('dashboard.roles.index'))
+            ->assertOk()
+            ->assertSeeText('Roles and permissions')
+            ->assertSeeText('Deacon');
+
+        $this->get(route('dashboard.roles.edit', $role))
+            ->assertOk()
+            ->assertSeeText('Edit role')
+            ->assertSeeText('Dashboard')
+            ->assertSeeText('View');
+
+        $this->withSession(['_token' => self::CSRF_TOKEN])
+            ->put(route('dashboard.roles.update', $role), [
+                '_token' => self::CSRF_TOKEN,
+                'name' => 'deacon',
+                'description' => 'Church Deacon',
+                'permissions' => ['dashboard.view', 'events.view'],
+            ])
+            ->assertRedirect(route('dashboard.roles.edit', $role));
+
+        $this->assertDatabaseHas('role_permissions', [
+            'role_id' => $role->id,
+            'permission_id' => $dashboardPermission->id,
+        ]);
+        $this->assertDatabaseHas('role_permissions', [
+            'role_id' => $role->id,
+            'permission_id' => $eventsPermission->id,
+        ]);
+        $this->assertDatabaseMissing('role_permissions', [
+            'role_id' => $role->id,
+            'permission_id' => $financePermission->id,
+        ]);
+        $this->assertDatabaseHas('role_permissions', [
+            'role_id' => Role::where('name', 'admin')->value('id'),
+            'permission_id' => Permission::where('name', '*')->value('id'),
+        ]);
+    }
+
+    public function test_admin_can_create_view_rename_and_delete_roles_without_orphaning_users(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin);
+
+        $this->get(route('dashboard.roles.create'))
+            ->assertOk()
+            ->assertSeeText('Create role')
+            ->assertSeeText('Create');
+
+        $this->withSession(['_token' => self::CSRF_TOKEN])
+            ->post(route('dashboard.roles.store'), [
+                '_token' => self::CSRF_TOKEN,
+                'name' => 'Church Coordinator',
+                'description' => 'Coordinates church activities.',
+                'permissions' => ['dashboard.view', 'events.view', 'events.create'],
+            ])
+            ->assertSessionHasNoErrors();
+
+        $role = Role::where('name', 'church_coordinator')->firstOrFail();
+        $dashboardUser = User::factory()->create(['role' => $role->name]);
+        $this->assertDatabaseHas('role_permissions', [
+            'role_id' => $role->id,
+            'permission_id' => Permission::where('name', 'events.create')->value('id'),
+        ]);
+
+        $this->get(route('dashboard.roles.show', $role))
+            ->assertOk()
+            ->assertSeeText('Church Coordinator')
+            ->assertSeeText('Events · Create');
+
+        $this->withSession(['_token' => self::CSRF_TOKEN])
+            ->put(route('dashboard.roles.update', $role), [
+                '_token' => self::CSRF_TOKEN,
+                'name' => 'Church Leader',
+                'description' => 'Leads church activities.',
+                'permissions' => ['dashboard.view'],
+            ])
+            ->assertRedirect(route('dashboard.roles.edit', $role->fresh()));
+        $role->refresh();
+        $this->assertSame('church_leader', $role->name);
+        $this->assertSame('church_leader', $role->name);
+        $this->assertSame('church_leader', $dashboardUser->fresh()->role);
+        $this->withSession(['_token' => self::CSRF_TOKEN])
+            ->delete(route('dashboard.roles.destroy', $role), ['_token' => self::CSRF_TOKEN])
+            ->assertStatus(422)
+            ->assertSeeText('Reassign them before deleting the role.');
+        $this->assertDatabaseHas('roles', ['id' => $role->id, 'name' => 'church_leader']);
+
+        $dashboardUser->delete();
+        $this->withSession(['_token' => self::CSRF_TOKEN])
+            ->delete(route('dashboard.roles.destroy', $role), ['_token' => self::CSRF_TOKEN])
+            ->assertRedirect(route('dashboard.roles.index'));
+        $this->assertDatabaseMissing('roles', ['id' => $role->id]);
+    }
+
+    public function test_non_admin_cannot_manage_roles_or_change_administrator_permissions(): void
+    {
+        $deacon = User::factory()->create(['role' => 'deacon']);
+        $adminRole = Role::where('name', 'admin')->firstOrFail();
+
+        $this->actingAs($deacon)
+            ->get(route('dashboard.roles.index'))
+            ->assertForbidden();
+
+        auth()->logout();
+        $this->actingAs(User::factory()->create(['role' => 'admin']))
+            ->get(route('dashboard.roles.edit', $adminRole))
+            ->assertForbidden();
+    }
+
     public function test_permissions_are_loaded_from_role_permission_database_tables(): void
     {
         $role = Role::create(['name' => 'custom_role', 'description' => 'Custom role']);
