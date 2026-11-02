@@ -8,10 +8,17 @@
     <div>
         <span class="role-eyebrow">Church management</span>
         <h1>{{ $definition['title'] }}</h1>
-        <p>Create, update, and manage {{ strtolower($definition['title']) }}.</p>
+        <p>
+            @if(auth()->user()->hasPermissionTo($resource.'.create'))
+                Create, update, and manage {{ strtolower($definition['title']) }}.
+            @else
+                View available {{ strtolower($definition['title']) }}.
+            @endif
+        </p>
     </div>
 </header>
 
+@if(auth()->user()->hasPermissionTo($resource.'.create'))
 <section class="content-box" style="margin-bottom: 24px;">
     <h2 class="resource-panel-title"><i class="fas fa-circle-plus"></i> Add a record</h2>
     <form method="POST" action="{{ route('dashboard.resource.store', $resource) }}" enctype="multipart/form-data">
@@ -51,6 +58,7 @@
         <button class="dashboard-action" type="submit">Create</button>
     </form>
 </section>
+@endif
 
 <section class="content-box">
     <div class="resource-records-heading">
@@ -63,11 +71,18 @@
                 <tr>
                     @foreach($definition['columns'] as $column)<th>{{ str($column)->replace('_', ' ')->title() }}</th>@endforeach
                     @if($resource === 'reports')<th>Attachment</th>@endif
-                    <th>Actions</th>
+                    @if($resource === 'reports' || auth()->user()->hasPermissionTo($resource.'.update') || auth()->user()->hasPermissionTo($resource.'.delete'))
+                        <th>Actions</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
                 @forelse($records as $record)
+                    @php
+                        $canManageRecord = ! isset($definition['owner'])
+                            || auth()->user()->hasPermissionTo($resource.'.view_all')
+                            || (int) $record->{$definition['owner']} === (int) auth()->id();
+                    @endphp
                     <tr>
                         @foreach($definition['columns'] as $column)
                             @php
@@ -110,7 +125,13 @@
                                 @endif
                             </td>
                         @endif
+                        @if($resource === 'reports' || auth()->user()->hasPermissionTo($resource.'.update') || auth()->user()->hasPermissionTo($resource.'.delete'))
                         <td>
+                            <div class="resource-row-actions">
+                            @if($resource === 'reports')
+                                <a class="dashboard-action dashboard-action-secondary" href="{{ route('dashboard.reports.print', $record->id) }}" target="_blank" rel="noopener">Print</a>
+                            @endif
+                            @if($canManageRecord && auth()->user()->hasPermissionTo($resource.'.update'))
                             <details>
                                 <summary class="dashboard-action dashboard-action-secondary">Edit</summary>
                                 <form method="POST" action="{{ route('dashboard.resource.update', [$resource, $record->id]) }}" class="resource-edit-form" enctype="multipart/form-data">
@@ -163,15 +184,20 @@
                                     <button class="dashboard-action" type="submit">Save changes</button>
                                 </form>
                             </details>
-                            <form method="POST" action="{{ route('dashboard.resource.destroy', [$resource, $record->id]) }}" onsubmit="return confirm('Delete this record?');" style="display:inline;">
+                            @endif
+                            @if($canManageRecord && auth()->user()->hasPermissionTo($resource.'.delete'))
+                            <form method="POST" action="{{ route('dashboard.resource.destroy', [$resource, $record->id]) }}" class="resource-delete-form" data-confirm-delete>
                                 @csrf
                                 @method('DELETE')
                                 <button class="dashboard-action dashboard-action-danger" type="submit">Delete</button>
                             </form>
+                            @endif
+                            </div>
                         </td>
+                        @endif
                     </tr>
                 @empty
-                    <tr><td colspan="{{ count($definition['columns']) + ($resource === 'reports' ? 2 : 1) }}">No records have been added.</td></tr>
+                    <tr><td colspan="{{ count($definition['columns']) + ($resource === 'reports' ? 1 : 0) + (($resource === 'reports' || auth()->user()->hasPermissionTo($resource.'.update') || auth()->user()->hasPermissionTo($resource.'.delete')) ? 1 : 0) }}">No records have been added.</td></tr>
                 @endforelse
             </tbody>
         </table>

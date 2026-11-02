@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Database\Seeders\AdminUserSeeder;
+use Database\Seeders\PermissionSeeder;
+use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -14,6 +16,13 @@ class DashboardAuthenticationTest extends TestCase
 
     private const CSRF_TOKEN = 'test-token';
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(RoleSeeder::class);
+        $this->seed(PermissionSeeder::class);
+    }
+
     public function test_login_page_has_separate_password_visibility_and_submit_controls(): void
     {
         $this->get(route('login'))
@@ -23,6 +32,8 @@ class DashboardAuthenticationTest extends TestCase
             ->assertSee('id="password"', false)
             ->assertSee('id="togglePasswordButton"', false)
             ->assertSee('aria-label="Show password"', false)
+            ->assertDontSee('name="role"', false)
+            ->assertDontSeeText('Sign in as')
             ->assertSee("password.type = isHidden ? 'text' : 'password'", false)
             ->assertSee('type="submit"', false);
     }
@@ -32,6 +43,8 @@ class DashboardAuthenticationTest extends TestCase
         $this->get(route('home'))
             ->assertOk()
             ->assertSee('<nav class="navbar">', false)
+            ->assertSee('id="primaryNavigation"', false)
+            ->assertSee('aria-controls="primaryNavigation"', false)
             ->assertSee('<footer class="site-footer">', false)
             ->assertSee('src="'.asset('Images/images.jpg').'"', false);
     }
@@ -40,7 +53,6 @@ class DashboardAuthenticationTest extends TestCase
     {
         $dashboardPages = [
             route('dashboard'),
-            route('dashboard.pastor'),
             route('dashboard.deacon'),
             route('dashboard.elder'),
             route('dashboard.department-leader'),
@@ -83,7 +95,7 @@ class DashboardAuthenticationTest extends TestCase
     {
         $user = User::factory()->create([
             'email' => 'leader@example.com',
-            'role' => 'pastor',
+            'role' => 'admin',
             'password' => 'secure-password',
         ]);
 
@@ -92,10 +104,9 @@ class DashboardAuthenticationTest extends TestCase
             '_token' => self::CSRF_TOKEN,
             'email' => $user->email,
             'password' => 'secure-password',
-            'role' => 'pastor',
-        ])->assertRedirect(route('dashboard.pastor'));
+        ])->assertRedirect(route('dashboard'));
 
-        $this->get(route('dashboard.pastor'))
+        $this->get(route('dashboard'))
             ->assertOk()
             ->assertSeeText($user->name);
 
@@ -112,7 +123,7 @@ class DashboardAuthenticationTest extends TestCase
         User::factory()->create([
             'email' => 'leader@example.com',
             'password' => 'secure-password',
-            'role' => 'pastor',
+            'role' => 'deacon',
         ]);
 
         $this->from(route('login'))
@@ -121,16 +132,13 @@ class DashboardAuthenticationTest extends TestCase
                 '_token' => self::CSRF_TOKEN,
                 'email' => 'leader@example.com',
                 'password' => 'incorrect-password',
-                'role' => 'pastor',
             ])
             ->assertRedirect(route('login'))
             ->assertSessionHasErrors('email');
     }
 
-    public function test_admin_seeder_creates_the_configured_administrator_account(): void
+    public function test_admin_seeder_creates_the_administrator_with_phmhcc_password(): void
     {
-        config(['admin.password' => 'short']);
-
         $this->seed(AdminUserSeeder::class);
 
         $this->assertDatabaseHas('users', [
@@ -139,15 +147,41 @@ class DashboardAuthenticationTest extends TestCase
             'role' => 'admin',
         ]);
         $this->assertTrue(Hash::check(
-            'short',
+            'phmhcc',
             User::where('email', 'tabianavitus@gmail.com')->value('password')
         ));
+    }
+
+    public function test_admin_seeder_updates_existing_account_to_phmhcc_password(): void
+    {
+        config(['admin.email' => 'admin@example.com']);
+        User::factory()->create([
+            'email' => 'admin@example.com',
+            'name' => 'Old Admin Name',
+            'role' => 'member',
+            'password' => 'old-password',
+        ]);
+
+        $this->seed(AdminUserSeeder::class);
+
+        $admin = User::where('email', 'admin@example.com')->firstOrFail();
+        $this->assertSame('Tabiana', $admin->name);
+        $this->assertSame('admin', $admin->role);
+        $this->assertTrue(Hash::check('phmhcc', $admin->password));
+
+        $this->withSession(['_token' => self::CSRF_TOKEN])
+            ->post(route('login.store'), [
+                '_token' => self::CSRF_TOKEN,
+                'email' => 'admin@example.com',
+                'password' => 'phmhcc',
+            ])
+            ->assertRedirect(route('dashboard'));
     }
 
     public function test_users_can_sign_in_to_their_assigned_role_dashboard(): void
     {
         foreach ([
-            'pastor' => 'pastor',
+            'admin' => 'dashboard',
             'deacon' => 'deacon',
             'elder' => 'elder',
             'department_leader' => 'department-leader',
@@ -164,20 +198,40 @@ class DashboardAuthenticationTest extends TestCase
                     '_token' => self::CSRF_TOKEN,
                     'email' => $user->email,
                     'password' => 'secure-password',
-                    'role' => $role,
                 ])
-                ->assertRedirect(route('dashboard.'.$routeRole));
+                ->assertRedirect($routeRole === 'dashboard' ? route('dashboard') : route('dashboard.'.$routeRole));
 
-            $this->get(route('dashboard.'.$routeRole))->assertOk();
-            $this->post(route('logout'), ['_token' => self::CSRF_TOKEN])->assertRedirect(route('home'));
+            $this->get($routeRole === 'dashboard' ? route('dashboard') : route('dashboard.'.$routeRole))->assertOk();
+            $this->post(route('logout'), [
+                '_token' => $this->app['session.store']->token(),
+            ])->assertRedirect(route('home'));
         }
     }
 
-    public function test_selected_role_must_match_the_account_role(): void
+    public function test_login_uses_the_role_assigned_to_the_account(): void
     {
         $user = User::factory()->create([
             'email' => 'deacon@example.com',
             'role' => 'deacon',
+            'password' => 'secure-password',
+        ]);
+
+        $this->withSession(['_token' => self::CSRF_TOKEN])
+            ->post(route('login.store'), [
+                '_token' => self::CSRF_TOKEN,
+                'email' => $user->email,
+                'password' => 'secure-password',
+            ])
+            ->assertRedirect(route('dashboard.deacon'));
+
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_accounts_without_dashboard_permission_cannot_sign_in(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'member@example.com',
+            'role' => 'member',
             'password' => 'secure-password',
         ]);
 
@@ -187,7 +241,6 @@ class DashboardAuthenticationTest extends TestCase
                 '_token' => self::CSRF_TOKEN,
                 'email' => $user->email,
                 'password' => 'secure-password',
-                'role' => 'pastor',
             ])
             ->assertRedirect(route('login'))
             ->assertSessionHasErrors('email');
@@ -195,24 +248,33 @@ class DashboardAuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_members_cannot_use_an_unavailable_member_role_login(): void
+    public function test_removed_pastor_role_cannot_sign_in_but_admin_can_use_main_dashboard(): void
     {
-        $user = User::factory()->create([
-            'email' => 'member@example.com',
-            'role' => 'member',
+        $pastorAccount = User::factory()->create([
+            'email' => 'former-pastor@example.com',
+            'role' => 'pastor',
             'password' => 'secure-password',
         ]);
 
-        $this->from(route('login'))
+        $this->withSession(['_token' => self::CSRF_TOKEN])
             ->post(route('login.store'), [
-                'email' => $user->email,
+                '_token' => self::CSRF_TOKEN,
+                'email' => $pastorAccount->email,
                 'password' => 'secure-password',
-                'role' => 'member',
             ])
             ->assertRedirect(route('login'))
-            ->assertSessionHasErrors('role');
+            ->assertSessionHasErrors('email');
 
         $this->assertGuest();
+
+        $this->seed(AdminUserSeeder::class);
+        $this->withSession(['_token' => self::CSRF_TOKEN])
+            ->post(route('login.store'), [
+                '_token' => self::CSRF_TOKEN,
+                'email' => config('admin.email'),
+                'password' => 'phmhcc',
+            ])
+            ->assertRedirect(route('dashboard'));
     }
 
     public function test_role_user_cannot_open_another_role_dashboard(): void
@@ -220,7 +282,6 @@ class DashboardAuthenticationTest extends TestCase
         $this->actingAs(User::factory()->create(['role' => 'deacon']));
 
         $this->get(route('dashboard.deacon'))->assertOk();
-        $this->get(route('dashboard.pastor'))->assertForbidden();
         $this->get(route('dashboard.treasurer'))->assertForbidden();
     }
 }

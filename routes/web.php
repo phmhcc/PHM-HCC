@@ -8,9 +8,10 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardNotificationController;
 use App\Http\Controllers\DashboardProfileController;
 use App\Http\Controllers\DashboardResourceController;
+use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\RoleDashboardController;
 
-Route::view('/', 'pages.index')->name('home');
+Route::get('/', [PublicPageController::class, 'home'])->name('home');
 
 Route::view('/about', 'pages.about')->name('about');
 
@@ -20,7 +21,7 @@ Route::view('/ministries', 'pages.ministries')->name('ministries');
 
 Route::view('/gallery', 'pages.gallery')->name('gallery');
 
-Route::view('/events', 'pages.events')->name('events');
+// Route::get('/events', [PublicPageController::class, 'events'])->name('events');
 
 Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements');
 
@@ -34,7 +35,7 @@ Route::middleware('guest')->group(function () {
         ->name('login.store');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'can:dashboard.view'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
@@ -42,7 +43,6 @@ Route::middleware('auth')->group(function () {
         ->name('logout');
 
     Route::prefix('dashboard')->name('dashboard.')->group(function () {
-        Route::get('/pastor', [RoleDashboardController::class, 'show'])->defaults('role', 'pastor')->name('pastor');
         Route::get('/deacon', [RoleDashboardController::class, 'show'])->defaults('role', 'deacon')->name('deacon');
         Route::get('/elder', [RoleDashboardController::class, 'show'])->defaults('role', 'elder')->name('elder');
         Route::get('/department-leader', [RoleDashboardController::class, 'show'])->defaults('role', 'department-leader')->name('department-leader');
@@ -55,6 +55,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports/{record}/attachment', [DashboardResourceController::class, 'downloadReportAttachment'])
             ->whereNumber('record')
             ->name('reports.attachment');
+        Route::get('/reports/{record}/print', [DashboardResourceController::class, 'printReport'])
+            ->whereNumber('record')
+            ->name('reports.print');
 
         Route::get('/{resource}', [DashboardResourceController::class, 'index'])->name('resource.index');
         Route::post('/{resource}', [DashboardResourceController::class, 'store'])->name('resource.store');

@@ -88,7 +88,7 @@
         cursor: pointer;
     }
 
-    .login-error {
+    .login-card p.login-error {
         margin-top: 6px;
         color: #b42318;
         font-size: 14px;
@@ -148,19 +148,6 @@
             <label for="email">Email address</label>
             <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="username" required autofocus>
             @error('email')
-            <p class="login-error" role="alert">{{ $message }}</p>
-            @enderror
-
-            <label for="role">Sign in as</label>
-            <select id="role" name="role" required>
-                <option value="">Select your role</option>
-                @foreach(config('roles') as $roleValue => $roleLabel)
-                    @if($roleValue !== 'member')
-                        <option value="{{ $roleValue }}" @selected(old('role') === $roleValue)>{{ $roleLabel }}</option>
-                    @endif
-                @endforeach
-            </select>
-            @error('role')
             <p class="login-error" role="alert">{{ $message }}</p>
             @enderror
 

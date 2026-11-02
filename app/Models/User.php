@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable
 {
@@ -46,5 +47,29 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function roleRecord(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'role', 'name');
+    }
+
+    public function hasPermissionTo(string $permission): bool
+    {
+        $permissions = $this->roleRecord?->permissions ?? collect();
+
+        foreach ($permissions as $grantedPermission) {
+            $grantedPermission = $grantedPermission->name;
+            if (
+                $grantedPermission === '*'
+                || $grantedPermission === $permission
+                || (str_ends_with($grantedPermission, '.*')
+                    && str_starts_with($permission, substr($grantedPermission, 0, -1)))
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -332,7 +332,7 @@
                 and oversees welfare ministries.
             </p>
         </div>
-
+<!-- 
         <div class="leader-card">
 
             <img src="{{ asset('Images/David.jpg') }}" alt="Deacon David">
@@ -348,7 +348,7 @@
                 welcomes visitors,
                 and oversees welfare ministries.
             </p>
-        </div>
+        </div> -->
 
     </section>
 @endsection

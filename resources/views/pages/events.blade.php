@@ -1,4 +1,4 @@
-@extends('layouts.app')
+<!-- @extends('layouts.app')
 
 @section('title', 'Events | PHM HCC')
 
@@ -11,6 +11,8 @@
     .event-card i { margin-top: 4px; color: #c9a900; font-size: 24px; }
     .event-card h2 { margin-bottom: 8px; color: #003366; font-size: 20px; }
     .event-card p { color: #555; line-height: 1.7; }
+    .event-date { margin-bottom: 8px; color: #778397; font-size: 13px; }
+    .events-empty { padding: 28px; border-radius: 8px; background: #fff; color: #555; text-align: center; box-shadow: 0 5px 18px rgba(0, 0, 0, .08); }
     .events-contact { margin-top: 28px; text-align: center; }
     @media (max-width: 600px) { .events-banner h1 { font-size: 34px; } .event-card { padding: 20px; } }
 </style>
@@ -23,13 +25,30 @@
 </section>
 
 <section class="events-section" aria-label="Church events">
-    <article class="event-card">
-        <i class="fas fa-calendar-days" aria-hidden="true"></i>
-        <div>
-            <h2>Upcoming events</h2>
-            <p>Event dates and details will be posted here when they are confirmed. Please check our announcements or contact the church for current information.</p>
+    @forelse($events as $event)
+        <article class="event-card">
+            <i class="fas fa-calendar-days" aria-hidden="true"></i>
+            <div>
+                <h2>{{ $event->title }}</h2>
+                <p class="event-date">
+                    {{ $event->start_date->format('F j, Y \a\t g:i A') }}
+                    @if($event->venue) · {{ $event->venue }} @endif
+                    · {{ str($event->status)->title() }}
+                </p>
+                @if($event->description)
+                    <p>{{ $event->description }}</p>
+                @endif
+            </div>
+        </article>
+    @empty
+        <div class="events-empty">
+            <i class="fas fa-calendar-days" aria-hidden="true"></i>
+            <p>There are no events at this time. Please check back soon.</p>
         </div>
-    </article>
+    @endforelse
+    @if($events->hasPages())
+        <div class="announcement-pagination">{{ $events->links() }}</div>
+    @endif
     <article class="event-card">
         <i class="fas fa-church" aria-hidden="true"></i>
         <div>
@@ -39,4 +58,4 @@
     </article>
     <p class="events-contact">Have a question? <a href="{{ route('contact') }}">Contact us</a>.</p>
 </section>
-@endsection
+@endsection -->

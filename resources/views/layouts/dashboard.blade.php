@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,7 +59,7 @@
             align-items: center;
             gap: 12px;
             padding: 5px 10px 30px;
-            border-bottom: 1px solid rgba(255,255,255,.15);
+            border-bottom: 1px solid rgba(255, 255, 255, .15);
         }
 
         .brand-logo {
@@ -125,7 +125,7 @@
         .sidebar-footer {
             margin-top: 35px;
             padding: 15px;
-            border-top: 1px solid rgba(255,255,255,.15);
+            border-top: 1px solid rgba(255, 255, 255, .15);
             color: #b9cce0;
             font-size: 11px;
             text-align: center;
@@ -186,7 +186,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 35px;
-            box-shadow: 0 2px 12px rgba(0,0,0,.05);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .05);
             position: sticky;
             top: 0;
             z-index: 1200;
@@ -395,7 +395,7 @@
             border-radius: 8px;
             color: #003366;
             font-size: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,.04);
+            box-shadow: 0 3px 12px rgba(0, 0, 0, .04);
         }
 
         /* SUMMARY CARDS */
@@ -411,14 +411,14 @@
             background: #fff;
             padding: 22px;
             border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,.04);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .04);
             border: 1px solid #edf0f5;
             transition: .25s;
         }
 
         .dashboard-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 22px rgba(0,0,0,.08);
+            box-shadow: 0 8px 22px rgba(0, 0, 0, .08);
         }
 
         .card-top {
@@ -490,7 +490,7 @@
             border-radius: 12px;
             padding: 23px;
             border: 1px solid #edf0f5;
-            box-shadow: 0 4px 16px rgba(0,0,0,.04);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .04);
             min-width: 0;
         }
 
@@ -694,13 +694,59 @@
             cursor: pointer;
         }
 
-        .dashboard-action-secondary { background: #e7f0ff; color: #003366; }
-        .dashboard-action-danger { margin-left: 5px; background: #fde8e8; color: #a61b1b; }
-        .form-error { color: #b42318; font-weight: 400; }
-        .dashboard-alert { margin-bottom: 18px; padding: 12px 16px; border-radius: 7px; background: #e3f7ed; color: #17633b; }
-        .resource-edit-form { min-width: 280px; max-width: 520px; padding: 16px 0; }
-        details summary { list-style: none; }
-        details summary::-webkit-details-marker { display: none; }
+        .dashboard-action-secondary {
+            background: #e7f0ff;
+            color: #003366;
+        }
+
+        .dashboard-action-danger {
+            margin-left: 5px;
+            background: #fde8e8;
+            color: #a61b1b;
+        }
+
+        .form-error {
+            color: #b42318;
+            font-weight: 400;
+        }
+
+        .dashboard-alert {
+            margin-bottom: 18px;
+            padding: 12px 16px;
+            border-radius: 7px;
+            background: #e3f7ed;
+            color: #17633b;
+        }
+
+        .resource-edit-form {
+            min-width: 280px;
+            max-width: 520px;
+            padding: 16px 0;
+        }
+
+        .resource-row-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .resource-row-actions .dashboard-action-danger {
+            margin-left: 0;
+        }
+
+        .resource-delete-form {
+            display: inline-flex;
+            margin: 0;
+        }
+
+        details summary {
+            list-style: none;
+        }
+
+        details summary::-webkit-details-marker {
+            display: none;
+        }
 
         /* RESPONSIVE */
 
@@ -727,7 +773,7 @@
                 display: block;
                 position: fixed;
                 inset: 0;
-                background: rgba(0,0,0,.4);
+                background: rgba(0, 0, 0, .4);
                 z-index: 999;
             }
 
@@ -847,9 +893,9 @@
             right: 12%;
             width: 280px;
             height: 280px;
-            border: 1px solid rgba(255,255,255,.13);
+            border: 1px solid rgba(255, 255, 255, .13);
             border-radius: 50%;
-            box-shadow: 0 0 0 36px rgba(255,255,255,.035), 0 0 0 72px rgba(255,255,255,.025);
+            box-shadow: 0 0 0 36px rgba(255, 255, 255, .035), 0 0 0 72px rgba(255, 255, 255, .025);
             content: "";
         }
 
@@ -874,7 +920,7 @@
         }
 
         .dashboard-welcome-copy p {
-            color: rgba(255,255,255,.78);
+            color: rgba(255, 255, 255, .78);
         }
 
         .dashboard-welcome-meta {
@@ -888,9 +934,9 @@
             align-items: center;
             gap: 9px;
             padding: 8px 12px;
-            border: 1px solid rgba(255,255,255,.22);
+            border: 1px solid rgba(255, 255, 255, .22);
             border-radius: 30px;
-            background: rgba(255,255,255,.1);
+            background: rgba(255, 255, 255, .1);
             color: #fff;
             font-size: 12px;
             font-weight: 600;
@@ -908,7 +954,7 @@
 
         .dashboard-welcome .date-display {
             border: 0;
-            background: rgba(255,255,255,.1);
+            background: rgba(255, 255, 255, .1);
             color: #fff;
             box-shadow: none;
         }
@@ -965,7 +1011,7 @@
             text-align: center;
         }
 
-        .dashboard-empty-state > span {
+        .dashboard-empty-state>span {
             display: grid;
             width: 52px;
             height: 52px;
@@ -1151,7 +1197,7 @@
             background: #f9dada;
         }
 
-        .resource-page-heading + .content-box {
+        .resource-page-heading+.content-box {
             margin-bottom: 24px;
         }
 
@@ -1241,9 +1287,9 @@
             right: -40px;
             width: 280px;
             height: 280px;
-            border: 1px solid rgba(255,255,255,.15);
+            border: 1px solid rgba(255, 255, 255, .15);
             border-radius: 50%;
-            box-shadow: 0 0 0 35px rgba(255,255,255,.04), 0 0 0 70px rgba(255,255,255,.035);
+            box-shadow: 0 0 0 35px rgba(255, 255, 255, .04), 0 0 0 70px rgba(255, 255, 255, .035);
             content: "";
         }
 
@@ -1269,7 +1315,7 @@
 
         .role-hero p {
             max-width: 580px;
-            color: rgba(255,255,255,.82);
+            color: rgba(255, 255, 255, .82);
             font-size: 13px;
             line-height: 1.7;
         }
@@ -1282,9 +1328,9 @@
             height: 74px;
             flex: 0 0 74px;
             place-items: center;
-            border: 1px solid rgba(255,255,255,.28);
+            border: 1px solid rgba(255, 255, 255, .28);
             border-radius: 20px;
-            background: rgba(255,255,255,.12);
+            background: rgba(255, 255, 255, .12);
             color: #f5dc57;
             font-size: 30px;
         }
@@ -1389,7 +1435,7 @@
             flex: 0 0 58px;
             place-items: center;
             border-radius: 50%;
-            background: rgba(255,255,255,.15);
+            background: rgba(255, 255, 255, .15);
             color: #f5dc57;
             font-size: 24px;
         }
@@ -1400,7 +1446,7 @@
         }
 
         .profile-banner p {
-            color: rgba(255,255,255,.78);
+            color: rgba(255, 255, 255, .78);
             font-size: 12px;
         }
 
@@ -1504,247 +1550,280 @@
 
 <body>
 
-<div class="dashboard-shell">
+    <div class="dashboard-shell">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
 
-        <div class="sidebar-brand">
-            <img class="brand-logo" src="{{ asset('Images/images.jpg') }}" alt="PHM HCC logo">
-            <div>
-                <h2>PHM HCC</h2>
-                <small>CHURCH MANAGEMENT</small>
+            <div class="sidebar-brand">
+                <img class="brand-logo" src="{{ asset('Images/images.jpg') }}" alt="PHM HCC logo">
+                <div>
+                    <h2>PHM HCC</h2>
+                    <small>CHURCH MANAGEMENT</small>
+                </div>
             </div>
-        </div>
 
-        <p class="sidebar-label">Main Menu</p>
+            <p class="sidebar-label">Main Menu</p>
 
-        <ul class="sidebar-menu">
+            <ul class="sidebar-menu">
 
-            <li>
-                <a href="{{ url('/dashboard') }}"
-                   class="{{ request()->is('dashboard') ? 'active' : '' }}">
-                    <i class="fas fa-house"></i>
-                    Dashboard
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ route('dashboard.resource.index', 'events') }}"
-                   class="{{ request()->is('dashboard/events*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-days"></i>
-                    Weekly Activities
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ route('dashboard.resource.index', 'announcements') }}"
-                   class="{{ request()->is('dashboard/announcements*') ? 'active' : '' }}">
-                    <i class="fas fa-bullhorn"></i>
-                    Announcements
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ route('dashboard.resource.index', 'duties') }}"
-                   class="{{ request()->is('dashboard/duties*') ? 'active' : '' }}">
-                    <i class="fas fa-clipboard-list"></i>
-                    Duty Schedule
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ route('dashboard.resource.index', 'meetings') }}"
-                   class="{{ request()->is('dashboard/meetings*') ? 'active' : '' }}">
-                    <i class="fas fa-users"></i>
-                    Meetings
-                </a>
-            </li>
-
-        </ul>
-
-        <p class="sidebar-label">Management</p>
-
-        <ul class="sidebar-menu">
-
-            <li>
-                <a href="{{ route('dashboard.resource.index', 'departments') }}"
-                   class="{{ request()->is('dashboard/departments*') ? 'active' : '' }}">
-                    <i class="fas fa-sitemap"></i>
-                    Departments
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ route('dashboard.resource.index', 'reports') }}"
-                   class="{{ request()->is('dashboard/reports*') ? 'active' : '' }}">
-                    <i class="fas fa-file-lines"></i>
-                    Reports
-                </a>
-            </li>
-
-            @if(in_array(auth()->user()->role, ['admin', 'treasurer'], true))
                 <li>
-                    <a href="{{ route('dashboard.resource.index', 'finance') }}"
-                       class="{{ request()->is('dashboard/finance*') ? 'active' : '' }}">
-                        <i class="fas fa-wallet"></i>
-                        Financial Statements
+                    <a href="{{ url('/dashboard') }}"
+                        class="{{ request()->is('dashboard') ? 'active' : '' }}">
+                        <i class="fas fa-house"></i>
+                        Dashboard
                     </a>
                 </li>
-            @endif
 
-            @if(auth()->user()->role === 'admin')
+                @if(auth()->user()->hasPermissionTo('users.view'))
                 <li>
                     <a href="{{ route('dashboard.resource.index', 'users') }}"
-                       class="{{ request()->is('dashboard/users*') ? 'active' : '' }}">
+                        class="{{ request()->is('dashboard/users*') ? 'active' : '' }}">
                         <i class="fas fa-user-shield"></i>
                         User Management
                     </a>
                 </li>
-            @endif
+                @endif
 
-        </ul>
+                @if(auth()->user()->hasPermissionTo('events.view'))
+                <li>
+                    <a href="{{ route('dashboard.resource.index', 'events') }}"
+                        class="{{ request()->is('dashboard/events*') ? 'active' : '' }}">
+                        <i class="fas fa-calendar-days"></i>
+                        Weekly Activities
+                    </a>
+                </li>
+                @endif
 
-        <!-- <p class="sidebar-label">Role dashboards</p>
+                @if(auth()->user()->hasPermissionTo('announcements.view'))
+                <li>
+                    <a href="{{ route('dashboard.resource.index', 'announcements') }}"
+                        class="{{ request()->is('dashboard/announcements*') ? 'active' : '' }}">
+                        <i class="fas fa-bullhorn"></i>
+                        Announcements
+                    </a>
+                </li>
+                @endif
 
-        <ul class="sidebar-menu">
-            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'pastor')
-                <li><a href="{{ route('dashboard.pastor') }}" class="{{ request()->routeIs('dashboard.pastor') ? 'active' : '' }}"><i class="fas fa-cross"></i> Pastor</a></li>
-            @endif
-            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'deacon')
-                <li><a href="{{ route('dashboard.deacon') }}" class="{{ request()->routeIs('dashboard.deacon') ? 'active' : '' }}"><i class="fas fa-hands-holding-circle"></i> Deacon</a></li>
-            @endif
-            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'elder')
-                <li><a href="{{ route('dashboard.elder') }}" class="{{ request()->routeIs('dashboard.elder') ? 'active' : '' }}"><i class="fas fa-book-bible"></i> Elder</a></li>
-            @endif
-            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'department_leader')
-                <li><a href="{{ route('dashboard.department-leader') }}" class="{{ request()->routeIs('dashboard.department-leader') ? 'active' : '' }}"><i class="fas fa-people-group"></i> Department Leader</a></li>
-            @endif
-            @if(in_array(auth()->user()->role, ['admin', 'treasurer'], true))
-                <li><a href="{{ route('dashboard.treasurer') }}" class="{{ request()->routeIs('dashboard.treasurer') ? 'active' : '' }}"><i class="fas fa-wallet"></i> Treasurer</a></li>
-            @endif
-        </ul> -->
+                @if(auth()->user()->hasPermissionTo('duties.view'))
+                <li>
+                    <a href="{{ route('dashboard.resource.index', 'duties') }}"
+                        class="{{ request()->is('dashboard/duties*') ? 'active' : '' }}">
+                        <i class="fas fa-clipboard-list"></i>
+                        Duty Schedule
+                    </a>
+                </li>
+                @endif
 
-    </aside>
+                @if(auth()->user()->hasPermissionTo('meetings.view'))
+                <li>
+                    <a href="{{ route('dashboard.resource.index', 'meetings') }}"
+                        class="{{ request()->is('dashboard/meetings*') ? 'active' : '' }}">
+                        <i class="fas fa-users"></i>
+                        Meetings
+                    </a>
+                </li>
+                @endif
 
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+            </ul>
 
-    <!-- MAIN CONTENT -->
-    <div class="main-area">
+            <p class="sidebar-label">Management</p>
 
-        <!-- TOPBAR -->
-        <header class="topbar">
+            <ul class="sidebar-menu">
 
-            <div class="topbar-left">
+                @if(auth()->user()->hasPermissionTo('finance.view'))
+                <li>
+                    <a href="{{ route('dashboard.resource.index', 'finance') }}"
+                        class="{{ request()->is('dashboard/finance*') ? 'active' : '' }}">
+                        <i class="fas fa-wallet"></i>
+                        Financial Statements
+                    </a>
+                </li>
+                @endif
 
-                <button class="menu-toggle" id="menuToggle"
-                    type="button" aria-label="Toggle navigation">
-                    <i class="fas fa-bars"></i>
-                </button>
+                @if(auth()->user()->hasPermissionTo('departments.view'))
+                <li>
+                    <a href="{{ route('dashboard.resource.index', 'departments') }}"
+                        class="{{ request()->is('dashboard/departments*') ? 'active' : '' }}">
+                        <i class="fas fa-sitemap"></i>
+                        Departments
+                    </a>
+                </li>
+                @endif
 
-                <div class="topbar-title">
-                    <h3>@yield('page-heading', 'Dashboard')</h3>
-                    <p>Welcome to PHM HCC Management Portal</p>
-                </div>
+                @if(auth()->user()->hasPermissionTo('reports.view'))
+                <li>
+                    <a href="{{ route('dashboard.resource.index', 'reports') }}"
+                        class="{{ request()->is('dashboard/reports*') ? 'active' : '' }}">
+                        <i class="fas fa-file-lines"></i>
+                        Reports
+                    </a>
+                </li>
+                @endif
 
-            </div>
 
-            <div class="topbar-right">
+            </ul>
+        </aside>
 
-                <a href="{{ route('dashboard.notifications') }}"
-                   class="topbar-icon" title="Notifications">
-                    <i class="far fa-bell"></i>
-                    @if(auth()->user()->unreadNotifications()->exists())
-                        <span class="notification-dot"></span>
-                    @endif
-                </a>
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-                <div class="profile">
-                    <button class="profile-toggle" id="profileToggle" type="button" aria-expanded="false" aria-controls="profileMenu" aria-label="Open account menu">
-                        <span class="profile-avatar">
-                            <i class="fas fa-user" aria-hidden="true"></i>
-                        </span>
-                        <span class="profile-info">
-                            <strong>{{ auth()->user()->name ?? 'Church Leader' }}</strong>
-                            <small>{{ str(auth()->user()->role)->replace('_', ' ')->title() }}</small>
-                        </span>
-                        <i class="fas fa-chevron-down profile-chevron" aria-hidden="true"></i>
+        <!-- MAIN CONTENT -->
+        <div class="main-area">
+
+            <!-- TOPBAR -->
+            <header class="topbar">
+
+                <div class="topbar-left">
+
+                    <button class="menu-toggle" id="menuToggle"
+                        type="button" aria-label="Toggle navigation">
+                        <i class="fas fa-bars"></i>
                     </button>
-                    <div class="profile-menu" id="profileMenu">
-                        <a href="{{ route('dashboard.profile') }}">
-                            <i class="fas fa-user-circle" aria-hidden="true"></i> My Profile
-                        </a>
-                        <a href="{{ route('home') }}">
-                            <i class="fas fa-globe" aria-hidden="true"></i> Visit Website
-                        </a>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit">
-                                <i class="fas fa-right-from-bracket" aria-hidden="true"></i> Logout
-                            </button>
-                        </form>
+
+                    <div class="topbar-title">
+                        <h3>@yield('page-heading', 'Dashboard')</h3>
+                        <p>Welcome to PHM HCC Management Portal</p>
                     </div>
+
                 </div>
 
-            </div>
+                <div class="topbar-right">
 
-        </header>
+                    <a href="{{ route('dashboard.notifications') }}"
+                        class="topbar-icon" title="Notifications">
+                        <i class="far fa-bell"></i>
+                        @if(auth()->user()->unreadNotifications()->exists())
+                        <span class="notification-dot"></span>
+                        @endif
+                    </a>
 
-        <!-- PAGE CONTENT -->
-        <main class="dashboard-content">
+                    <div class="profile">
+                        <button class="profile-toggle" id="profileToggle" type="button" aria-expanded="false" aria-controls="profileMenu" aria-label="Open account menu">
+                            <span class="profile-avatar">
+                                <i class="fas fa-user" aria-hidden="true"></i>
+                            </span>
+                            <span class="profile-info">
+                                <strong>{{ auth()->user()->name ?? 'Church Leader' }}</strong>
+                                <small>{{ str(auth()->user()->role)->replace('_', ' ')->title() }}</small>
+                            </span>
+                            <i class="fas fa-chevron-down profile-chevron" aria-hidden="true"></i>
+                        </button>
+                        <div class="profile-menu" id="profileMenu">
+                            <a href="{{ route('dashboard.profile') }}">
+                                <i class="fas fa-user-circle" aria-hidden="true"></i> My Profile
+                            </a>
+                            <a href="{{ route('home') }}">
+                                <i class="fas fa-globe" aria-hidden="true"></i> Visit Website
+                            </a>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit">
+                                    <i class="fas fa-right-from-bracket" aria-hidden="true"></i> Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
 
-            @if(session('status'))
+                </div>
+
+            </header>
+
+            <!-- PAGE CONTENT -->
+            <main class="dashboard-content">
+
+                @if(session('status'))
                 <div class="dashboard-alert" role="status">{{ session('status') }}</div>
-            @endif
+                @endif
 
-            @yield('content')
+                @yield('content')
 
-        </main>
+            </main>
 
-        @include('layouts.partials.site-footer')
+            @include('layouts.partials.site-footer')
+        </div>
+
     </div>
 
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.querySelectorAll('form[data-confirm-delete]').forEach((form) => {
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
 
-<script>
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
+                if (typeof Swal === 'undefined') {
+                    if (window.confirm('Are you sure you want to delete this record?')) {
+                        form.submit();
+                    }
 
-    function toggleSidebar() {
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-    }
+                    return;
+                }
 
-    menuToggle.addEventListener('click', toggleSidebar);
-    overlay.addEventListener('click', toggleSidebar);
+                Swal.fire({
+                    title: 'Delete this record?',
+                    text: 'This action cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#b42318',
+                    cancelButtonColor: '#66758a',
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
 
-    const profileToggle = document.getElementById('profileToggle');
-    const profileMenu = document.getElementById('profileMenu');
-
-    profileToggle.addEventListener('click', () => {
-        const isOpen = profileToggle.getAttribute('aria-expanded') === 'true';
-        profileToggle.setAttribute('aria-expanded', String(!isOpen));
-        profileMenu.classList.toggle('open', !isOpen);
-    });
-
-    document.addEventListener('click', (event) => {
-        if (!profileToggle.contains(event.target) && !profileMenu.contains(event.target)) {
-            profileToggle.setAttribute('aria-expanded', 'false');
-            profileMenu.classList.remove('open');
+        const statusMessage = @json(session('status'));
+        if (statusMessage && typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Success',
+                text: statusMessage,
+                icon: 'success',
+                confirmButtonColor: '#003366',
+            });
         }
-    });
 
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            profileToggle.setAttribute('aria-expanded', 'false');
-            profileMenu.classList.remove('open');
-            profileToggle.focus();
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
         }
-    });
-</script>
 
-@stack('scripts')
+        menuToggle.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+
+        const profileToggle = document.getElementById('profileToggle');
+        const profileMenu = document.getElementById('profileMenu');
+
+        profileToggle.addEventListener('click', () => {
+            const isOpen = profileToggle.getAttribute('aria-expanded') === 'true';
+            profileToggle.setAttribute('aria-expanded', String(!isOpen));
+            profileMenu.classList.toggle('open', !isOpen);
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!profileToggle.contains(event.target) && !profileMenu.contains(event.target)) {
+                profileToggle.setAttribute('aria-expanded', 'false');
+                profileMenu.classList.remove('open');
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                profileToggle.setAttribute('aria-expanded', 'false');
+                profileMenu.classList.remove('open');
+                profileToggle.focus();
+            }
+        });
+    </script>
+
+    @stack('scripts')
 
 </body>
+
 </html>

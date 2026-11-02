@@ -29,6 +29,7 @@ header {
     z-index: 1000;
 }
 .navbar {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -74,9 +75,18 @@ header {
 
 .menu {
     display: none;
+    padding: 6px;
+    border: 0;
+    background: transparent;
     color: white;
     font-size: 28px;
     cursor: pointer;
+}
+
+.menu:focus-visible,
+.nav-links a:focus-visible {
+    outline: 2px solid #FFD700;
+    outline-offset: 4px;
 }
 
 /* =========================
@@ -435,22 +445,47 @@ RESPONSIVE DESIGN
 @media(max-width:900px) {
     .nav-links {
         position: absolute;
-        top: 80px;
-        left: -100%;
+        top: 100%;
+        right: 0;
+        left: 0;
+        z-index: 1001;
         background: #003366;
         width: 100%;
         flex-direction: column;
         text-align: center;
-        padding: 30px;
-        transition: .4s;
+        gap: 0;
+        max-height: calc(100vh - 80px);
+        padding: 12px 20px;
+        overflow-y: auto;
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(-8px);
+        pointer-events: none;
+        transition: opacity .2s ease, transform .2s ease, visibility .2s;
     }
 
     .nav-links.active {
-        left: 0;
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    .nav-links li {
+        width: 100%;
+    }
+
+    .nav-links a {
+        display: block;
+        padding: 12px 8px;
     }
 
     .menu {
         display: block;
+    }
+
+    .menu[aria-expanded="true"] {
+        color: #FFD700;
     }
 
     .service-container,
@@ -477,20 +512,6 @@ RESPONSIVE DESIGN
     .hero-content h2 {
 
         font-size: 25px;
-    }
-
-    /* ==========================
-   Scroll Animation
-========================== */
-    section {
-        opacity: 0;
-        transform: translateY(40px);
-        transition: 1s;
-    }
-
-    section.show {
-        opacity: 1;
-        transform: translateY(0);
     }
 
     /* ==========================

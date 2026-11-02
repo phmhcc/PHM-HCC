@@ -29,7 +29,7 @@
                 <h2>PHM HCC</h2>
             </div>
 
-            <ul class="nav-links">
+            <ul class="nav-links" id="primaryNavigation">
                 <li>
                     <a href="{{ route('home') }}"
                         class="{{ request()->routeIs('home') ? 'active' : '' }}">
@@ -65,13 +65,7 @@
                     </a>
                 </li>
 
-                <li>
-                    <a href="{{ route('events') }}"
-                        class="{{ request()->routeIs('events') ? 'active' : '' }}">
-                        Events
-                    </a>
-                </li>
-
+               
                 <li>
                     <a href="{{ route('announcements') }}"
                         class="{{ request()->routeIs('announcements') ? 'active' : '' }}">
@@ -101,9 +95,10 @@
                 </li>
             </ul>
 
-            <div class="menu" aria-label="Open navigation menu">
-                <i class="fas fa-bars"></i>
-            </div>
+            <button class="menu" type="button" aria-label="Open navigation menu"
+                aria-controls="primaryNavigation" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
         </nav>
     </header>
     @endunless

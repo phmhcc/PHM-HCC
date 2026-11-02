@@ -8,9 +8,11 @@ use App\Models\Duty;
 use App\Models\Event;
 use App\Models\FinancialTransaction;
 use App\Models\Meeting;
+use App\Models\Role;
 use App\Models\Report;
 use App\Models\User;
 use App\Notifications\AnnouncementPublished;
+use App\Notifications\DashboardInformationPublished;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -44,23 +46,20 @@ class DashboardResourceController extends Controller
                 'title' => ['Title', 'text', 'required|string|max:255'], 'department_id' => ['Department', 'department', 'nullable|exists:departments,id'], 'reporting_period' => ['Reporting period', 'date', 'nullable|date'], 'activities' => ['Activities', 'textarea', 'nullable|string'], 'achievements' => ['Achievements', 'textarea', 'nullable|string'], 'challenges' => ['Challenges', 'textarea', 'nullable|string'], 'recommendations' => ['Recommendations', 'textarea', 'nullable|string'], 'status' => ['Status', 'select', 'required|in:pending,reviewed,approved', ['pending', 'reviewed', 'approved']],
                 'attachment' => ['Attachment', 'file', 'nullable|file|mimes:pdf,xls,xlsx|extensions:pdf,xls,xlsx|max:10240'],
             ]],
-            'finance' => ['title' => 'Financial Transactions', 'model' => FinancialTransaction::class, 'roles' => ['admin', 'treasurer'], 'columns' => ['transaction_date', 'type', 'category', 'amount', 'description'], 'fields' => [
+            'finance' => ['title' => 'Financial Transactions', 'model' => FinancialTransaction::class, 'columns' => ['transaction_date', 'type', 'category', 'amount', 'description'], 'fields' => [
                 'transaction_date' => ['Date', 'date', 'required|date'], 'type' => ['Type', 'select', 'required|in:income,expense', ['income', 'expense']], 'category' => ['Category', 'text', 'required|string|max:255'], 'amount' => ['Amount', 'number', 'required|numeric|min:0.01'], 'description' => ['Description', 'textarea', 'nullable|string'], 'reference' => ['Reference', 'text', 'nullable|string|max:255'],
             ]],
-            'users' => ['title' => 'User Management', 'model' => User::class, 'roles' => ['admin'], 'columns' => ['name', 'email', 'role', 'created_at'], 'fields' => [
-                'name' => ['Name', 'text', 'required|string|max:255'], 'email' => ['Email', 'email', 'required|email|max:255'], 'role' => ['Role', 'select', 'required|in:pastor,deacon,elder,department_leader,treasurer,member', ['pastor', 'deacon', 'elder', 'department_leader', 'treasurer', 'member']], 'password' => ['Password', 'password', 'required|string|min:1'],
+            'users' => ['title' => 'User Management', 'model' => User::class, 'columns' => ['name', 'email', 'role', 'created_at'], 'fields' => [
+                'name' => ['Name', 'text', 'required|string|max:255'], 'email' => ['Email', 'email', 'required|email|max:255'], 'role' => ['Role', 'select', 'required|exists:roles,name|not_in:admin', Role::where('name', '!=', 'admin')->orderBy('name')->pluck('name')->all()], 'password' => ['Password', 'password', 'required|string|min:1'],
             ]],
         ];
     }
 
-    private function definition(string $resource): array
+    private function definition(string $resource, string $action = 'view'): array
     {
         abort_unless(isset($this->definitions()[$resource]), 404);
         $definition = $this->definitions()[$resource];
-        abort_if(
-            isset($definition['roles']) && ! in_array(auth()->user()->role, $definition['roles'], true),
-            403
-        );
+        abort_unless(auth()->user()->hasPermissionTo($resource.'.'.$action), 403);
 
         return $definition;
     }
@@ -69,8 +68,18 @@ class DashboardResourceController extends Controller
     {
         $definition = $this->definition($resource);
         $query = $definition['model']::query()->latest('id');
-        if (isset($definition['owner']) && ! isset($definition['roles'])) {
-            $query->where($definition['owner'], auth()->id());
+        if (isset($definition['owner']) && ! auth()->user()->hasPermissionTo($resource.'.view_all')) {
+            if (in_array($resource, ['events', 'duties', 'meetings'], true)) {
+                $query->where(function ($query) use ($definition) {
+                    $query->where($definition['owner'], auth()->id())
+                        ->orWhereIn(
+                            $definition['owner'],
+                            User::query()->where('role', 'admin')->select('id')
+                        );
+                });
+            } else {
+                $query->where($definition['owner'], auth()->id());
+            }
         }
 
         $records = $query->paginate(15);
@@ -82,7 +91,7 @@ class DashboardResourceController extends Controller
 
     public function store(Request $request, string $resource): RedirectResponse
     {
-        $definition = $this->definition($resource);
+        $definition = $this->definition($resource, 'create');
         $data = $this->validated($request, $definition);
         $attachment = $data['attachment'] ?? null;
         unset($data['attachment']);
@@ -103,7 +112,27 @@ class DashboardResourceController extends Controller
         }
 
         if ($resource === 'announcements') {
-            User::where('id', '!=', auth()->id())->each(fn (User $user) => $user->notify(new AnnouncementPublished($record)));
+            $notification = new AnnouncementPublished($record);
+        } elseif (
+            auth()->user()->role === 'admin'
+            && in_array($resource, ['events', 'duties', 'meetings', 'departments'], true)
+        ) {
+            $noun = [
+                'events' => 'event',
+                'duties' => 'duty',
+                'meetings' => 'meeting',
+                'departments' => 'department',
+            ][$resource];
+            $itemTitle = $resource === 'departments' ? $record->name : $record->title;
+            $notification = new DashboardInformationPublished(
+                'New '.$noun.': '.$itemTitle,
+                'An administrator added this to the church dashboard.',
+            );
+        }
+
+        if (isset($notification)) {
+            User::where('id', '!=', auth()->id())
+                ->each(fn (User $user) => $user->notify($notification));
         }
 
         return back()->with('status', $definition['title'].' item created.');
@@ -111,8 +140,8 @@ class DashboardResourceController extends Controller
 
     public function update(Request $request, string $resource, int $record): RedirectResponse
     {
-        $definition = $this->definition($resource);
-        $item = $this->findRecord($definition, $record);
+        $definition = $this->definition($resource, 'update');
+        $item = $this->findRecord($definition, $record, $resource);
         $data = $this->validated($request, $definition, $record);
         $attachment = $data['attachment'] ?? null;
         unset($data['attachment']);
@@ -132,7 +161,7 @@ class DashboardResourceController extends Controller
     public function downloadReportAttachment(int $record)
     {
         $definition = $this->definition('reports');
-        $report = $this->findRecord($definition, $record);
+        $report = $this->findRecord($definition, $record, 'reports');
         $path = $this->reportAttachmentPath($report);
 
         abort_unless($path !== null, 404);
@@ -140,10 +169,19 @@ class DashboardResourceController extends Controller
         return Storage::disk('local')->download($path);
     }
 
+    public function printReport(int $record): View
+    {
+        $definition = $this->definition('reports');
+        $report = $this->findRecord($definition, $record, 'reports');
+        $report->load(['department', 'submitter']);
+
+        return view('dashboards.resources.report-print', compact('report'));
+    }
+
     public function destroy(string $resource, int $record): RedirectResponse
     {
-        $definition = $this->definition($resource);
-        $item = $this->findRecord($definition, $record);
+        $definition = $this->definition($resource, 'delete');
+        $item = $this->findRecord($definition, $record, $resource);
         abort_if($resource === 'users' && $item->is(auth()->user()), 422, 'You cannot delete your own account.');
         $item->delete();
         if ($resource === 'reports') {
@@ -153,10 +191,13 @@ class DashboardResourceController extends Controller
         return back()->with('status', $definition['title'].' item deleted.');
     }
 
-    private function findRecord(array $definition, int $id): Model
+    private function findRecord(array $definition, int $id, string $resource): Model
     {
         $query = $definition['model']::query();
-        if (isset($definition['owner'])) {
+        if (
+            isset($definition['owner'])
+            && ! auth()->user()->hasPermissionTo($resource.'.view_all')
+        ) {
             $query->where($definition['owner'], auth()->id());
         }
 

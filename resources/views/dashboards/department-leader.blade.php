@@ -21,8 +21,11 @@
 <section class="content-box">
     <h2 class="role-section-title">Quick actions</h2>
     <div class="role-tools">
-        <a class="role-tool-link" href="{{ route('dashboard.resource.index', 'departments') }}"><span><i class="fas fa-sitemap"></i> Departments</span><i class="fas fa-arrow-right"></i></a>
+        <!-- <a class="role-tool-link" href="{{ route('dashboard.resource.index', 'departments') }}"><span><i class="fas fa-sitemap"></i> Departments</span><i class="fas fa-arrow-right"></i></a> -->
         <a class="role-tool-link" href="{{ route('dashboard.resource.index', 'duties') }}"><span><i class="fas fa-list-check"></i> Schedule duties</span><i class="fas fa-arrow-right"></i></a>
+        <a class="role-tool-link" href="{{ route('dashboard.resource.index', 'meetings') }}"><span><i class="fas fa-calendar-days"></i> Schedule meetings</span><i class="fas fa-arrow-right"></i></a>
+        <a class="role-tool-link" href="{{ route('dashboard.resource.index', 'announcements') }}"><span><i class="fas fa-bullhorn"></i>announcements</span><i class="fas fa-arrow-right"></i></a>
+    </div>
         <a class="role-tool-link" href="{{ route('dashboard.resource.index', 'reports') }}"><span><i class="fas fa-file-lines"></i> Submit report</span><i class="fas fa-arrow-right"></i></a>
     </div>
  </section>

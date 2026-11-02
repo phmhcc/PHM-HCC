@@ -3,6 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\Permission;
+use App\Models\Role;
+use Database\Seeders\PermissionSeeder;
+use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
@@ -19,6 +23,8 @@ class DashboardModulesTest extends TestCase
     {
         parent::setUp();
         config(['admin.email' => 'admin@example.com']);
+        $this->seed(RoleSeeder::class);
+        $this->seed(PermissionSeeder::class);
     }
 
     public function test_admin_can_open_each_dashboard_module(): void
@@ -41,7 +47,7 @@ class DashboardModulesTest extends TestCase
 
         $this->get(route('home'))->assertOk();
 
-        foreach (['pastor', 'deacon', 'elder', 'department-leader', 'treasurer'] as $role) {
+        foreach (['deacon', 'elder', 'department-leader', 'treasurer'] as $role) {
             $this->get(route('dashboard.'.$role))->assertOk();
         }
 
@@ -102,7 +108,116 @@ class DashboardModulesTest extends TestCase
         $this->assertCount(1, $recipient->fresh()->notifications);
     }
 
-    public function test_public_announcements_page_shows_current_announcements_from_database(): void
+    public function test_admin_created_shared_information_notifies_other_users_and_appears_on_dashboard(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $recipient = User::factory()->create(['role' => 'deacon']);
+        $anotherRecipient = User::factory()->create(['role' => 'elder']);
+        $this->actingAs($admin);
+
+        $this->withSession(['_token' => self::CSRF_TOKEN])->post(route('dashboard.resource.store', 'events'), [
+            '_token' => self::CSRF_TOKEN,
+            'title' => 'Church-wide gathering',
+            'start_date' => '2026-11-08T10:00',
+            'status' => 'scheduled',
+        ])->assertRedirect();
+
+        $this->assertCount(0, $admin->fresh()->notifications);
+        $this->assertCount(1, $recipient->fresh()->notifications);
+        $this->assertCount(1, $anotherRecipient->fresh()->notifications);
+
+        $this->actingAs($recipient)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSeeText('New event: Church-wide gathering')
+            ->assertSeeText('An administrator added this to the church dashboard.');
+    }
+
+    public function test_all_dashboard_roles_can_see_admin_created_events_duties_and_meetings(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $event = \App\Models\Event::create([
+            'title' => 'Church-wide event',
+            'start_date' => now()->addDay(),
+            'status' => 'scheduled',
+            'created_by' => $admin->id,
+        ]);
+        \App\Models\Duty::create([
+            'title' => 'Church-wide duty',
+            'duty_date' => today()->addDay(),
+            'status' => 'pending',
+            'created_by' => $admin->id,
+        ]);
+        \App\Models\Meeting::create([
+            'title' => 'Church-wide meeting',
+            'meeting_date' => today()->addDay(),
+            'status' => 'scheduled',
+            'created_by' => $admin->id,
+        ]);
+
+        foreach (['deacon', 'elder', 'treasurer', 'department_leader'] as $role) {
+            $user = User::factory()->create(['role' => $role]);
+
+            $this->actingAs($user)
+                ->get(route('dashboard.resource.index', 'events'))
+                ->assertOk()
+                ->assertSeeText($event->title);
+            $this->get(route('dashboard.resource.index', 'duties'))
+                ->assertOk()
+                ->assertSeeText('Church-wide duty');
+            $this->get(route('dashboard.resource.index', 'meetings'))
+                ->assertOk()
+                ->assertSeeText('Church-wide meeting');
+            $this->get(route('dashboard'))
+                ->assertOk()
+                ->assertSeeText($event->title);
+        }
+    }
+
+    public function test_all_dashboard_roles_can_view_all_announcements_but_only_admin_can_create(): void
+    {
+        $author = User::factory()->create(['role' => 'admin']);
+        \App\Models\Announcement::create([
+            'title' => 'Church-wide announcement',
+            'message' => 'Visible to every dashboard role.',
+            'created_by' => $author->id,
+        ]);
+
+        foreach (['admin', 'deacon', 'elder', 'department_leader', 'treasurer'] as $role) {
+            $user = User::factory()->create(['role' => $role]);
+
+            $this->actingAs($user)
+                ->get(route('dashboard.resource.index', 'announcements'))
+                ->assertOk()
+                ->assertSeeText('Church-wide announcement');
+
+            if ($role !== 'admin') {
+                $this->withSession(['_token' => self::CSRF_TOKEN])
+                    ->post(route('dashboard.resource.store', 'announcements'), [
+                        '_token' => self::CSRF_TOKEN,
+                        'title' => 'Unauthorized announcement',
+                        'message' => 'Only administrators can publish this.',
+                    ])
+                    ->assertForbidden();
+            }
+
+            auth()->logout();
+        }
+
+        $this->actingAs($author)
+            ->withSession(['_token' => self::CSRF_TOKEN])
+            ->post(route('dashboard.resource.store', 'announcements'), [
+                '_token' => self::CSRF_TOKEN,
+                'title' => 'Admin announcement',
+                'message' => 'Created by the admin.',
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('announcements', ['title' => 'Admin announcement']);
+        $this->assertDatabaseMissing('announcements', ['title' => 'Unauthorized announcement']);
+    }
+
+    public function test_public_announcements_page_shows_all_announcements_from_database(): void
     {
         $publisher = User::factory()->create();
         \App\Models\Announcement::create([
@@ -113,7 +228,7 @@ class DashboardModulesTest extends TestCase
         ]);
         \App\Models\Announcement::create([
             'title' => 'Future announcement',
-            'message' => 'This should not be visible yet.',
+            'message' => 'This scheduled update should be visible.',
             'published_at' => now()->addDay(),
             'created_by' => $publisher->id,
         ]);
@@ -122,15 +237,40 @@ class DashboardModulesTest extends TestCase
             ->assertOk()
             ->assertSeeText('This Sunday')
             ->assertSeeText('Join the church family for service.')
+            ->assertSeeText('Future announcement')
+            ->assertSeeText('This scheduled update should be visible.')
             ->assertSeeText('Need more information?')
-            ->assertSee('href="'.route('contact').'"', false)
-            ->assertDontSeeText('Future announcement');
+            ->assertSee('href="'.route('contact').'"', false);
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSeeText('This Sunday')
+            ->assertSeeText('Future announcement');
+    }
+
+    public function test_public_events_page_shows_events_from_database(): void
+    {
+        $publisher = User::factory()->create();
+        \App\Models\Event::create([
+            'title' => 'Community celebration',
+            'description' => 'Everyone is welcome.',
+            'start_date' => now()->addWeek(),
+            'venue' => 'Main church',
+            'status' => 'scheduled',
+            'created_by' => $publisher->id,
+        ]);
+
+        $this->get(route('events'))
+            ->assertOk()
+            ->assertSeeText('Community celebration')
+            ->assertSeeText('Everyone is welcome.')
+            ->assertSeeText('Main church')
+            ->assertSeeText('Weekly gatherings');
     }
 
     public function test_reports_can_store_download_replace_and_delete_pdf_and_excel_attachments(): void
     {
         Storage::fake('local');
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'department_leader']);
         $this->actingAs($user);
 
         $this->withSession(['_token' => self::CSRF_TOKEN])->post(route('dashboard.resource.store', 'reports'), [
@@ -148,7 +288,7 @@ class DashboardModulesTest extends TestCase
             ->assertDownload('attachment.pdf');
 
         auth()->logout();
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->create(['role' => 'deacon']));
         $this->get(route('dashboard.reports.attachment', $report->id))->assertNotFound();
 
         auth()->logout();
@@ -173,10 +313,43 @@ class DashboardModulesTest extends TestCase
         Storage::disk('local')->assertMissing('reports/'.$report->id.'/attachment.xlsx');
     }
 
+    public function test_report_owner_can_open_a_printable_report_but_other_users_cannot(): void
+    {
+        $owner = User::factory()->create(['role' => 'department_leader']);
+        $report = \App\Models\Report::create([
+            'title' => 'Monthly report',
+            'activities' => 'Community outreach and Sunday service.',
+            'achievements' => 'Welcomed five new members.',
+            'challenges' => 'Limited transport.',
+            'recommendations' => 'Arrange additional transport.',
+            'submitted_by' => $owner->id,
+            'status' => 'reviewed',
+        ]);
+
+        $this->actingAs($owner)
+            ->get(route('dashboard.reports.print', $report->id))
+            ->assertOk()
+            ->assertSeeText('Monthly report')
+            ->assertSeeText('Community outreach and Sunday service.')
+            ->assertSeeText('Welcomed five new members.')
+            ->assertSeeText('Limited transport.')
+            ->assertSeeText('Arrange additional transport.')
+            ->assertSee('onclick="window.print()"', false);
+
+        $this->get(route('dashboard.resource.index', 'reports'))
+            ->assertOk()
+            ->assertSee('class="resource-row-actions"', false)
+            ->assertSee(route('dashboard.reports.print', $report->id));
+
+        $this->actingAs(User::factory()->create(['role' => 'deacon']))
+            ->get(route('dashboard.reports.print', $report->id))
+            ->assertNotFound();
+    }
+
     public function test_report_attachment_accepts_only_pdf_and_excel_files(): void
     {
         Storage::fake('local');
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->create(['role' => 'department_leader']));
 
         $this->from(route('dashboard.resource.index', 'reports'))
             ->withSession(['_token' => self::CSRF_TOKEN])
@@ -203,6 +376,73 @@ class DashboardModulesTest extends TestCase
         $this->actingAs(User::factory()->create(['role' => 'treasurer']));
         $this->get(route('dashboard.resource.index', 'finance'))->assertOk();
         $this->get(route('dashboard.resource.index', 'users'))->assertForbidden();
+    }
+
+    public function test_role_permissions_restrict_modules_and_record_actions(): void
+    {
+        $deacon = User::factory()->create(['role' => 'deacon']);
+        $this->actingAs($deacon);
+
+        $this->get(route('dashboard.resource.index', 'reports'))
+            ->assertOk()
+            ->assertSee('Add a record');
+        $this->get(route('dashboard.resource.index', 'departments'))
+            ->assertOk()
+            ->assertDontSee('Add a record')
+            ->assertDontSee('Save changes')
+            ->assertDontSee('Delete</button>', false);
+        $this->get(route('dashboard.resource.index', 'finance'))->assertForbidden();
+        $this->get(route('dashboard.resource.index', 'users'))->assertForbidden();
+
+        $this->withSession(['_token' => self::CSRF_TOKEN])
+            ->post(route('dashboard.resource.store', 'announcements'), [
+                '_token' => self::CSRF_TOKEN,
+                'title' => 'Unauthorized announcement',
+                'message' => 'This should not be created.',
+            ])
+            ->assertForbidden();
+        $this->assertDatabaseMissing('announcements', ['title' => 'Unauthorized announcement']);
+
+        auth()->logout();
+        $this->actingAs(User::factory()->create(['role' => 'elder']));
+        $this->get(route('dashboard.resource.index', 'announcements'))->assertOk();
+        $this->get(route('dashboard.resource.index', 'finance'))->assertForbidden();
+        \App\Models\Report::create([
+            'title' => 'Deacon report',
+            'submitted_by' => User::factory()->create(['role' => 'deacon'])->id,
+            'status' => 'pending',
+        ]);
+        $this->get(route('dashboard.resource.index', 'reports'))
+            ->assertOk()
+            ->assertDontSeeText('Deacon report');
+
+        auth()->logout();
+        $this->actingAs(User::factory()->create(['role' => 'treasurer']));
+        $this->get(route('dashboard.resource.index', 'finance'))->assertOk();
+        $this->get(route('dashboard.resource.index', 'announcements'))->assertOk();
+    }
+
+    public function test_permissions_are_loaded_from_role_permission_database_tables(): void
+    {
+        $role = Role::create(['name' => 'custom_role', 'description' => 'Custom role']);
+        $dashboardPermission = Permission::where('name', 'dashboard.view')->firstOrFail();
+        $permission = Permission::where('name', 'announcements.view')->firstOrFail();
+        $role->permissions()->attach($dashboardPermission);
+        $user = User::factory()->create(['role' => 'custom_role']);
+
+        $this->actingAs($user)
+            ->get(route('dashboard.resource.index', 'announcements'))
+            ->assertForbidden();
+
+        $role->permissions()->attach($permission);
+
+        $this->actingAs($user->fresh());
+        $this->get(route('dashboard.resource.index', 'announcements'))->assertOk();
+
+        $role->permissions()->detach($permission);
+
+        $this->actingAs($user->fresh());
+        $this->get(route('dashboard.resource.index', 'announcements'))->assertForbidden();
     }
 
     public function test_admin_can_create_finance_records_and_users(): void
@@ -237,7 +477,7 @@ class DashboardModulesTest extends TestCase
 
     public function test_user_can_update_profile_and_mark_notification_read(): void
     {
-        $user = User::factory()->create(['email' => 'member@example.com']);
+        $user = User::factory()->create(['email' => 'member@example.com', 'role' => 'admin']);
         $user->notify(new \App\Notifications\AnnouncementPublished(
             \App\Models\Announcement::create([
                 'title' => 'Service update',

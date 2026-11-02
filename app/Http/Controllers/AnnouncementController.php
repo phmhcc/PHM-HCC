@@ -10,10 +10,6 @@ class AnnouncementController extends Controller
     public function index(): View
     {
         $announcements = Announcement::query()
-            ->where(function ($query) {
-                $query->whereNull('published_at')
-                    ->orWhere('published_at', '<=', now());
-            })
             ->latest('published_at')
             ->latest('id')
             ->paginate(10);

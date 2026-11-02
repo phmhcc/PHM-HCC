@@ -108,100 +108,31 @@
 
     <!-- Announcements -->
 
-    <section class="announcement">
+    <!-- <section class="announcement">
 
         <h2>Latest Announcements</h2>
 
         <div class="marquee-container">
             <div class="marquee-content">
-
-                <div class="news-card">
-                    <h3>Youth Conference</h3>
-                    <p>Wednesday at 04:30 PM.</p>
-                </div>
-
-                <div class="news-card">
-                    <h3>Choir Practice</h3>
-                    <p>Every Friday at 08:00 PM.</p>
-                </div>
-
-                <div class="news-card">
-                    <h3>Praise and Worship Practice</h3>
-                    <p>Every Thursday and Saturday at 08:00 PM - 10:00 PM.</p>
-                </div>
-
-                <div class="news-card">
-                    <h3>Community Outreach</h3>
-                    <p>Next Sunday after church service.</p>
-                </div>
-
-                <!-- Duplicate cards for smooth scrolling -->
-
-                <div class="news-card">
-                    <h3>Youth Conference</h3>
-                    <p>Wednesday at 04:30 PM.</p>
-                </div>
-
-                <div class="news-card">
-                    <h3>Choir Practice</h3>
-                    <p>Every Friday at 08:00 PM.</p>
-                </div>
- 
-                 <div class="news-card">
-                    <h3>Praise and Worship Practice</h3>
-                    <p>Every Thursday and Saturday at 08:00 PM - 10:00 PM.</p>
-                </div>
-
-                <div class="news-card">
-                    <h3>Community Outreach</h3>
-                    <p>Next Sunday after church service.</p>
-                </div>
-
-                <!-- Duplicate cards for smooth scrolling -->
-
-                <div class="news-card">
-                    <h3>Youth Conference</h3>
-                    <p>Wednesday at 04:30 PM.</p>
-                </div>
-
-                <div class="news-card">
-                    <h3>Choir Practice</h3>
-                    <p>Every Friday at 08:00 PM.</p>
-                </div>
- 
-                 <div class="news-card">
-                    <h3>Praise and Worship Practice</h3>
-                    <p>Every Thursday and Saturday at 08:00 PM - 10:00 PM.</p>
-                </div>
-
-                <div class="news-card">
-                    <h3>Community Outreach</h3>
-                    <p>Next Sunday after church service.</p>
-                </div>
-
-                <!-- Duplicate cards for smooth scrolling -->
-
-                <div class="news-card">
-                    <h3>Youth Conference</h3>
-                    <p>Wednesday at 04:30 PM.</p>
-                </div>
-
-                <div class="news-card">
-                    <h3>Choir Practice</h3>
-                    <p>Every Friday at 08:00 PM.</p>
-                </div>
-
-                 <div class="news-card">
-                    <h3>Praise and Worship Practice</h3>
-                    <p>Every Thursday and Saturday at 08:00 PM - 10:00 PM.</p>
-                </div>
-
-                <div class="news-card">
-                    <h3>Community Outreach</h3>
-                    <p>Next Sunday after church service.</p>
-                </div>
+                @forelse($announcements as $announcement)
+                    <div class="news-card">
+                        <h3>{{ $announcement->title }}</h3>
+                        <p>{{ $announcement->message }}</p>
+                    </div>
+                @empty
+                    <div class="news-card">
+                        <h3>No announcements yet</h3>
+                        <p>Please check back soon for church updates.</p>
+                    </div>
+                @endforelse
+                @foreach($announcements as $announcement)
+                    <div class="news-card" aria-hidden="true">
+                        <h3>{{ $announcement->title }}</h3>
+                        <p>{{ $announcement->message }}</p>
+                    </div>
+                @endforeach
             </div>
         </div>
-    </section>
+    </section> -->
 
 @endsection

@@ -75,7 +75,7 @@
 
 </div>
 
-@if(in_array(auth()->user()->role, ['admin', 'treasurer'], true))
+@if(auth()->user()->hasPermissionTo('finance.view'))
 <div class="dashboard-cards finance-summary-cards">
     <article class="dashboard-card">
         <p class="card-label">Recorded income</p>
@@ -257,11 +257,13 @@
             <p>Plan and manage church activities.</p>
         </a>
 
+        @if(auth()->user()->hasPermissionTo('announcements.view'))
         <a href="{{ route('dashboard.resource.index', 'announcements') }}" class="dashboard-card quick-access-card">
             <div class="card-icon icon-gold"><i class="fas fa-bullhorn"></i></div>
             <h2>Announcements</h2>
             <p>Share updates with the church family.</p>
         </a>
+        @endif
 
         <a href="{{ route('dashboard.resource.index', 'duties') }}" class="dashboard-card quick-access-card">
             <div class="card-icon icon-purple"><i class="fas fa-clipboard-list"></i></div>
@@ -293,7 +295,7 @@
             <p>View church departments and leaders.</p>
         </a>
 
-        @if(in_array(auth()->user()->role, ['admin', 'treasurer'], true))
+        @if(auth()->user()->hasPermissionTo('finance.view'))
             <a href="{{ route('dashboard.resource.index', 'finance') }}" class="dashboard-card quick-access-card">
                 <div class="card-icon icon-green">
                     <i class="fas fa-wallet"></i>

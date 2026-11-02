@@ -23,6 +23,8 @@
     <div class="role-tools">
         <a class="role-tool-link" href="{{ route('dashboard.resource.index', 'duties') }}"><span><i class="fas fa-list-check"></i> Duty schedule</span><i class="fas fa-arrow-right"></i></a>
         <a class="role-tool-link" href="{{ route('dashboard.resource.index', 'meetings') }}"><span><i class="fas fa-users"></i> Church meetings</span><i class="fas fa-arrow-right"></i></a>
+        <a class="role-tool-link" href="{{ route('dashboard.resource.index', 'events') }}"><span><i class="fas fa-calendar-week"></i> Church events</span><i class="fas fa-arrow-right"></i></a>
+        <a class="role-tool-link" href="{{ route('dashboard.resource.index', 'announcements') }}"><span><i class="fas fa-bullhorn"></i> Church announcements</span><i class="fas fa-arrow-right"></i></a>
     </div>
  </section>
 @endsection

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -21,21 +21,29 @@ class AuthenticatedSessionController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
-            'role' => ['required', Rule::in(array_diff(array_keys(config('roles')), ['member']))],
         ]);
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return redirect()->route('login')
-                ->withErrors(['email' => 'Email, password, and selected role do not match an account.'])
-                ->withInput($request->only('email', 'role'));
+                ->withErrors(['email' => 'Email or password do not match an account.'])
+                ->withInput($request->only('email'));
+        }
+
+        $user = Auth::user();
+        if (! Gate::forUser($user)->allows('dashboard.view')) {
+            Auth::logout();
+
+            return redirect()->route('login')
+                ->withErrors(['email' => 'This account does not have dashboard access. Please contact your administrator.'])
+                ->withInput($request->only('email'));
         }
 
         $request->session()->regenerate();
 
-        $roleRoute = str_replace('_', '-', Auth::user()->role);
+        $roleRoute = str_replace('_', '-', $user->role);
 
         return redirect()->intended(
-            Auth::user()->role === 'admin'
+            in_array($user->role, ['admin'], true)
                 ? route('dashboard')
                 : route('dashboard.'.$roleRoute)
         );

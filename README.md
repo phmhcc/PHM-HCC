@@ -9,14 +9,16 @@
 
 ## PHM HCC dashboard setup
 
-Set your chosen, non-empty `ADMIN_PASSWORD` in your local `.env` file. The administrator account is created for Tabiana (`tabianavitus@gmail.com`). Then run:
+The administrator account is created for Tabiana (`tabianavitus@gmail.com`) with the password `phmhcc`. Run:
 
 ```bash
 php artisan migrate
-php artisan db:seed --class=AdminUserSeeder
+php artisan db:seed
 ```
 
-Sign in at `/login` to open the protected `/dashboard`. The sidebar provides create, edit, and delete screens for activities, announcements, duties, meetings, departments, reports, finance, and users. Finance and user management are restricted to the administrator account. Profile updates and announcement notifications are also available there. Role overview pages are available under `/dashboard/pastor`, `/dashboard/deacon`, `/dashboard/elder`, `/dashboard/department-leader`, and `/dashboard/treasurer`.
+The seeder creates or updates the administrator account, including its password. Sign in at `/login` to open the protected `/dashboard`. Roles are stored in `roles`, permission names in `permissions`, and role grants in `role_permissions`; each user's existing `role` value matches a role name. The database seeder creates the initial roles and grants. To change access, update the role-to-permission assignments in `role_permissions`.
+
+The sidebar provides the modules allowed for the signed-in user's database role. Profile updates and announcement notifications are also available there. Administrator accounts use `/dashboard`; other role overview pages are available under `/dashboard/deacon`, `/dashboard/elder`, `/dashboard/department-leader`, and `/dashboard/treasurer`.
 
 ## About Laravel
 

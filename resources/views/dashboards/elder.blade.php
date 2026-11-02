@@ -23,6 +23,7 @@
     <div class="role-tools">
         <a class="role-tool-link" href="{{ route('dashboard.resource.index', 'departments') }}"><span><i class="fas fa-sitemap"></i> Ministry departments</span><i class="fas fa-arrow-right"></i></a>
         <a class="role-tool-link" href="{{ route('dashboard.resource.index', 'reports') }}"><span><i class="fas fa-file-lines"></i> Ministry reports</span><i class="fas fa-arrow-right"></i></a>
+
     </div>
  </section>
 @endsection
