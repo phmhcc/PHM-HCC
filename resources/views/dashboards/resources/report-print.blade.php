@@ -85,20 +85,6 @@
             <div><strong>Submitted by:</strong> {{ $report->submitter?->name ?? '—' }}</div>
             <div><strong>Submitted on:</strong> {{ $report->created_at?->format('d M Y') ?? '—' }}</div>
         </div>
-
-        @foreach([
-            'Activities' => $report->activities,
-            'Achievements' => $report->achievements,
-            'Challenges' => $report->challenges,
-            'Recommendations' => $report->recommendations,
-        ] as $heading => $content)
-            @if($content)
-                <section>
-                    <h2>{{ $heading }}</h2>
-                    <div class="report-section">{{ $content }}</div>
-                </section>
-            @endif
-        @endforeach
     </main>
 </body>
 </html>

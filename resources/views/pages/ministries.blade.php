@@ -73,10 +73,10 @@
 @section('content')
 <section class="page-banner">
 
-    <h1>Church Ministries</h1>
+    <h1>{{ __('Church Ministries') }}</h1>
 
     <p>
-        Serving God Together Through Different Ministries
+        {{ __('Serving God Together Through Different Ministries') }}
     </p>
 
 </section>
@@ -89,15 +89,14 @@
 
             <i class="fas fa-child"></i>
 
-            <h3>Children's Ministry</h3>
+            <h3>{{ __('Children\'s Ministry') }}</h3>
 
             <p>
-                Teaching children the Word of God through Bible lessons,
-                songs, prayer, games, and Christian values.
+                {{ __('Teaching children the Word of God through Bible lessons, songs, prayer, games, and Christian values.') }}
             </p>
 
             <p class="schedule">
-                Every Sunday - 8:30 AM
+                {{ __('Every Sunday - 8:30 AM') }}
             </p>
 
         </div>
@@ -106,15 +105,14 @@
 
             <i class="fas fa-users"></i>
 
-            <h3>Youth Ministry</h3>
+            <h3>{{ __('Youth Ministry') }}</h3>
 
             <p>
-                Helping young people grow spiritually through Bible study,
-                fellowship, worship, leadership training, and outreach.
+                {{ __('Helping young people grow spiritually through Bible study, fellowship, worship, leadership training, and outreach.') }}
             </p>
 
             <p class="schedule">
-                Wednesday - 04:30 PM
+                {{ __('Wednesday - 04:30 PM') }}
             </p>
 
         </div>
@@ -123,15 +121,14 @@
 
             <i class="fas fa-female"></i>
 
-            <h3>Women's Ministry</h3>
+            <h3>{{ __('Women\'s Ministry') }}</h3>
 
             <p>
-                Empowering women through prayer meetings,
-                Bible studies, conferences, and community service.
+                {{ __('Empowering women through prayer meetings, Bible studies, conferences, and community service.') }}
             </p>
 
             <p class="schedule">
-                Every Thursday - 04:30 PM
+                {{ __('Every Thursday - 04:30 PM') }}
             </p>
 
         </div>
@@ -140,15 +137,14 @@
 
             <i class="fas fa-male"></i>
 
-            <h3>Men's Ministry</h3>
+            <h3>{{ __('Men\'s Ministry') }}</h3>
 
             <p>
-                Encouraging men to become godly leaders in their families,
-                church, workplace, and community.
+                {{ __('Encouraging men to become godly leaders in their families, church, workplace, and community.') }}
             </p>
 
             <p class="schedule">
-                Every Thursday - 06:00 PM
+                {{ __('Every Thursday - 06:00 PM') }}
             </p>
 
         </div>
@@ -157,15 +153,14 @@
 
             <i class="fas fa-music"></i>
 
-            <h3>Choir Ministry</h3>
+            <h3>{{ __('Choir Ministry') }}</h3>
 
             <p>
-                Leading the congregation in praise and worship through
-                music, singing, and special presentations.
+                {{ __('Leading the congregation in praise and worship through music, singing, and special presentations.') }}
             </p>
 
             <p class="schedule">
-                Practice: Friday - 08:00 PM
+                {{ __('Practice: Friday - 08:00 PM') }}
             </p>
 
         </div>
@@ -174,15 +169,14 @@
 
             <i class="fas fa-cross"></i>
 
-            <h3>Evangelism Ministry</h3>
+            <h3>{{ __('Evangelism Ministry') }}</h3>
 
             <p>
-                Sharing the Gospel of Jesus Christ through door-to-door
-                evangelism, crusades, and outreach programs.
+                {{ __('Sharing the Gospel of Jesus Christ through door-to-door evangelism, crusades, and outreach programs.') }}
             </p>
 
             <p class="schedule">
-                Last Sunday of Every Month
+                {{ __('Last Sunday of Every Month') }}
             </p>
 
         </div>
@@ -191,15 +185,14 @@
 
             <i class="fas fa-hands-praying"></i>
 
-            <h3>Prayer Ministry</h3>
+            <h3>{{ __('Prayer Ministry') }}</h3>
 
             <p>
-                Standing in prayer for the church, families,
-                the nation, and the world.
+                {{ __('Standing in prayer for the church, families, the nation, and the world.') }}
             </p>
 
             <p class="schedule">
-                Friday - 06:30 PM - 08:00 PM
+                {{ __('Friday - 06:30 PM - 08:00 PM') }}
             </p>
 
         </div>
@@ -208,16 +201,14 @@
 
             <i class="fas fa-hand-holding-heart"></i>
 
-            <h3>Community Outreach</h3>
+            <h3>{{ __('Community Outreach') }}</h3>
 
             <p>
-                Serving our community through charity work,
-                visiting the sick, helping families,
-                and supporting those in need.
+                {{ __('Serving our community through charity work, visiting the sick, helping families, and supporting those in need.') }}
             </p>
 
             <p class="schedule">
-                Monthly Outreach Program
+                {{ __('Monthly Outreach Program') }}
             </p>
         </div>
     </div>

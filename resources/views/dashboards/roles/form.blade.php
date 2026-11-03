@@ -1,7 +1,7 @@
 @extends('layouts.dashboard')
 
-@section('title', $heading.' | PHM HCC')
-@section('page-heading', $heading)
+@section('title', __($heading).' | PHM HCC')
+@section('page-heading', __($heading))
 
 @push('styles')
 <style>
@@ -33,12 +33,12 @@
 @section('content')
 <header class="resource-page-heading">
     <div>
-        <span class="role-eyebrow">User management</span>
-        <h1>{{ $heading }}</h1>
-        <p>Set the role details and choose the permissions assigned to it.</p>
+        <span class="role-eyebrow">{{ __('User Management') }}</span>
+        <h1>{{ __($heading) }}</h1>
+        <p>{{ __('Set the role details and choose the permissions assigned to it.') }}</p>
     </div>
     <a class="dashboard-action dashboard-action-secondary" href="{{ route('dashboard.roles.index') }}">
-        <i class="fas fa-arrow-left" aria-hidden="true"></i> Back to roles
+        <i class="fas fa-arrow-left" aria-hidden="true"></i> {{ __('Back to roles') }}
     </a>
 </header>
 
@@ -51,27 +51,27 @@
 
         <div class="role-basic-fields">
             <label class="resource-field">
-                <span>Role name</span>
+                <span>{{ __('Role name') }}</span>
                 <input name="name" value="{{ old('name', $role->name) }}" required maxlength="50" autocomplete="off">
-                <small>Use letters, numbers, and spaces. Names are saved in lowercase with underscores.</small>
+                <small>{{ __('Use letters, numbers, and spaces. Names are saved in lowercase with underscores.') }}</small>
                 @error('name')<small class="form-error">{{ $message }}</small>@enderror
             </label>
             <label class="resource-field">
-                <span>Description</span>
+                <span>{{ __('Description') }}</span>
                 <input name="description" value="{{ old('description', $role->description) }}" maxlength="255">
                 @error('description')<small class="form-error">{{ $message }}</small>@enderror
             </label>
         </div>
 
-        <h2 class="resource-panel-title"><i class="fas fa-key" aria-hidden="true"></i> Permissions</h2>
+        <h2 class="resource-panel-title"><i class="fas fa-key" aria-hidden="true"></i> {{ __('Permissions') }}</h2>
         <div class="role-permission-groups">
             @foreach($permissionGroups as $group => $permissions)
                 @php($groupKey = 'permission-group-'.$loop->index)
                 <section class="role-permission-group" aria-labelledby="{{ $groupKey }}-heading">
-                    <h3 id="{{ $groupKey }}-heading">{{ $group }}</h3>
+                    <h3 id="{{ $groupKey }}-heading">{{ __($group) }}</h3>
                     <label class="role-permission-select-all">
                         <input type="checkbox" data-select-group="{{ $groupKey }}">
-                        <span>Select all</span>
+                        <span>{{ __('Select all') }}</span>
                     </label>
                     <div class="role-permission-options">
                         @foreach($permissions as $permission)
@@ -83,7 +83,7 @@
                                     data-permission-group="{{ $groupKey }}"
                                     @checked(in_array($permission['name'], old('permissions', $selectedPermissions), true))
                                 >
-                                <span>{{ $permission['label'] }}</span>
+                                <span>{{ __($permission['label']) }}</span>
                             </label>
                         @endforeach
                     </div>
@@ -94,8 +94,8 @@
         @error('permissions.*')<p class="form-error">{{ $message }}</p>@enderror
 
         <div class="role-form-actions">
-            <button class="dashboard-action" type="submit">{{ $formMethod === 'POST' ? 'Create role' : 'Save role' }}</button>
-            <a class="dashboard-action dashboard-action-secondary" href="{{ route('dashboard.roles.index') }}">Cancel</a>
+            <button class="dashboard-action" type="submit">{{ __($formMethod === 'POST' ? 'Create role' : 'Save role') }}</button>
+            <a class="dashboard-action dashboard-action-secondary" href="{{ route('dashboard.roles.index') }}">{{ __('Cancel') }}</a>
         </div>
     </form>
 </section>

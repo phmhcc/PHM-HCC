@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 
 <head>
     <meta charset="UTF-8">
@@ -20,7 +20,7 @@
 
 <body class="{{ request()->routeIs('announcements') ? 'announcements-page' : '' }}">
 
-    @unless(request()->routeIs('login'))
+    @unless(request()->routeIs('login', 'password.*'))
     <header>
         <nav class="navbar">
             <div class="logo">
@@ -33,35 +33,35 @@
                 <li>
                     <a href="{{ route('home') }}"
                         class="{{ request()->routeIs('home') ? 'active' : '' }}">
-                        Home
+                        {{ __('Home') }}
                     </a>
                 </li>
 
                 <li>
                     <a href="{{ route('about') }}"
                         class="{{ request()->routeIs('about') ? 'active' : '' }}">
-                        About
+                        {{ __('About') }}
                     </a>
                 </li>
 
                 <li>
                     <a href="{{ route('leadership') }}"
                         class="{{ request()->routeIs('leadership') ? 'active' : '' }}">
-                        Leadership
+                        {{ __('Leadership') }}
                     </a>
                 </li>
 
                 <li>
                     <a href="{{ route('ministries') }}"
                         class="{{ request()->routeIs('ministries') ? 'active' : '' }}">
-                        Ministries
+                        {{ __('Ministries') }}
                     </a>
                 </li>
 
                 <li>
                     <a href="{{ route('gallery') }}"
                         class="{{ request()->routeIs('gallery') ? 'active' : '' }}">
-                        Gallery
+                        {{ __('Gallery') }}
                     </a>
                 </li>
 
@@ -69,14 +69,14 @@
                 <li>
                     <a href="{{ route('announcements') }}"
                         class="{{ request()->routeIs('announcements') ? 'active' : '' }}">
-                        Announcements
+                        {{ __('Announcements') }}
                     </a>
                 </li>
 
                 <li>
                     <a href="{{ route('contact') }}"
                         class="{{ request()->routeIs('contact') ? 'active' : '' }}">
-                        Contact
+                        {{ __('Contact') }}
                     </a>
                 </li>
 
@@ -84,14 +84,17 @@
                     @auth
                     <a href="{{ route('dashboard') }}"
                         class="{{ request()->routeIs('dashboard*') ? 'active' : '' }}">
-                        Dashboard
+                        {{ __('Dashboard') }}
                     </a>
                     @else
                     <a href="{{ route('login') }}"
                         class="{{ request()->routeIs('login') ? 'active' : '' }}">
-                        Sign in
+                        {{ __('Sign in') }}
                     </a>
                     @endauth
+                </li>
+                <li class="nav-language-switch">
+                    @include('layouts.partials.language-switch', ['id' => 'public-language-switch'])
                 </li>
             </ul>
 
@@ -101,13 +104,17 @@
             </button>
         </nav>
     </header>
+    @else
+        <div class="auth-language-switch">
+            @include('layouts.partials.language-switch', ['id' => 'auth-language-switch'])
+        </div>
     @endunless
 
     <main>
         @yield('content')
     </main>
 
-    @unless(request()->routeIs('login'))
+    @unless(request()->routeIs('login', 'password.*'))
         @include('layouts.partials.site-footer')
     @endunless
 

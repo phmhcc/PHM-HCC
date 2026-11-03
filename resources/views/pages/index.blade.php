@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Home | PHM HCC')
+@section('title', __('Home').' | PHM HCC')
 
 @push('styles')
 <style>
@@ -8,9 +8,10 @@
         padding: 100px 8%;
         text-align: center;
         background:
-            linear-gradient(rgba(4, 4, 4, 0.6), rgba(85, 64, 64, 0.6)),
+         linear-gradient( rgba(186, 129, 129, 0.6), rgba(0, 0, 0, 0.60)),
             url("{{ asset('Images/church-background.jpg') }}")
             center center / cover no-repeat;
+         
     }
 
     .hero h1 {
@@ -33,44 +34,42 @@
         <div class="hero-content">
             <h1>PENTECOSTAL HOLINESS MISSION</h1>
             <h2>HOPE CHRISTIAN CHURCH</h2>
-            <p>Winning Souls • Building Faith • Serving God</p>
-            <a href="{{ route('about') }}" class="btn">Learn More</a>
+            <p>{{ __('Winning Souls • Building Faith • Serving God') }}</p>
+            <a href="{{ route('about') }}" class="btn">{{ __('Learn More') }}</a>
         </div>
     </section>
 
     <!-- Welcome -->
 
     <section class="welcome">
-        <h2>Welcome to PHM HCC</h2>
+        <h2>{{ __('Welcome to PHM HCC') }}</h2>
         <p>
-            We warmly welcome you to Pentecostal Holiness Mission Hope Christian Church.
-            Join us as we worship God, grow spiritually, and impact our community through
-            love, prayer, and the Word of God.
+            {{ __('We warmly welcome you to Pentecostal Holiness Mission Hope Christian Church. Join us as we worship God, grow spiritually, and impact our community through love, prayer, and the Word of God.') }}
         </p>
     </section>
 
     <!-- Service Times -->
 
     <section class="services">
-        <h2>Service Schedule</h2>
+        <h2>{{ __('Service Schedule') }}</h2>
         <div class="service-box">
 
             <div class="card">
                 <i class="fa-solid fa-church"></i>
-                <h3>Sunday Worship</h3>
-                <p>06:30 AM - 09:30 AM -English Service</p>
-                <p>09:00 AM - 01:00 PM - Swahili Service</p>
+                <h3>{{ __('Sunday Worship') }}</h3>
+                <p>{{ __('06:30 AM - 09:30 AM - English Service') }}</p>
+                <p>{{ __('09:00 AM - 01:00 PM - Swahili Service') }}</p>
             </div>
 
             <div class="card">
                 <i class="fa-solid fa-book-bible"></i>
-                <h3>Tuesday Service (Bible Study)</h3>
+                <h3>{{ __('Tuesday Service (Bible Study)') }}</h3>
                 <p>06:30 PM - 08:00 PM</p>
             </div>
 
             <div class="card">
                 <i class="fa-solid fa-hands-praying"></i>
-                <h3>Friday Prayer</h3>
+                <h3>{{ __('Friday Prayer') }}</h3>
                 <p>06:30 PM - 08:00 PM</p>
             </div>
         </div>
@@ -83,28 +82,25 @@
             <img src="{{ asset('Images/pastor.jpg') }}" alt="Pastor">
         </div>
         <div class="pastor-text">
-            <h2>Message from the Pastor</h2>
+            <h2>{{ __('Message from the Pastor') }}</h2>
             <p>
-                We believe that Jesus Christ transforms lives.
-                Our prayer is that every visitor experiences God's love,
-                hope, and salvation through our ministry.
+                {{ __('We believe that Jesus Christ transforms lives. Our prayer is that every visitor experiences God\'s love, hope, and salvation through our ministry.') }}
             </p>
-            <a href="{{ route('contact') }}" class="btn">Contact Us</a>
+            <a href="{{ route('contact') }}" class="btn">{{ __('Contact us') }}</a>
         </div>
     </section>
 
     <!-- Bible Verse -->
-
+<!-- 
     <section class="verse">
-        <h2>Weekly Bible Verse</h2>
+        <h2>{{ __('Weekly Bible Verse') }}</h2>
         <blockquote>
-            "For where two or three gather in my name,
-            there am I with them."
+            {{ __('For where two or three gather in my name, there am I with them.') }}
 
             <br><br>
-            <strong>Matthew 18:20</strong>
+            <strong>{{ __('Matthew 18:20') }}</strong>
         </blockquote>
-    </section>
+    </section> -->
 
     <!-- Announcements -->
 

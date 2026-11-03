@@ -13,6 +13,7 @@ class FinancialTransaction extends Model
         'description',
         'amount',
         'reference',
+        'receipt_path',
         'recorded_by',
     ];
 

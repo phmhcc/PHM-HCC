@@ -1,16 +1,16 @@
 
 @extends('layouts.dashboard')
 
-@section('title', 'Dashboard | PHM HCC')
-@section('page-heading', 'Church Overview')
+@section('title', __('Dashboard').' | PHM HCC')
+@section('page-heading', __('Church Overview'))
 
 @section('content')
 
 <header class="dashboard-heading dashboard-welcome">
     <div class="dashboard-welcome-copy">
-        <span class="dashboard-welcome-eyebrow"><i class="fas fa-sun"></i> Church management portal</span>
-        <h1>Welcome Back, {{ auth()->user()->name }}!</h1>
-        <p>Here is your overview of church activities and administration.</p>
+        <span class="dashboard-welcome-eyebrow"><i class="fas fa-sun"></i> {{ __('Church management portal') }}</span>
+        <h1>{{ __('Welcome Back, :name!', ['name' => auth()->user()->name]) }}</h1>
+        <p>{{ __('Here is your overview of church activities and administration.') }}</p>
     </div>
     <div class="dashboard-welcome-meta">
         <div class="dashboard-user-chip"><span><i class="fas fa-user"></i></span>{{ auth()->user()->name }}</div>
@@ -24,53 +24,53 @@
     <div class="dashboard-card">
         <div class="card-top">
             <div>
-                <p class="card-label">Upcoming Events</p>
+                <p class="card-label">{{ __('Upcoming Events') }}</p>
                 <h2 class="card-number">{{ $upcomingEvents ?? 0 }}</h2>
             </div>
             <div class="card-icon icon-blue">
                 <i class="fas fa-calendar-days"></i>
             </div>
         </div>
-        <p class="card-description">Church activities and programs</p>
+        <p class="card-description">{{ __('Church activities and programs') }}</p>
     </div>
 
     <div class="dashboard-card">
         <div class="card-top">
             <div>
-                <p class="card-label">Scheduled Duties</p>
+                <p class="card-label">{{ __('Scheduled Duties') }}</p>
                 <h2 class="card-number">{{ $scheduledDuties ?? 0 }}</h2>
             </div>
             <div class="card-icon icon-gold">
                 <i class="fas fa-clipboard-check"></i>
             </div>
         </div>
-        <p class="card-description">Upcoming duty assignments</p>
+        <p class="card-description">{{ __('Upcoming duty assignments') }}</p>
     </div>
 
     <div class="dashboard-card">
         <div class="card-top">
             <div>
-                <p class="card-label">Pending Reports</p>
+                <p class="card-label">{{ __('Pending Reports') }}</p>
                 <h2 class="card-number">{{ $pendingReports ?? 0 }}</h2>
             </div>
             <div class="card-icon icon-purple">
                 <i class="fas fa-file-circle-exclamation"></i>
             </div>
         </div>
-        <p class="card-description">Reports requiring attention</p>
+        <p class="card-description">{{ __('Reports requiring attention') }}</p>
     </div>
 
     <div class="dashboard-card">
         <div class="card-top">
             <div>
-                <p class="card-label">Upcoming Meetings</p>
+                <p class="card-label">{{ __('Upcoming Meetings') }}</p>
                 <h2 class="card-number">{{ $upcomingMeetings ?? 0 }}</h2>
             </div>
             <div class="card-icon icon-green">
                 <i class="fas fa-users"></i>
             </div>
         </div>
-        <p class="card-description">Scheduled church meetings</p>
+        <p class="card-description">{{ __('Scheduled church meetings') }}</p>
     </div>
 
 </div>
@@ -78,11 +78,11 @@
 @if(auth()->user()->hasPermissionTo('finance.view'))
 <div class="dashboard-cards finance-summary-cards">
     <article class="dashboard-card">
-        <p class="card-label">Recorded income</p>
+        <p class="card-label">{{ __('Recorded income') }}</p>
         <h2 class="card-number">{{ number_format((float) ($financeTotals['income'] ?? 0), 2) }}</h2>
     </article>
     <article class="dashboard-card">
-        <p class="card-label">Recorded expenses</p>
+        <p class="card-label">{{ __('Recorded expenses') }}</p>
         <h2 class="card-number">{{ number_format((float) ($financeTotals['expense'] ?? 0), 2) }}</h2>
     </article>
 </div>
@@ -94,9 +94,9 @@
     <div class="content-box">
 
         <div class="box-heading">
-            <h3><i class="fas fa-calendar-week"></i> Weekly Activities</h3>
+            <h3><i class="fas fa-calendar-week"></i> {{ __('Weekly Activities') }}</h3>
             <a href="{{ route('dashboard.resource.index', 'events') }}" class="view-all">
-                View All
+                {{ __('View All') }}
             </a>
         </div>
 
@@ -116,12 +116,12 @@
                         {{ \Carbon\Carbon::parse($event->start_date)->format('h:i A') }}
                         &nbsp; | &nbsp;
                         <i class="fas fa-map-marker-alt"></i>
-                        {{ $event->venue ?? 'Church premises' }}
+                        {{ $event->venue ?? __('Church premises') }}
                     </p>
                 </div>
 
                 <span class="activity-status">
-                    {{ ucfirst($event->status ?? 'Scheduled') }}
+                    {{ __(ucfirst($event->status ?? 'Scheduled')) }}
                 </span>
 
             </div>
@@ -130,8 +130,8 @@
 
             <div class="dashboard-empty-state">
                 <span><i class="far fa-calendar"></i></span>
-                <h2>No upcoming activities</h2>
-                <p>New church events will appear here.</p>
+                <h2>{{ __('No upcoming activities') }}</h2>
+                <p>{{ __('New church events will appear here.') }}</p>
             </div>
 
         @endforelse
@@ -142,9 +142,9 @@
     <div class="content-box">
 
         <div class="box-heading">
-            <h3><i class="far fa-bell"></i> Recent Notifications</h3>
+            <h3><i class="far fa-bell"></i> {{ __('Recent Notifications') }}</h3>
             <a href="{{ route('dashboard.notifications') }}" class="view-all">
-                View All
+                {{ __('View All') }}
             </a>
         </div>
 
@@ -157,9 +157,9 @@
                 </div>
 
                 <div class="notification-text">
-                    <h4>{{ $notification->data['title'] ?? 'Church Notification' }}</h4>
+                    <h4>{{ $notification->data['title'] ?? __('Church notification') }}</h4>
                     <p>
-                        {{ $notification->data['message'] ?? 'You have a new notification.' }}
+                        {{ $notification->data['message'] ?? __('You have a new notification.') }}
                     </p>
                     <p>
                         {{ $notification->created_at->diffForHumans() }}
@@ -172,8 +172,8 @@
 
             <div class="dashboard-empty-state">
                 <span><i class="far fa-bell"></i></span>
-                <h2>No new notifications</h2>
-                <p>You’re all caught up.</p>
+                <h2>{{ __('No new notifications') }}</h2>
+                <p>{{ __('You’re all caught up.') }}</p>
             </div>
 
         @endforelse
@@ -186,9 +186,9 @@
 <div class="content-box" style="margin-bottom:25px;">
 
     <div class="box-heading">
-        <h3><i class="fas fa-tasks"></i> Upcoming Duty Schedule</h3>
+        <h3><i class="fas fa-tasks"></i> {{ __('Upcoming Duty Schedule') }}</h3>
         <a href="{{ route('dashboard.resource.index', 'duties') }}" class="view-all">
-            View All
+            {{ __('View All') }}
         </a>
     </div>
 
@@ -196,11 +196,11 @@
         <table class="dashboard-table">
             <thead>
                 <tr>
-                    <th>Duty</th>
-                    <th>Assigned To</th>
-                    <th>Date</th>
-                    <th>Department</th>
-                    <th>Status</th>
+                    <th>{{ __('Duty') }}</th>
+                    <th>{{ __('Assigned to') }}</th>
+                    <th>{{ __('Date') }}</th>
+                    <th>{{ __('Department') }}</th>
+                    <th>{{ __('Status') }}</th>
                 </tr>
             </thead>
 
@@ -211,17 +211,17 @@
                     <tr>
                         <td>{{ $duty->title }}</td>
                         <td>
-                            {{ $duty->assignedUser->name ?? 'Not assigned' }}
+                            {{ $duty->assignedUser->name ?? __('Not assigned') }}
                         </td>
                         <td>
                             {{ \Carbon\Carbon::parse($duty->duty_date)->format('d M Y') }}
                         </td>
                         <td>
-                            {{ $duty->department->name ?? 'General' }}
+                            {{ $duty->department->name ?? __('General') }}
                         </td>
                         <td>
                             <span class="status-badge status-pending">
-                                {{ ucfirst($duty->status ?? 'Pending') }}
+                                {{ __(ucfirst($duty->status ?? 'Pending')) }}
                             </span>
                         </td>
                     </tr>
@@ -230,7 +230,7 @@
 
                     <tr>
                         <td colspan="5" style="text-align:center;">
-                            No upcoming duties available.
+                            {{ __('No upcoming duties available.') }}
                         </td>
                     </tr>
 
@@ -246,53 +246,53 @@
 <div class="content-box">
 
     <div class="box-heading">
-        <h3><i class="fas fa-bolt"></i> Quick Access</h3>
+        <h3><i class="fas fa-bolt"></i> {{ __('Quick Access') }}</h3>
     </div>
 
     <div class="dashboard-cards">
 
         <a href="{{ route('dashboard.resource.index', 'events') }}" class="dashboard-card quick-access-card">
             <div class="card-icon icon-blue"><i class="fas fa-calendar-days"></i></div>
-            <h2>Activities</h2>
-            <p>Plan and manage church activities.</p>
+            <h2>{{ __('Activities') }}</h2>
+            <p>{{ __('Plan and manage church activities.') }}</p>
         </a>
 
         @if(auth()->user()->hasPermissionTo('announcements.view'))
         <a href="{{ route('dashboard.resource.index', 'announcements') }}" class="dashboard-card quick-access-card">
             <div class="card-icon icon-gold"><i class="fas fa-bullhorn"></i></div>
-            <h2>Announcements</h2>
-            <p>Share updates with the church family.</p>
+            <h2>{{ __('Announcements') }}</h2>
+            <p>{{ __('Share updates with the church family.') }}</p>
         </a>
         @endif
 
         <a href="{{ route('dashboard.resource.index', 'duties') }}" class="dashboard-card quick-access-card">
             <div class="card-icon icon-purple"><i class="fas fa-clipboard-list"></i></div>
-            <h2>Duties</h2>
-            <p>Coordinate upcoming duty assignments.</p>
+            <h2>{{ __('Duties') }}</h2>
+            <p>{{ __('Coordinate upcoming duty assignments.') }}</p>
         </a>
 
         <a href="{{ route('dashboard.resource.index', 'reports') }}" class="dashboard-card quick-access-card">
             <div class="card-icon icon-blue">
                 <i class="fas fa-file-alt"></i>
             </div>
-            <h2>Reports</h2>
-            <p>Submit and review church reports.</p>
+            <h2>{{ __('Reports') }}</h2>
+            <p>{{ __('Submit and review church reports.') }}</p>
         </a>
 
         <a href="{{ route('dashboard.resource.index', 'meetings') }}" class="dashboard-card quick-access-card">
             <div class="card-icon icon-gold">
                 <i class="fas fa-users"></i>
             </div>
-            <h2>Meetings</h2>
-            <p>Manage church meetings and minutes.</p>
+            <h2>{{ __('Meetings') }}</h2>
+            <p>{{ __('Manage church meetings and minutes.') }}</p>
         </a>
 
         <a href="{{ route('dashboard.resource.index', 'departments') }}" class="dashboard-card quick-access-card">
             <div class="card-icon icon-purple">
                 <i class="fas fa-sitemap"></i>
             </div>
-            <h2>Departments</h2>
-            <p>View church departments and leaders.</p>
+            <h2>{{ __('Departments') }}</h2>
+            <p>{{ __('View church departments and leaders.') }}</p>
         </a>
 
         @if(auth()->user()->hasPermissionTo('finance.view'))
@@ -300,8 +300,8 @@
                 <div class="card-icon icon-green">
                     <i class="fas fa-wallet"></i>
                 </div>
-                <h2>Finance</h2>
-                <p>View authorized financial records.</p>
+                <h2>{{ __('Finance') }}</h2>
+                <p>{{ __('View authorized financial records.') }}</p>
             </a>
         @endif
 

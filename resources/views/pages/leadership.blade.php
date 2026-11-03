@@ -66,8 +66,8 @@
 
 @section('content')
 <section class="page-title">
-        <h1>Church Leadership</h1>
-        <p>Meet the servants God has called to lead PHM HCC.</p>
+        <h1>{{ __('Church Leadership') }}</h1>
+        <p>{{ __('Meet the servants God has called to lead PHM HCC.') }}</p>
     </section>
 
     <section class="leaders">
@@ -78,13 +78,11 @@
             <h3>Happymacx & Spora Mkomekwa</h3>
 
             <p class="position">
-                Senior Pastor
+                {{ __('Senior Pastor') }}
             </p>
 
             <p>
-                Pastor Happymacx & Spora Mkomekwa has faithfully served the church for many years,
-                preaching the Gospel, mentoring believers,
-                and leading the congregation with wisdom and compassion.
+                {{ __('Pastor Happymacx & Spora Mkomekwa has faithfully served the church for many years, preaching the Gospel, mentoring believers, and leading the congregation with wisdom and compassion.') }}
             </p>
         </div>
 
@@ -95,13 +93,11 @@
             <h3> Tumsifu Didas</h3>
 
             <p class="position">
-                Church Secretary
+                {{ __('Church Secretary') }}
             </p>
 
             <p>
-                Responsible for spiritual guidance,
-                discipleship,
-                and assisting in church administration.
+                {{ __('Responsible for spiritual guidance, discipleship, and assisting in church administration.') }}
             </p>
 
         </div>
@@ -113,13 +109,11 @@
             <h3> Faustine Kunjumu</h3>
 
             <p class="position">
-                Church Elder
+                {{ __('Church Elder') }}
             </p>
 
             <p>
-                Responsible for spiritual guidance,
-                discipleship,
-                and assisting in church administration.
+                {{ __('Responsible for spiritual guidance, discipleship, and assisting in church administration.') }}
             </p>
 
         </div>
@@ -131,13 +125,11 @@
             <h3> Samson Mkole</h3>
 
             <p class="position">
-                Church Elder
+                {{ __('Church Elder') }}
             </p>
 
             <p>
-                Responsible for spiritual guidance,
-                discipleship,
-                and assisting in church administration.
+                {{ __('Responsible for spiritual guidance, discipleship, and assisting in church administration.') }}
             </p>
 
         </div>
@@ -150,13 +142,11 @@
             <h3> Eliya Mhagama</h3>
 
             <p class="position">
-                Church Elder
+                {{ __('Church Elder') }}
             </p>
 
             <p>
-                Responsible for spiritual guidance,
-                discipleship,
-                and assisting in church administration.
+                {{ __('Responsible for spiritual guidance, discipleship, and assisting in church administration.') }}
             </p>
 
         </div>
@@ -168,13 +158,11 @@
             <h3> Kasian Kikoti</h3>
 
             <p class="position">
-                Church Elder
+                {{ __('Church Elder') }}
             </p>
 
             <p>
-                Responsible for spiritual guidance,
-                discipleship,
-                and assisting in church administration.
+                {{ __('Responsible for spiritual guidance, discipleship, and assisting in church administration.') }}
             </p>
 
         </div>
@@ -352,4 +340,3 @@
 
     </section>
 @endsection
-

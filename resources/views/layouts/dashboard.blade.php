@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 
 <head>
     <meta charset="UTF-8">
@@ -32,6 +32,16 @@
 
         button {
             font-family: inherit;
+        }
+
+        .language-switch select {
+            min-height: 36px;
+            padding: 6px 10px;
+            border: 1px solid #d5deea;
+            border-radius: 6px;
+            background: #fff;
+            color: #123b64;
+            font: inherit;
         }
 
         .dashboard-shell {
@@ -716,6 +726,10 @@
             border-radius: 7px;
             background: #e3f7ed;
             color: #17633b;
+        }
+
+        .swal2-container {
+            z-index: 2000 !important;
         }
 
         .resource-edit-form {
@@ -1571,7 +1585,7 @@
                     <a href="{{ url('/dashboard') }}"
                         class="{{ request()->is('dashboard') ? 'active' : '' }}">
                         <i class="fas fa-house"></i>
-                        Dashboard
+                        {{ __('Dashboard') }}
                     </a>
                 </li>
 
@@ -1580,7 +1594,7 @@
                     <a href="{{ route('dashboard.resource.index', 'users') }}"
                         class="{{ request()->is('dashboard/users*') ? 'active' : '' }}">
                         <i class="fas fa-user-shield"></i>
-                        User Management
+                        {{ __('User Management') }}
                     </a>
                 </li>
                 @endif
@@ -1590,7 +1604,7 @@
                     <a href="{{ route('dashboard.resource.index', 'events') }}"
                         class="{{ request()->is('dashboard/events*') ? 'active' : '' }}">
                         <i class="fas fa-calendar-days"></i>
-                        Weekly Activities
+                        {{ __('Weekly Activities') }}
                     </a>
                 </li>
                 @endif
@@ -1600,7 +1614,7 @@
                     <a href="{{ route('dashboard.resource.index', 'announcements') }}"
                         class="{{ request()->is('dashboard/announcements*') ? 'active' : '' }}">
                         <i class="fas fa-bullhorn"></i>
-                        Announcements
+                        {{ __('Announcements') }}
                     </a>
                 </li>
                 @endif
@@ -1610,7 +1624,7 @@
                     <a href="{{ route('dashboard.resource.index', 'duties') }}"
                         class="{{ request()->is('dashboard/duties*') ? 'active' : '' }}">
                         <i class="fas fa-clipboard-list"></i>
-                        Duty Schedule
+                        {{ __('Duty Schedule') }}
                     </a>
                 </li>
                 @endif
@@ -1620,7 +1634,7 @@
                     <a href="{{ route('dashboard.resource.index', 'meetings') }}"
                         class="{{ request()->is('dashboard/meetings*') ? 'active' : '' }}">
                         <i class="fas fa-users"></i>
-                        Meetings
+                        {{ __('Meetings') }}
                     </a>
                 </li>
                 @endif
@@ -1636,7 +1650,7 @@
                     <a href="{{ route('dashboard.resource.index', 'finance') }}"
                         class="{{ request()->is('dashboard/finance*') ? 'active' : '' }}">
                         <i class="fas fa-wallet"></i>
-                        Financial Statements
+                        {{ __('Financial Statements') }}
                     </a>
                 </li>
                 @endif
@@ -1646,7 +1660,7 @@
                     <a href="{{ route('dashboard.resource.index', 'departments') }}"
                         class="{{ request()->is('dashboard/departments*') ? 'active' : '' }}">
                         <i class="fas fa-sitemap"></i>
-                        Departments
+                        {{ __('Departments') }}
                     </a>
                 </li>
                 @endif
@@ -1656,7 +1670,7 @@
                     <a href="{{ route('dashboard.resource.index', 'reports') }}"
                         class="{{ request()->is('dashboard/reports*') ? 'active' : '' }}">
                         <i class="fas fa-file-lines"></i>
-                        Reports
+                        {{ __('Reports') }}
                     </a>
                 </li>
                 @endif
@@ -1682,15 +1696,17 @@
 
                     <div class="topbar-title">
                         <h3>@yield('page-heading', 'Dashboard')</h3>
-                        <p>Welcome to PHM HCC Management Portal</p>
+                        <p>{{ __('Welcome to PHM HCC Management Portal') }}</p>
                     </div>
 
                 </div>
 
                 <div class="topbar-right">
 
+                    @include('layouts.partials.language-switch', ['id' => 'dashboard-language-switch'])
+
                     <a href="{{ route('dashboard.notifications') }}"
-                        class="topbar-icon" title="Notifications">
+                        class="topbar-icon" title="{{ __('Notifications') }}">
                         <i class="far fa-bell"></i>
                         @if(auth()->user()->unreadNotifications()->exists())
                         <span class="notification-dot"></span>
@@ -1710,15 +1726,15 @@
                         </button>
                         <div class="profile-menu" id="profileMenu">
                             <a href="{{ route('dashboard.profile') }}">
-                                <i class="fas fa-user-circle" aria-hidden="true"></i> My Profile
+                                <i class="fas fa-user-circle" aria-hidden="true"></i> {{ __('My Profile') }}
                             </a>
                             <a href="{{ route('home') }}">
-                                <i class="fas fa-globe" aria-hidden="true"></i> Visit Website
+                                <i class="fas fa-globe" aria-hidden="true"></i> {{ __('Visit Website') }}
                             </a>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
                                 <button type="submit">
-                                    <i class="fas fa-right-from-bracket" aria-hidden="true"></i> Logout
+                                    <i class="fas fa-right-from-bracket" aria-hidden="true"></i> {{ __('Logout') }}
                                 </button>
                             </form>
                         </div>
@@ -1775,7 +1791,7 @@
             });
         });
 
-        const statusMessage = @json(session('status'));
+        const statusMessage = document.querySelector('.dashboard-alert')?.textContent.trim();
         if (statusMessage && typeof Swal !== 'undefined') {
             Swal.fire({
                 title: 'Success',

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Contact | PHM HCC')
+@section('title', __('Contact').' | PHM HCC')
 @push('styles')
 <style>
     .page-header {
@@ -122,13 +122,13 @@
 
 @section('content')
 <section class="page-header">
-    <h1>Contact Us</h1>
-    <p>We would love to hear from you.</p>
+    <h1>{{ __('Contact us') }}</h1>
+    <p>{{ __('We would love to hear from you.') }}</p>
 </section>
 
 <section class="contact-section">
     <div class="contact-info">
-        <h2>Church Information</h2>
+        <h2>{{ __('Church Information') }}</h2>
         <p>
             <i class="fas fa-map-marker-alt"></i>
             Mbezi-Magari Saba,
@@ -151,23 +151,23 @@
 
         <p>
             <i class="fas fa-clock"></i>
-            Sunday Worship:
+            {{ __('Sunday Worship') }}:
             <br>
-            06:30 AM - 09:30 AM (English Service)
+            {{ __('06:30 AM - 09:30 AM (English Service)') }}
             <br>
-            09:00 AM - 01:00 PM (Swahili Service)
+            {{ __('09:00 AM - 01:00 PM (Swahili Service)') }}
         </p>
 
         <p>
             <i class="fas fa-clock"></i>
-            Tuesday Bible Study:
+            {{ __('Tuesday Bible Study') }}:
             <br>
             06:30 PM - 08:00 PM
         </p>
 
         <p>
             <i class="fas fa-clock"></i>
-            Friday Prayer:
+            {{ __('Friday Prayer') }}:
             <br>
             06:30 PM - 08:00 PM
         </p>
@@ -198,7 +198,7 @@
     </div>
 
     <div class="contact-form">
-        <h2>Send Us a Message</h2>
+        <h2>{{ __('Send Us a Message') }}</h2>
 
             {{-- Success message --}}
             @if (session('success'))
@@ -224,24 +224,24 @@
                 <input
                     type="text"
                     name="name"
-                    placeholder="Full Name"
+                    placeholder="{{ __('Full Name') }}"
                     value="{{ old('name') }}"
                     required>
 
                 <input
                     type="email"
                     name="email"
-                    placeholder="Email Address"
+                    placeholder="{{ __('Email address') }}"
                     value="{{ old('email') }}"
                     required>
 
                 <textarea
                     name="message"
                     rows="7"
-                    placeholder="Write your message here..."
+                    placeholder="{{ __('Write your message here...') }}"
                     required>{{ old('message') }}</textarea>
 
-                <button type="submit">Send Message</button>
+                <button type="submit">{{ __('Send Message') }}</button>
             </form>
 
         </form>

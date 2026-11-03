@@ -38,6 +38,41 @@ header {
     padding: 15px 8%;
 }
 
+.language-switch select {
+    min-height: 36px;
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, .45);
+    border-radius: 6px;
+    background: #003366;
+    color: #fff;
+    font: inherit;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.auth-language-switch {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 1;
+}
+
+.auth-language-switch .language-switch select {
+    border-color: #ccd4df;
+    background: #fff;
+    color: #003366;
+}
+
 .logo {
     display: flex;
     align-items: center;
@@ -478,6 +513,11 @@ RESPONSIVE DESIGN
     .nav-links a {
         display: block;
         padding: 12px 8px;
+    }
+
+    .nav-language-switch .language-switch select {
+        width: 100%;
+        margin-top: 8px;
     }
 
     .menu {

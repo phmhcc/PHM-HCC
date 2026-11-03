@@ -10,6 +10,10 @@ use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -108,6 +112,25 @@ class DashboardModulesTest extends TestCase
         $this->assertCount(1, $recipient->fresh()->notifications);
     }
 
+    public function test_announcement_without_publish_date_uses_the_current_date_and_time(): void
+    {
+        $admin = User::factory()->create(['email' => 'admin@example.com', 'role' => 'admin']);
+        $publishTime = now()->startOfSecond();
+        $this->travelTo($publishTime);
+        $this->actingAs($admin);
+
+        $this->withSession(['_token' => self::CSRF_TOKEN])->post(route('dashboard.resource.store', 'announcements'), [
+            '_token' => self::CSRF_TOKEN,
+            'title' => 'Immediate announcement',
+            'message' => 'This announcement is published now.',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('announcements', [
+            'title' => 'Immediate announcement',
+            'published_at' => $publishTime->toDateTimeString(),
+        ]);
+    }
+
     public function test_admin_created_shared_information_notifies_other_users_and_appears_on_dashboard(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
@@ -201,7 +224,6 @@ class DashboardModulesTest extends TestCase
                     ->assertForbidden();
             }
 
-            auth()->logout();
         }
 
         $this->actingAs($author)
@@ -282,16 +304,14 @@ class DashboardModulesTest extends TestCase
 
         $report = \App\Models\Report::where('title', 'Monthly report')->firstOrFail();
         $pdfPath = 'reports/'.$report->id.'/attachment.pdf';
-        Storage::disk('local')->assertExists($pdfPath);
+        $this->assertTrue(Storage::disk('local')->exists($pdfPath));
         $this->get(route('dashboard.reports.attachment', $report->id))
             ->assertOk()
             ->assertDownload('attachment.pdf');
 
-        auth()->logout();
         $this->actingAs(User::factory()->create(['role' => 'deacon']));
         $this->get(route('dashboard.reports.attachment', $report->id))->assertNotFound();
 
-        auth()->logout();
         $this->actingAs($user);
         $this->withSession(['_token' => self::CSRF_TOKEN])->put(route('dashboard.resource.update', ['reports', $report->id]), [
             '_token' => self::CSRF_TOKEN,
@@ -304,13 +324,13 @@ class DashboardModulesTest extends TestCase
             ),
         ])->assertRedirect();
 
-        Storage::disk('local')->assertMissing($pdfPath);
-        Storage::disk('local')->assertExists('reports/'.$report->id.'/attachment.xlsx');
+        $this->assertFalse(Storage::disk('local')->exists($pdfPath));
+        $this->assertTrue(Storage::disk('local')->exists('reports/'.$report->id.'/attachment.xlsx'));
 
         $this->withSession(['_token' => self::CSRF_TOKEN])->delete(route('dashboard.resource.destroy', ['reports', $report->id]), [
             '_token' => self::CSRF_TOKEN,
         ])->assertRedirect();
-        Storage::disk('local')->assertMissing('reports/'.$report->id.'/attachment.xlsx');
+        $this->assertFalse(Storage::disk('local')->exists('reports/'.$report->id.'/attachment.xlsx'));
     }
 
     public function test_report_owner_can_open_a_printable_report_but_other_users_cannot(): void
@@ -372,7 +392,6 @@ class DashboardModulesTest extends TestCase
         $this->get(route('dashboard.resource.index', 'finance'))->assertForbidden();
         $this->get(route('dashboard.resource.index', 'users'))->assertForbidden();
 
-        auth()->logout();
         $this->actingAs(User::factory()->create(['role' => 'treasurer']));
         $this->get(route('dashboard.resource.index', 'finance'))->assertOk();
         $this->get(route('dashboard.resource.index', 'users'))->assertForbidden();
@@ -403,7 +422,6 @@ class DashboardModulesTest extends TestCase
             ->assertForbidden();
         $this->assertDatabaseMissing('announcements', ['title' => 'Unauthorized announcement']);
 
-        auth()->logout();
         $this->actingAs(User::factory()->create(['role' => 'elder']));
         $this->get(route('dashboard.resource.index', 'announcements'))->assertOk();
         $this->get(route('dashboard.resource.index', 'finance'))->assertForbidden();
@@ -416,7 +434,6 @@ class DashboardModulesTest extends TestCase
             ->assertOk()
             ->assertDontSeeText('Deacon report');
 
-        auth()->logout();
         $this->actingAs(User::factory()->create(['role' => 'treasurer']));
         $this->get(route('dashboard.resource.index', 'finance'))->assertOk();
         $this->get(route('dashboard.resource.index', 'announcements'))->assertOk();
@@ -538,7 +555,6 @@ class DashboardModulesTest extends TestCase
             ->get(route('dashboard.roles.index'))
             ->assertForbidden();
 
-        auth()->logout();
         $this->actingAs(User::factory()->create(['role' => 'admin']))
             ->get(route('dashboard.roles.edit', $adminRole))
             ->assertForbidden();
@@ -569,6 +585,7 @@ class DashboardModulesTest extends TestCase
 
     public function test_admin_can_create_finance_records_and_users(): void
     {
+        Notification::fake();
         $admin = User::factory()->create(['email' => 'admin@example.com', 'role' => 'admin']);
         $this->actingAs($admin);
 
@@ -591,10 +608,136 @@ class DashboardModulesTest extends TestCase
             'name' => 'Ministry Leader',
             'email' => 'ministry@example.com',
             'role' => 'department_leader',
-            'password' => 'my-password',
         ])->assertRedirect();
-        $this->assertDatabaseHas('users', ['email' => 'ministry@example.com', 'role' => 'department_leader']);
-        $this->assertTrue(Hash::check('my-password', User::where('email', 'ministry@example.com')->value('password')));
+        $newUser = User::where('email', 'ministry@example.com')->firstOrFail();
+        $this->assertSame('department_leader', $newUser->role);
+        $this->assertNotSame('', $newUser->password);
+        Notification::assertSentTo($newUser, ResetPassword::class);
+        $this->assertDatabaseHas('password_reset_tokens', ['email' => $newUser->email]);
+    }
+
+    public function test_user_creation_form_has_no_password_field_and_promises_an_invitation(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)
+            ->get(route('dashboard.resource.index', 'users'))
+            ->assertOk()
+            ->assertSeeText('The user will receive an email invitation to set their own password.');
+        preg_match('/<form id="createResourceForm"[^>]*>(.*?)<\/form>/s', $response->getContent(), $createForm);
+        self::assertArrayHasKey(1, $createForm);
+        self::assertStringNotContainsString('name="password"', $createForm[1]);
+    }
+
+    public function test_new_user_can_set_password_using_the_invitation_token(): void
+    {
+        Notification::fake();
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin)
+            ->withSession(['_token' => self::CSRF_TOKEN])
+            ->post(route('dashboard.resource.store', 'users'), [
+                '_token' => self::CSRF_TOKEN,
+                'name' => 'Invited User',
+                'email' => 'invite@example.com',
+                'role' => 'deacon',
+            ])
+            ->assertRedirect();
+
+        $user = User::where('email', 'invite@example.com')->firstOrFail();
+        $notification = Notification::sent($user, ResetPassword::class)->first();
+        self::assertNotNull($notification);
+
+        Auth::logout();
+        $this->withSession(['_token' => self::CSRF_TOKEN])
+            ->post(route('password.store'), [
+                '_token' => self::CSRF_TOKEN,
+                'token' => $notification->token,
+                'email' => $user->email,
+                'password' => 'new-user-password',
+                'password_confirmation' => 'new-user-password',
+            ])
+            ->assertRedirect(route('login'))
+            ->assertSessionHas('status');
+
+        $this->assertTrue(Hash::check('new-user-password', $user->fresh()->password));
+    }
+
+    public function test_finance_categories_are_limited_and_receipts_can_be_uploaded_downloaded_replaced_and_deleted(): void
+    {
+        Storage::fake('local');
+        $admin = User::factory()->create(['email' => 'admin@example.com', 'role' => 'admin']);
+        $this->actingAs($admin)
+            ->get(route('dashboard.resource.index', 'finance'))
+            ->assertOk()
+            ->assertSeeText('Tithe')
+            ->assertSeeText('Thanksgiving')
+            ->assertSeeText('Ujenzi')
+            ->assertSeeText('Receipt attachment');
+
+        $this->withSession(['_token' => self::CSRF_TOKEN])
+            ->post(route('dashboard.resource.store', 'finance'), [
+                '_token' => self::CSRF_TOKEN,
+                'transaction_date' => '2026-11-03',
+                'type' => 'income',
+                'category' => 'Tithe',
+                'amount' => '250.00',
+                'reference' => 'Sunday service',
+                'receipt' => UploadedFile::fake()->create('tithe-receipt.pdf', 20, 'application/pdf'),
+            ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $transaction = \App\Models\FinancialTransaction::where('category', 'Tithe')->firstOrFail();
+        $pdfPath = 'finance/'.$transaction->id.'/receipt.pdf';
+        $this->assertTrue(Storage::disk('local')->exists($pdfPath));
+        $this->get(route('dashboard.finance.receipt', $transaction->id))
+            ->assertOk()
+            ->assertDownload('receipt.pdf');
+
+        $pngContents = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l9sAAAAASUVORK5CYII=');
+        $this->assertNotFalse($pngContents);
+        $this->withSession(['_token' => self::CSRF_TOKEN])
+            ->put(route('dashboard.resource.update', ['finance', $transaction->id]), [
+                '_token' => self::CSRF_TOKEN,
+                'transaction_date' => '2026-11-03',
+                'type' => 'income',
+                'category' => 'Offering',
+                'amount' => '300.00',
+                'receipt' => UploadedFile::fake()->createWithContent('offering-receipt.png', $pngContents),
+            ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $transaction->refresh();
+        $pngPath = 'finance/'.$transaction->id.'/receipt.png';
+        $this->assertTrue(Storage::disk('local')->exists($pngPath));
+        $this->assertFalse(Storage::disk('local')->exists($pdfPath));
+        $this->assertSame('Offering', $transaction->category);
+
+        $this->withSession(['_token' => self::CSRF_TOKEN])
+            ->delete(route('dashboard.resource.destroy', ['finance', $transaction->id]), [
+                '_token' => self::CSRF_TOKEN,
+            ])
+            ->assertRedirect();
+        $this->assertFalse(Storage::disk('local')->exists($pngPath));
+    }
+
+    public function test_finance_rejects_categories_outside_the_dropdown_options(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => 'admin']))
+            ->from(route('dashboard.resource.index', 'finance'))
+            ->withSession(['_token' => self::CSRF_TOKEN])
+            ->post(route('dashboard.resource.store', 'finance'), [
+                '_token' => self::CSRF_TOKEN,
+                'transaction_date' => '2026-11-03',
+                'type' => 'income',
+                'category' => 'Other',
+                'amount' => '250.00',
+            ])
+            ->assertRedirect(route('dashboard.resource.index', 'finance'))
+            ->assertSessionHasErrors('category');
+
+        $this->assertDatabaseMissing('financial_transactions', ['category' => 'Other']);
     }
 
     public function test_user_can_update_profile_and_mark_notification_read(): void

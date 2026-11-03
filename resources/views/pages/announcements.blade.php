@@ -126,8 +126,8 @@
 
 @section('content')
 <section class="announcements-banner">
-    <h1>Church Announcements</h1>
-    <p>Updates and information for our church family</p>
+    <h1>{{ __('Church Announcements') }}</h1>
+    <p>{{ __('Updates and information for our church family') }}</p>
 </section>
 
 <section class="announcements-section" aria-label="Announcements">
@@ -138,7 +138,7 @@
                 <h2>{{ $announcement->title }}</h2>
                 @if($announcement->published_at)
                     <p class="announcement-date">
-                        Published {{ $announcement->published_at->format('F j, Y') }}
+                        {{ __('Published') }} {{ $announcement->published_at->format('F j, Y') }}
                     </p>
                 @endif
                 <p>{{ $announcement->message }}</p>
@@ -147,7 +147,7 @@
     @empty
         <div class="announcement-empty">
             <i class="fas fa-bullhorn" aria-hidden="true"></i>
-            <p>There are no announcements at this time. Please check back soon.</p>
+            <p>{{ __('There are no announcements at this time. Please check back soon.') }}</p>
         </div>
     @endforelse
 
@@ -157,10 +157,10 @@
 
     <article class="announcement-info-card">
         <div>
-            <h2>Need more information?</h2>
-            <p>Contact the church team if you have a question or need help.</p>
+            <h2>{{ __('Need more information?') }}</h2>
+            <p>{{ __('Contact the church team if you have a question or need help.') }}</p>
         </div>
-        <a class="announcement-contact-link" href="{{ route('contact') }}">Contact us</a>
+        <a class="announcement-contact-link" href="{{ route('contact') }}">{{ __('Contact us') }}</a>
     </article>
 </section>
 @endsection

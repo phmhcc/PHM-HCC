@@ -75,10 +75,10 @@
 @section('content')
 <section class="page-header">
 
-    <h1>Church Gallery</h1>
+    <h1>{{ __('Church Gallery') }}</h1>
 
     <p>
-        Moments of Worship, Fellowship, and Ministry
+        {{ __('Moments of Worship, Fellowship, and Ministry') }}
     </p>
 
 </section>
@@ -89,88 +89,88 @@
 
         <div class="gallery-item">
 
-            <img src="{{ asset('Images/images.jpg') }}" alt="Sunday Worship">
+            <img src="{{ asset('Images/images.jpg') }}" alt="{{ __('Sunday Worship') }}">
 
             <div class="caption">
-                <h3>Sunday Worship</h3>
-                <p>Worship service with the congregation.</p>
+                <h3>{{ __('Sunday Worship') }}</h3>
+                <p>{{ __('Worship service with the congregation.') }}</p>
             </div>
 
         </div>
 
         <div class="gallery-item">
 
-            <img src="{{ asset('Images/images.jpg') }}" alt="Choir">
+            <img src="{{ asset('Images/images.jpg') }}" alt="{{ __('Choir') }}">
 
             <div class="caption">
-                <h3>Choir Ministry</h3>
-                <p>Praise and worship through music.</p>
+                <h3>{{ __('Choir Ministry') }}</h3>
+                <p>{{ __('Praise and worship through music.') }}</p>
             </div>
 
         </div>
 
         <div class="gallery-item">
 
-            <img src="{{ asset('Images/images.jpg') }}" alt="Youth">
+            <img src="{{ asset('Images/images.jpg') }}" alt="{{ __('Youth') }}">
 
             <div class="caption">
-                <h3>Youth Fellowship</h3>
-                <p>Young people growing in Christ.</p>
+                <h3>{{ __('Youth Fellowship') }}</h3>
+                <p>{{ __('Young people growing in Christ.') }}</p>
             </div>
 
         </div>
 
         <div class="gallery-item">
 
-            <img src="{{ asset('Images/images.jpg') }}" alt="Prayer">
+            <img src="{{ asset('Images/images.jpg') }}" alt="{{ __('Prayer') }}">
 
             <div class="caption">
-                <h3>Prayer Meeting</h3>
-                <p>Seeking God's presence together.</p>
+                <h3>{{ __('Prayer Meeting') }}</h3>
+                <p>{{ __('Seeking God\'s presence together.') }}</p>
             </div>
 
         </div>
 
         <div class="gallery-item">
 
-            <img src="{{ asset('Images/images.jpg') }}" alt="Children">
+            <img src="{{ asset('Images/images.jpg') }}" alt="{{ __('Children') }}">
 
             <div class="caption">
-                <h3>Children's Ministry</h3>
-                <p>Teaching children God's Word.</p>
+                <h3>{{ __('Children\'s Ministry') }}</h3>
+                <p>{{ __('Teaching children God\'s Word.') }}</p>
             </div>
 
         </div>
 
         <div class="gallery-item">
 
-            <img src="{{ asset('Images/images.jpg') }}" alt="Outreach">
+            <img src="{{ asset('Images/images.jpg') }}" alt="{{ __('Outreach') }}">
 
             <div class="caption">
-                <h3>Community Outreach</h3>
-                <p>Serving and supporting our community.</p>
+                <h3>{{ __('Community Outreach') }}</h3>
+                <p>{{ __('Serving and supporting our community.') }}</p>
             </div>
 
         </div>
 
         <div class="gallery-item">
 
-            <img src="{{ asset('Images/images.jpg') }}" alt="Conference">
+            <img src="{{ asset('Images/images.jpg') }}" alt="{{ __('Conference') }}">
 
             <div class="caption">
-                <h3>Annual Conference</h3>
-                <p>Special conference and revival meetings.</p>
+                <h3>{{ __('Annual Conference') }}</h3>
+                <p>{{ __('Special conference and revival meetings.') }}</p>
             </div>
 
         </div>
 
         <div class="gallery-item">
 
-            <img src="{{ asset('Images/images.jpg') }}" alt="Baptism">
+            <img src="{{ asset('Images/images.jpg') }}" alt="{{ __('Baptism') }}">
 
             <div class="caption">
-                <h3>Baptism Service</h3>
-                <p>Celebrating new life in Christ.</p>
+                <h3>{{ __('Baptism Service') }}</h3>
+                <p>{{ __('Celebrating new life in Christ.') }}</p>
             </div>
         </div>
     </div>

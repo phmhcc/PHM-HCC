@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Sign In | PHM HCC')
+@section('title', __('Sign In | PHM HCC'))
 
 @push('styles')
 <style>
@@ -56,6 +56,29 @@
         margin: 14px 0 6px;
         color: #003366;
         font-weight: 600;
+    }
+
+    .password-label-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 14px 0 6px;
+    }
+
+    .password-label-row label {
+        margin: 0;
+    }
+
+    .forgot-password-link {
+        color: #536dfe;
+        font-size: 14px;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .forgot-password-link:hover {
+        text-decoration: underline;
     }
 
     .login-form input {
@@ -141,17 +164,23 @@
 <section class="login-section">
     <div class="login-card">
         <img class="login-logo" src="{{ asset('Images/images.jpg') }}" alt="PHM HCC logo">
-        <h1>Church Team Sign In</h1>
-        <p>Sign in with the account provided by your church administrator.</p>
+        <h1>{{ __('Church Team Sign In') }}</h1>
+        <p>{{ __('Sign in with the account provided by your church administrator.') }}</p>
+        @if (session('status'))
+            <p role="status">{{ session('status') }}</p>
+        @endif
         <form class="login-form" method="POST" action="{{ route('login.store') }}">
             @csrf
-            <label for="email">Email address</label>
+            <label for="email">{{ __('Email address') }}</label>
             <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="username" required autofocus>
             @error('email')
             <p class="login-error" role="alert">{{ $message }}</p>
             @enderror
 
-            <label for="password">Password</label>
+            <div class="password-label-row">
+                <label for="password">{{ __('Password') }}</label>
+                <a class="forgot-password-link" href="{{ route('password.request') }}">{{ __('Forgot Your Password?') }}</a>
+            </div>
 
             <div class="password-wrapper">
                 <input
@@ -172,9 +201,9 @@
 
             <label style="display: flex; align-items: center; gap: 8px; font-weight: 400;">
                 <input type="checkbox" name="remember" value="1" style="width: auto;">
-                Remember me
+                {{ __('Remember me') }}
             </label>
-            <button type="submit">Sign in</button>
+            <button type="submit">{{ __('Sign in') }}</button>
         </form>
     </div>
 

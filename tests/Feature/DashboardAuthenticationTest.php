@@ -49,6 +49,49 @@ class DashboardAuthenticationTest extends TestCase
             ->assertSee('src="'.asset('Images/images.jpg').'"', false);
     }
 
+    public function test_language_can_be_switched_and_persists_across_pages(): void
+    {
+        $this->withSession(['_token' => self::CSRF_TOKEN])
+            ->post(route('language.update'), ['_token' => self::CSRF_TOKEN, 'locale' => 'sw'])
+            ->assertRedirect();
+
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertSeeText('Kuingia kwa Timu ya Kanisa')
+            ->assertSee('value="sw" selected', false);
+
+        $this->get(route('ministries'))->assertOk()->assertSeeText('Huduma za Kanisa');
+        $this->get(route('gallery'))->assertOk()->assertSeeText('Picha za Kanisa');
+        $this->get(route('leadership'))->assertOk()->assertSeeText('Uongozi wa Kanisa');
+        $this->get(route('contact'))->assertOk()->assertSeeText('Wasiliana nasi');
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSeeText('Kwa maana wanapokusanyika wawili au watatu kwa jina langu, nami niko pamoja nao.')
+            ->assertSeeText('Mathayo 18:20')
+            ->assertDontSeeText('For where two or three gather in my name');
+
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSeeText('Ufikiaji wa Haraka')
+            ->assertSeeText('Shughuli')
+            ->assertSeeText('Matangazo')
+            ->assertSeeText('Jukumu')
+            ->assertDontSeeText('Quick Access')
+            ->assertDontSeeText('Plan and manage church activities.');
+
+        $this->withSession(['_token' => self::CSRF_TOKEN])
+            ->post(route('language.update'), ['_token' => self::CSRF_TOKEN, 'locale' => 'en'])
+            ->assertRedirect();
+
+        auth()->logout();
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertSeeText('Church Team Sign In')
+            ->assertSee('value="en" selected', false);
+    }
+
     public function test_guests_are_redirected_to_sign_in_from_dashboard_pages(): void
     {
         $dashboardPages = [
