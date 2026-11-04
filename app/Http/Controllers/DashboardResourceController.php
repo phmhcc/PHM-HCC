@@ -12,6 +12,7 @@ use App\Models\Role;
 use App\Models\Report;
 use App\Models\User;
 use App\Notifications\AnnouncementPublished;
+use App\Notifications\AccountInvitation;
 use App\Notifications\DashboardInformationPublished;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
@@ -37,7 +38,7 @@ class DashboardResourceController extends Controller
                 'title' => ['Title', 'text', 'required|string|max:255'], 'message' => ['Message', 'textarea', 'required|string'], 'published_at' => ['Publish at', 'datetime-local', 'nullable|date'],
             ]],
             'duties' => ['title' => 'Duty Schedule', 'model' => Duty::class, 'owner' => 'created_by', 'columns' => ['title', 'duty_date', 'assigned_to', 'status'], 'fields' => [
-                'title' => ['Duty', 'text', 'required|string|max:255'], 'description' => ['Description', 'textarea', 'nullable|string'], 'duty_date' => ['Date', 'date', 'required|date'], 'start_time' => ['Start time', 'time', 'nullable|date_format:H:i'], 'end_time' => ['End time', 'time', 'nullable|date_format:H:i'], 'department_id' => ['Department', 'department', 'nullable|exists:departments,id'], 'assigned_to' => ['Assigned to', 'user', 'nullable|exists:users,id'], 'status' => ['Status', 'select', 'required|in:pending,completed,cancelled', ['pending', 'completed', 'cancelled']],
+                'title' => ['Duty', 'text', 'required|string|max:255'], 'description' => ['Description', 'textarea', 'nullable|string'], 'duty_date' => ['Date', 'date', 'required|date'], 'start_time' => ['Start time', 'time', 'nullable|date_format:H:i'], 'end_time' => ['End time', 'time', 'nullable|date_format:H:i'], 'assigned_to' => ['Assigned to', 'user', 'nullable|exists:users,id'], 'status' => ['Status', 'select', 'required|in:pending,completed,cancelled', ['pending', 'completed', 'cancelled']],
             ]],
             'meetings' => ['title' => 'Meetings', 'model' => Meeting::class, 'owner' => 'created_by', 'columns' => ['title', 'meeting_date', 'venue', 'status'], 'fields' => [
                 'title' => ['Title', 'text', 'required|string|max:255'], 'description' => ['Description', 'textarea', 'nullable|string'], 'meeting_date' => ['Date', 'date', 'required|date'], 'start_time' => ['Start time', 'time', 'nullable|date_format:H:i'], 'end_time' => ['End time', 'time', 'nullable|date_format:H:i'], 'venue' => ['Venue', 'text', 'nullable|string|max:255'], 'department_id' => ['Department', 'department', 'nullable|exists:departments,id'], 'status' => ['Status', 'select', 'required|in:scheduled,completed,cancelled', ['scheduled', 'completed', 'cancelled']],
@@ -52,8 +53,8 @@ class DashboardResourceController extends Controller
             'finance' => ['title' => 'Financial Transactions', 'model' => FinancialTransaction::class, 'columns' => ['transaction_date', 'type', 'category', 'amount', 'description'], 'fields' => [
                 'transaction_date' => ['Date', 'date', 'required|date'], 'type' => ['Type', 'select', 'required|in:income,expense', ['income', 'expense']], 'category' => ['Category', 'select', 'required|in:Tithe,Offering,Thanksgiving,Vows,Ujenzi,Supporting', ['Tithe', 'Offering', 'Thanksgiving', 'Vows', 'Ujenzi', 'Supporting']], 'amount' => ['Amount', 'number', 'required|numeric|min:0.01'], 'description' => ['Description', 'textarea', 'nullable|string'], 'reference' => ['Reference', 'text', 'nullable|string|max:255'], 'receipt' => ['Receipt attachment', 'file', 'nullable|file|mimes:pdf,jpg,jpeg,png|extensions:pdf,jpg,jpeg,png|max:10240'],
             ]],
-            'users' => ['title' => 'User Management', 'model' => User::class, 'columns' => ['name', 'email', 'role', 'created_at'], 'fields' => [
-                'name' => ['Name', 'text', 'required|string|max:255'], 'email' => ['Email', 'email', 'required|email|max:255'], 'role' => ['Role', 'select', 'required|exists:roles,name|not_in:admin', Role::where('name', '!=', 'admin')->orderBy('name')->pluck('name')->all()], 'password' => ['Password', 'password', 'required|string|min:1'],
+            'users' => ['title' => 'User Management', 'model' => User::class, 'columns' => ['name', 'email', 'department_id', 'role', 'created_at'], 'fields' => [
+                'name' => ['Name', 'text', 'required|string|max:255'], 'email' => ['Email', 'email', 'required|email|max:255'], 'department_id' => ['Department', 'department', 'nullable|exists:departments,id'], 'role' => ['Role', 'select', 'required|exists:roles,name|not_in:admin', Role::where('name', '!=', 'admin')->orderBy('name')->pluck('name')->all()], 'password' => ['Password', 'password', 'required|string|min:1'],
             ]],
         ];
     }
@@ -117,7 +118,7 @@ class DashboardResourceController extends Controller
             DB::transaction(function () use ($record): void {
                 $record->save();
                 $token = Password::createToken($record);
-                $record->sendPasswordResetNotification($token);
+                $record->notify(new AccountInvitation($token));
             });
 
             return back()->with('status', 'User created and password setup invitation sent.');
@@ -266,7 +267,9 @@ class DashboardResourceController extends Controller
             $rules['email'] = ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($record)];
         }
 
-        return $request->validate($rules);
+        return $request->validate($rules, [
+            'email.unique' => __('This email address is already registered.'),
+        ]);
     }
 
     private function storeReportAttachment(Report $report, UploadedFile $attachment): void

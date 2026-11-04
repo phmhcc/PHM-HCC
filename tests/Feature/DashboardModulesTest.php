@@ -5,13 +5,14 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\Department;
+use App\Notifications\AccountInvitation;
 use Database\Seeders\PermissionSeeder;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
@@ -587,6 +588,7 @@ class DashboardModulesTest extends TestCase
     {
         Notification::fake();
         $admin = User::factory()->create(['email' => 'admin@example.com', 'role' => 'admin']);
+        $department = Department::create(['name' => 'Worship']);
         $this->actingAs($admin);
 
         $this->withSession(['_token' => self::CSRF_TOKEN])->post(route('dashboard.resource.store', 'finance'), [
@@ -607,12 +609,14 @@ class DashboardModulesTest extends TestCase
             '_token' => self::CSRF_TOKEN,
             'name' => 'Ministry Leader',
             'email' => 'ministry@example.com',
+            'department_id' => $department->id,
             'role' => 'department_leader',
         ])->assertRedirect();
         $newUser = User::where('email', 'ministry@example.com')->firstOrFail();
         $this->assertSame('department_leader', $newUser->role);
+        $this->assertSame($department->id, $newUser->department_id);
         $this->assertNotSame('', $newUser->password);
-        Notification::assertSentTo($newUser, ResetPassword::class);
+        Notification::assertSentTo($newUser, AccountInvitation::class);
         $this->assertDatabaseHas('password_reset_tokens', ['email' => $newUser->email]);
     }
 
@@ -623,29 +627,61 @@ class DashboardModulesTest extends TestCase
         $response = $this->actingAs($admin)
             ->get(route('dashboard.resource.index', 'users'))
             ->assertOk()
-            ->assertSeeText('The user will receive an email invitation to set their own password.');
+            ->assertSeeText('The user will receive an email invitation to set their own password.')
+            ->assertSee('name="department_id"', false);
         preg_match('/<form id="createResourceForm"[^>]*>(.*?)<\/form>/s', $response->getContent(), $createForm);
         self::assertArrayHasKey(1, $createForm);
         self::assertStringNotContainsString('name="password"', $createForm[1]);
+        self::assertLessThan(
+            strpos($createForm[1], 'name="role"'),
+            strpos($createForm[1], 'name="department_id"')
+        );
+    }
+
+    public function test_duty_schedule_form_does_not_include_a_department_field(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin)
+            ->get(route('dashboard.resource.index', 'duties'))
+            ->assertOk()
+            ->assertDontSee('name="department_id"', false);
     }
 
     public function test_new_user_can_set_password_using_the_invitation_token(): void
     {
         Notification::fake();
         $admin = User::factory()->create(['role' => 'admin']);
+        $department = Department::create(['name' => 'Worship']);
         $this->actingAs($admin)
             ->withSession(['_token' => self::CSRF_TOKEN])
             ->post(route('dashboard.resource.store', 'users'), [
                 '_token' => self::CSRF_TOKEN,
                 'name' => 'Invited User',
                 'email' => 'invite@example.com',
+                'department_id' => $department->id,
                 'role' => 'deacon',
             ])
             ->assertRedirect();
 
         $user = User::where('email', 'invite@example.com')->firstOrFail();
-        $notification = Notification::sent($user, ResetPassword::class)->first();
+        $notification = Notification::sent($user, AccountInvitation::class)->first();
         self::assertNotNull($notification);
+
+        $mail = $notification->toMail($user);
+        $emailHtml = $mail->render();
+        self::assertStringContainsString('Welcome to PHM HCC!', $emailHtml);
+        self::assertStringContainsString('Invited User', $emailHtml);
+        self::assertStringContainsString('invite@example.com', $emailHtml);
+        self::assertStringContainsString(asset('Images/images.jpg'), $emailHtml);
+        self::assertStringContainsString('#082f63', $emailHtml);
+        self::assertStringContainsString('#f5ad18', $emailHtml);
+        self::assertStringContainsString('<strong style="color:#082f63;">Department:</strong><br>Worship', $emailHtml);
+        self::assertStringContainsString('Deacon', $emailHtml);
+        self::assertStringContainsString(route('password.reset', [
+            'token' => $notification->token,
+            'email' => $user->email,
+        ]), $emailHtml);
 
         Auth::logout();
         $this->withSession(['_token' => self::CSRF_TOKEN])
@@ -660,6 +696,30 @@ class DashboardModulesTest extends TestCase
             ->assertSessionHas('status');
 
         $this->assertTrue(Hash::check('new-user-password', $user->fresh()->password));
+    }
+
+    public function test_user_invitation_rejects_an_email_already_in_the_database(): void
+    {
+        Notification::fake();
+        $admin = User::factory()->create(['email' => 'admin@example.com', 'role' => 'admin']);
+        $existingUser = User::factory()->create(['email' => 'existing@example.com']);
+
+        $this->actingAs($admin)
+            ->withSession(['_token' => self::CSRF_TOKEN])
+            ->from(route('dashboard.resource.index', 'users'))
+            ->post(route('dashboard.resource.store', 'users'), [
+                '_token' => self::CSRF_TOKEN,
+                'name' => 'Duplicate User',
+                'email' => $existingUser->email,
+                'role' => 'deacon',
+            ])
+            ->assertRedirect(route('dashboard.resource.index', 'users'))
+            ->assertSessionHasErrors([
+                'email' => 'This email address is already registered.',
+            ]);
+
+        $this->assertDatabaseCount('users', 2);
+        Notification::assertNothingSent();
     }
 
     public function test_finance_categories_are_limited_and_receipts_can_be_uploaded_downloaded_replaced_and_deleted(): void

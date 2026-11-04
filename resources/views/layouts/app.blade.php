@@ -65,7 +65,7 @@
                     </a>
                 </li>
 
-               
+
                 <li>
                     <a href="{{ route('announcements') }}"
                         class="{{ request()->routeIs('announcements') ? 'active' : '' }}">
@@ -98,16 +98,20 @@
                 </li>
             </ul>
 
-            <button class="menu" type="button" aria-label="Open navigation menu"
-                aria-controls="primaryNavigation" aria-expanded="false">
+            <button class="menu" type="button"
+                aria-label="Open navigation menu"
+                aria-controls="primaryNavigation"
+                aria-expanded="false">
+
                 <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
+
         </nav>
     </header>
     @else
-        <div class="auth-language-switch">
-            @include('layouts.partials.language-switch', ['id' => 'auth-language-switch'])
-        </div>
+    <div class="auth-language-switch">
+        @include('layouts.partials.language-switch', ['id' => 'auth-language-switch'])
+    </div>
     @endunless
 
     <main>
@@ -115,7 +119,7 @@
     </main>
 
     @unless(request()->routeIs('login', 'password.*'))
-        @include('layouts.partials.site-footer')
+    @include('layouts.partials.site-footer')
     @endunless
 
     <script src="{{ asset('/js/script.js') }}"></script>

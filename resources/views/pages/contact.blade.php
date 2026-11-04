@@ -172,29 +172,6 @@
             06:30 PM - 08:00 PM
         </p>
 
-        <div class="social">
-            <a href="https://www.facebook.com/share/14kCi4Q2iXW/" target="_blank" rel="noopener noreferrer">
-                
-                <i class="fab fa-facebook"></i>
-            </a>
-
-            <a href="https://youtube.com/@pastor-happymacxmkomekwa" target="_blank" rel="noopener noreferrer">
-
-                <i class="fab fa-youtube"></i>
-
-            </a>
-
-            <a href="https://www.instagram.com/pastor_mkomekwa" target="_blank" rel="noopener noreferrer">
-
-                <i class="fab fa-instagram"></i>
-
-            </a>
-
-            <a href="https://wa.me/255754970421" target="_blank" rel="noopener noreferrer">
-                <i class="fab fa-whatsapp"></i>
-
-            </a>
-        </div>
     </div>
 
     <div class="contact-form">

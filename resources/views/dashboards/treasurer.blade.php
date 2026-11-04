@@ -1,12 +1,10 @@
 @extends('layouts.dashboard')
 
 @section('title', __('Treasurer Dashboard').' | PHM HCC')
-@section('page-heading', __('Treasury'))
 
 @section('content')
 <header class="role-hero">
     <div class="role-hero-content">
-        <span class="role-eyebrow">{{ __('Finance portal') }}</span>
         <h1>{{ __('Treasurer Dashboard') }}</h1>
         <p>{{ __('Maintain accurate records and support transparent financial stewardship.') }}</p>
     </div>

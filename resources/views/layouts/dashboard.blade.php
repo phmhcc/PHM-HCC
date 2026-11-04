@@ -61,7 +61,9 @@
             padding: 25px 18px;
             z-index: 1000;
             overflow-y: auto;
-            transition: .3s ease;
+            transition: none !important;
+            will-change: auto;
+
         }
 
         .sidebar-brand {
@@ -155,36 +157,15 @@
             width: 100%;
         }
 
-        .site-footer {
+        .dashboard-footer {
             width: 100%;
-            margin-top: 24px;
-            padding: 40px;
-            background: #111;
-            color: #fff;
-            text-align: center;
-        }
-
-        .site-footer h2 {
-            margin-bottom: 8px;
-            color: #ffd700;
-        }
-
-        .site-footer p {
-            line-height: 1.7;
-        }
-
-        .site-footer .social {
-            margin: 20px;
-        }
-
-        .site-footer .social a {
-            margin: 0 10px;
-            color: #fff;
-            font-size: 30px;
-        }
-
-        .site-footer .social a:hover {
-            color: #ffd700;
+            flex-shrink: 0;
+            padding: 16px 32px;
+            border-top: 1px solid #dce5ef;
+            background: #eef2f6;
+            color: #607b99;
+            font-size: 11px;
+            line-height: 20px;
         }
 
         /* TOP NAVBAR */
@@ -216,17 +197,8 @@
             color: #003366;
             cursor: pointer;
             display: none;
-        }
-
-        .topbar-title h3 {
-            font-size: 17px;
-            color: #003366;
-            font-weight: 600;
-        }
-
-        .topbar-title p {
-            font-size: 11px;
-            color: #999;
+            padding: 8px;
+            transition: none;
         }
 
         .topbar-right {
@@ -776,6 +748,7 @@
 
         @media(max-width: 850px) {
             .sidebar {
+                z-index: 1301;
                 transform: translateX(-100%);
             }
 
@@ -788,7 +761,7 @@
                 position: fixed;
                 inset: 0;
                 background: rgba(0, 0, 0, .4);
-                z-index: 999;
+                z-index: 1300;
             }
 
             .main-area {
@@ -917,16 +890,6 @@
         .dashboard-welcome-meta {
             position: relative;
             z-index: 1;
-        }
-
-        .dashboard-welcome-eyebrow {
-            display: inline-block;
-            margin-bottom: 12px;
-            color: #f5dc57;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
         }
 
         .dashboard-welcome-copy h1 {
@@ -1312,16 +1275,6 @@
             z-index: 1;
         }
 
-        .role-eyebrow {
-            display: inline-block;
-            margin-bottom: 10px;
-            color: #f5dc57;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
-
         .role-hero h1 {
             margin-bottom: 8px;
             font-size: clamp(25px, 3vw, 34px);
@@ -1573,7 +1526,6 @@
                 <img class="brand-logo" src="{{ asset('Images/images.jpg') }}" alt="PHM HCC logo">
                 <div>
                     <h2>PHM HCC</h2>
-                    <small>CHURCH MANAGEMENT</small>
                 </div>
             </div>
 
@@ -1694,11 +1646,6 @@
                         <i class="fas fa-bars"></i>
                     </button>
 
-                    <div class="topbar-title">
-                        <h3>@yield('page-heading', 'Dashboard')</h3>
-                        <p>{{ __('Welcome to PHM HCC Management Portal') }}</p>
-                    </div>
-
                 </div>
 
                 <div class="topbar-right">
@@ -1755,7 +1702,9 @@
 
             </main>
 
-            @include('layouts.partials.site-footer')
+            <footer class="dashboard-footer">
+                <p>&copy; {{ date('Y') }} PHM HCC. {{ __('All Rights Reserved.') }}</p>
+            </footer>
         </div>
 
     </div>

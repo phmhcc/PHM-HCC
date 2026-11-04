@@ -1,16 +1,14 @@
 @extends('layouts.dashboard')
 
 @section('title', __($definition['title']).' | PHM HCC')
-@section('page-heading', __($definition['title']))
 
 @section('content')
 <header class="resource-page-heading">
     <div>
-        <span class="role-eyebrow">{{ __('Church management') }}</span>
         <h1>{{ __($definition['title']) }}</h1>
         <p>
             @if(auth()->user()->hasPermissionTo($resource.'.create'))
-                {{ __('Create, update, and manage :resource.', ['resource' => strtolower(__($definition['title']))]) }}
+                <!-- {{ __('Create, update, and manage :resource.', ['resource' => strtolower(__($definition['title']))]) }} -->
             @else
                 {{ __('View available :resource.', ['resource' => strtolower(__($definition['title']))]) }}
             @endif
@@ -109,6 +107,8 @@
                                 $value = $record->{$column} ?? null;
                                 if (in_array($column, ['assigned_to', 'leader_id'], true) && $value) {
                                     $value = $users->firstWhere('id', $value)?->name;
+                                } elseif ($column === 'department_id' && $value) {
+                                    $value = $departments->firstWhere('id', $value)?->name;
                                 } elseif (in_array($column, ['start_date', 'end_date'], true) && $value) {
                                     $value = \Carbon\Carbon::parse($value)->format('d M Y, h:i A');
                                 } elseif (in_array($column, ['duty_date', 'meeting_date', 'reporting_period', 'transaction_date', 'published_at', 'created_at'], true) && $value) {

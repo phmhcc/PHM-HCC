@@ -1,12 +1,10 @@
 @extends('layouts.dashboard')
 
 @section('title', __('View Role').' | PHM HCC')
-@section('page-heading', __('View Role'))
 
 @section('content')
 <header class="resource-page-heading">
     <div>
-        <span class="role-eyebrow">{{ __('User Management') }}</span>
         <h1>{{ __(str($role->name)->replace('_', ' ')->title()->toString()) }}</h1>
         <p>{{ $role->description ?: __('No description provided.') }}</p>
     </div>

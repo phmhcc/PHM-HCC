@@ -1,12 +1,10 @@
 @extends('layouts.dashboard')
 
 @section('title', __('Role Permissions').' | PHM HCC')
-@section('page-heading', __('User Management'))
 
 @section('content')
 <header class="resource-page-heading">
     <div>
-        <span class="role-eyebrow">{{ __('User Management') }}</span>
         <h1>{{ __('Roles and permissions') }}</h1>
         <p>{{ __('Create roles and control their dashboard access.') }}</p>
     </div>

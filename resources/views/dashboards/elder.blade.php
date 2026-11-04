@@ -1,12 +1,10 @@
 @extends('layouts.dashboard')
 
 @section('title', __('Elder Dashboard').' | PHM HCC')
-@section('page-heading', __('Elder Ministry'))
 
 @section('content')
 <header class="role-hero">
     <div class="role-hero-content">
-        <span class="role-eyebrow">{{ __('Ministry portal') }}</span>
         <h1>{{ __('Elder Dashboard') }}</h1>
         <p>{{ __('Encourage spiritual growth and provide faithful support across the church.') }}</p>
     </div>

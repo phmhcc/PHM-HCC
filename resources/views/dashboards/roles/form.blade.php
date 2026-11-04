@@ -1,7 +1,6 @@
 @extends('layouts.dashboard')
 
 @section('title', __($heading).' | PHM HCC')
-@section('page-heading', __($heading))
 
 @push('styles')
 <style>
@@ -33,7 +32,6 @@
 @section('content')
 <header class="resource-page-heading">
     <div>
-        <span class="role-eyebrow">{{ __('User Management') }}</span>
         <h1>{{ __($heading) }}</h1>
         <p>{{ __('Set the role details and choose the permissions assigned to it.') }}</p>
     </div>

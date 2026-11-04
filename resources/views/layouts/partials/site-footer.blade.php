@@ -1,7 +1,7 @@
 <footer class="site-footer">
     <!-- <h2>PHM HCC</h2> -->
     <p>{{ __('Pentecostal Holiness Mission Hope Christian Church (PHM HCC)') }}</p>
-<!-- 
+
     <div class="social">
         <a href="https://www.facebook.com/share/14kCi4Q2iXW/"
             target="_blank" rel="noopener noreferrer"
@@ -23,7 +23,7 @@
             aria-label="WhatsApp">
             <i class="fab fa-whatsapp"></i>
         </a>
-    </div> -->
+    </div>
 
     <p>&copy; {{ date('Y') }} PHM HCC. {{ __('All Rights Reserved.') }}</p>
 </footer>

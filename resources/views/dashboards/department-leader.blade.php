@@ -1,12 +1,10 @@
 @extends('layouts.dashboard')
 
 @section('title', __('Department Leader Dashboard').' | PHM HCC')
-@section('page-heading', __('Department Leadership'))
 
 @section('content')
 <header class="role-hero">
     <div class="role-hero-content">
-        <span class="role-eyebrow">{{ __('Team leadership portal') }}</span>
         <h1>{{ __('Department Leader Dashboard') }}</h1>
         <p>{{ __('Plan ministry activities, coordinate your team, and keep church leadership informed.') }}</p>
     </div>

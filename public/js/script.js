@@ -1,9 +1,11 @@
-document.addEventListener('DOMContentLoaded', () => {
+const initializePublicNavigation = () => {
     const menuButton = document.querySelector('.menu');
+    const menuIcon = menuButton?.querySelector('i');
     const navigation = document.querySelector('.nav-links');
     const navbar = document.querySelector('.navbar');
 
     if (!(menuButton instanceof HTMLButtonElement)
+        || !(menuIcon instanceof HTMLElement)
         || !(navigation instanceof HTMLElement)
         || !(navbar instanceof HTMLElement)) {
         return;
@@ -16,7 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
             'aria-label',
             isOpen ? 'Close navigation menu' : 'Open navigation menu'
         );
-        menuButton.innerHTML = `<i class="fas ${isOpen ? 'fa-xmark' : 'fa-bars'}" aria-hidden="true"></i>`;
+        menuIcon.classList.toggle('fa-bars', !isOpen);
+        menuIcon.classList.toggle('fa-xmark', isOpen);
     };
 
     menuButton.addEventListener('click', () => {
@@ -47,4 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
             setMenuOpen(false);
         }
     });
-});
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializePublicNavigation, { once: true });
+} else {
+    initializePublicNavigation();
+}

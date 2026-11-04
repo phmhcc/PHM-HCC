@@ -2,13 +2,11 @@
 @extends('layouts.dashboard')
 
 @section('title', __('Dashboard').' | PHM HCC')
-@section('page-heading', __('Church Overview'))
 
 @section('content')
 
 <header class="dashboard-heading dashboard-welcome">
     <div class="dashboard-welcome-copy">
-        <span class="dashboard-welcome-eyebrow"><i class="fas fa-sun"></i> {{ __('Church management portal') }}</span>
         <h1>{{ __('Welcome Back, :name!', ['name' => auth()->user()->name]) }}</h1>
         <p>{{ __('Here is your overview of church activities and administration.') }}</p>
     </div>

@@ -1,7 +1,6 @@
 @extends('layouts.dashboard')
 
 @section('title', __('My Profile | PHM HCC'))
-@section('page-heading', __('My Profile'))
 
 @section('content')
 <div class="profile-panel">
