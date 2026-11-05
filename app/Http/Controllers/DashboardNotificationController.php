@@ -20,6 +20,6 @@ class DashboardNotificationController extends Controller
         $item = $request->user()->notifications()->findOrFail($notification);
         $item->markAsRead();
 
-        return back()->with('status', 'Notification marked as read.');
+        return back()->with('status', __('Notification marked as read.'));
     }
 }

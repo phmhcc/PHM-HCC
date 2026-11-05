@@ -66,6 +66,9 @@ class PermissionSeeder extends Seeder
                 'reports.delete',
                 'finance.*',
             ],
+            'church_secretary' => [
+                'dashboard.view',
+            ],
         ];
 
         foreach ($rolePermissions as $roleName => $permissionNames) {

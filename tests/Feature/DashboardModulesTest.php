@@ -7,6 +7,7 @@ use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Department;
 use App\Notifications\AccountInvitation;
+use App\Notifications\DashboardInformationPublished;
 use Database\Seeders\PermissionSeeder;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -63,6 +64,46 @@ class DashboardModulesTest extends TestCase
 
         $this->get(route('dashboard.profile'))->assertOk();
         $this->get(route('dashboard.notifications'))->assertOk();
+    }
+
+    public function test_dashboard_breadcrumbs_show_module_hierarchy_in_current_language(): void
+    {
+        $admin = User::factory()->create(['email' => 'admin@example.com', 'role' => 'admin']);
+
+        $this->actingAs($admin)
+            ->get(route('dashboard.resource.index', 'finance'))
+            ->assertOk()
+            ->assertSee('aria-label="Breadcrumb"', false)
+            ->assertSeeText('Dashboard')
+            ->assertSeeText('Financial Transactions');
+
+        $this->withSession(['locale' => 'sw'])
+            ->get(route('dashboard.resource.index', 'finance'))
+            ->assertOk()
+            ->assertSeeText('Dashibodi')
+            ->assertSeeText('Miamala ya Fedha');
+    }
+
+    public function test_department_names_are_translated_when_swahili_is_selected(): void
+    {
+        $admin = User::factory()->create(['email' => 'admin@example.com', 'role' => 'admin']);
+        foreach (['Women', 'IT', 'Youth', 'Children', 'Ushers'] as $name) {
+            Department::create(['name' => $name]);
+        }
+
+        $this->actingAs($admin)->withSession(['locale' => 'sw']);
+
+        $departments = $this->get(route('dashboard.resource.index', 'departments'))
+            ->assertOk();
+        foreach (['Wanawake', 'Teknolojia ya Habari', 'Vijana', 'Watoto', 'Wakaribishaji'] as $name) {
+            $departments->assertSeeText($name);
+        }
+
+        $users = $this->get(route('dashboard.resource.index', 'users'))
+            ->assertOk();
+        foreach (['Wanawake', 'Teknolojia ya Habari', 'Vijana', 'Watoto', 'Wakaribishaji'] as $name) {
+            $users->assertSeeText($name);
+        }
     }
 
     public function test_admin_can_create_update_and_delete_a_church_event(): void
@@ -155,6 +196,41 @@ class DashboardModulesTest extends TestCase
             ->assertOk()
             ->assertSeeText('New event: Church-wide gathering')
             ->assertSeeText('An administrator added this to the church dashboard.');
+    }
+
+    public function test_department_notification_is_translated_using_recipient_language(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $recipient = User::factory()->create(['role' => 'deacon']);
+
+        $this->actingAs($admin)
+            ->withSession(['_token' => self::CSRF_TOKEN])
+            ->post(route('dashboard.resource.store', 'departments'), [
+                '_token' => self::CSRF_TOKEN,
+                'name' => 'Women',
+            ])
+            ->assertRedirect();
+
+        $this->actingAs($recipient)
+            ->withSession(['locale' => 'sw'])
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSeeText('Idara mpya: Wanawake')
+            ->assertSeeText('Msimamizi ameongeza taarifa hii kwenye dashibodi ya kanisa.');
+
+        $this->get(route('dashboard.notifications'))
+            ->assertOk()
+            ->assertSeeText('Idara mpya: Wanawake')
+            ->assertSeeText('Msimamizi ameongeza taarifa hii kwenye dashibodi ya kanisa.');
+
+        $this->assertSame(
+            'Idara mpya: Wanawake',
+            DashboardInformationPublished::localizedTitle(['title' => 'New department: Women']),
+        );
+        $this->assertSame(
+            'Msimamizi ameongeza taarifa hii kwenye dashibodi ya kanisa.',
+            DashboardInformationPublished::localizedMessage(['message' => 'An administrator added this to the church dashboard.']),
+        );
     }
 
     public function test_all_dashboard_roles_can_see_admin_created_events_duties_and_meetings(): void
@@ -628,7 +704,8 @@ class DashboardModulesTest extends TestCase
             ->get(route('dashboard.resource.index', 'users'))
             ->assertOk()
             ->assertSeeText('The user will receive an email invitation to set their own password.')
-            ->assertSee('name="department_id"', false);
+            ->assertSee('name="department_id"', false)
+            ->assertSee('value="church_secretary"', false);
         preg_match('/<form id="createResourceForm"[^>]*>(.*?)<\/form>/s', $response->getContent(), $createForm);
         self::assertArrayHasKey(1, $createForm);
         self::assertStringNotContainsString('name="password"', $createForm[1]);
@@ -731,8 +808,21 @@ class DashboardModulesTest extends TestCase
             ->assertOk()
             ->assertSeeText('Tithe')
             ->assertSeeText('Thanksgiving')
-            ->assertSeeText('Ujenzi')
+            ->assertSeeText('Building')
+            ->assertSeeText('Supporting Expense')
             ->assertSeeText('Receipt attachment');
+
+        app()->setLocale('sw');
+        $this->get(route('dashboard.resource.index', 'finance'))
+            ->assertOk()
+            ->assertSeeText('Zaka')
+            ->assertSeeText('Sadaka')
+            ->assertSeeText('Nadhiri')
+            ->assertSeeText('Shukrani')
+            ->assertSeeText('Ujenzi')
+            ->assertSeeText('Gharama za usaidizi')
+            ->assertSeeText('Mapato')
+            ->assertSeeText('Matumizi');
 
         $this->withSession(['_token' => self::CSRF_TOKEN])
             ->post(route('dashboard.resource.store', 'finance'), [
@@ -812,6 +902,12 @@ class DashboardModulesTest extends TestCase
         ));
         $notificationId = $user->notifications()->firstOrFail()->id;
         $this->actingAs($user);
+
+        $this->get(route('dashboard.profile'))
+            ->assertOk()
+            ->assertSee('aria-controls="current_password"', false)
+            ->assertSee('aria-controls="password"', false)
+            ->assertSee('aria-controls="password_confirmation"', false);
 
         $this->withSession(['_token' => self::CSRF_TOKEN])->put(route('dashboard.profile.update'), [
             '_token' => self::CSRF_TOKEN,

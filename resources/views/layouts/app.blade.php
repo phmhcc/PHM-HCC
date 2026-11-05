@@ -18,7 +18,7 @@
     @stack('styles')
 </head>
 
-<body class="{{ request()->routeIs('announcements') ? 'announcements-page' : '' }}">
+<body class="{{ request()->routeIs('announcements') ? 'announcements-page' : '' }} {{ request()->routeIs('gallery') ? 'gallery-page' : '' }}">
 
     @unless(request()->routeIs('login', 'password.*'))
     <header>
@@ -99,7 +99,7 @@
             </ul>
 
             <button class="menu" type="button"
-                aria-label="Open navigation menu"
+                aria-label="{{ __('Open navigation menu') }}"
                 aria-controls="primaryNavigation"
                 aria-expanded="false">
 
@@ -115,6 +115,9 @@
     @endunless
 
     <main>
+        @if(request()->routeIs('dashboard*'))
+            @include('layouts.partials.breadcrumbs')
+        @endif
         @yield('content')
     </main>
 

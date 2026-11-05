@@ -28,7 +28,10 @@ class PasswordResetTest extends TestCase
             ->assertOk()
             ->assertSee('Choose a new password')
             ->assertSee('src="'.asset('Images/images.jpg').'"', false)
-            ->assertSee(route('password.store'), false);
+            ->assertSee(route('password.store'), false)
+            ->assertSee('id="toggleNewPasswordButton"', false)
+            ->assertSee('aria-controls="password"', false)
+            ->assertSee('id="password_confirmation"', false);
     }
 
     public function test_password_reset_link_is_sent_for_an_existing_account(): void

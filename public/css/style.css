@@ -13,6 +13,43 @@ html {
     scroll-behavior: smooth;
 }
 
+.breadcrumbs {
+    padding: 12px ;
+    padding-top: 0px;
+    padding-bottom: 8px;
+    background: #f5f7fa;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+}
+
+.breadcrumbs li + li::before {
+    content: "/";
+    margin-right: 8px;
+    color: #94a3b8;
+}
+
+.breadcrumbs a {
+    color: #245783;
+    text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumbs [aria-current="page"] {
+    color: #334155;
+    font-weight: 600;
+}
+
 body {
     background: #ffffff;
     color: #222;
@@ -509,24 +546,28 @@ RESPONSIVE DESIGN
 
 @media(max-width:900px) {
     .nav-links {
-        position: absolute;
-        top: 100%;
-        right: 0;
+        position: fixed;
+        top: 80px;
         left: 0;
         z-index: 1001;
-        background: #014080;
-        width: 100%;
+        display: flex;
         flex-direction: column;
-        text-align: center;
+        align-items: stretch;
         gap: 0;
+        width:415px;
         max-height: calc(100vh - 80px);
-        padding: 12px 20px;
+        padding: 18px 16px 20px;
         overflow-y: auto;
-        display: none;
+        background: #014080;
+        border-top: 1px solid rgba(255, 255, 255, .16);
+        box-shadow: 12px 12px 30px rgba(0, 0, 0, .18);
+        transform: translateX(-120%);
+        transition: transform .25s ease;
+        text-align: left;
     }
 
     .nav-links.active {
-        display: flex;
+        transform: translateX(0);
     }
 
     .nav-links li {
@@ -535,7 +576,8 @@ RESPONSIVE DESIGN
 
     .nav-links a {
         display: block;
-        padding: 12px 8px;
+        padding: 14px 10px;
+        border-radius: 8px;
     }
 
     .nav-language-switch .language-switch select {

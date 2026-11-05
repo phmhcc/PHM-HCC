@@ -54,6 +54,34 @@
         font: inherit;
     }
 
+    .auth-password-wrapper {
+        position: relative;
+    }
+
+    .auth-form .auth-password-wrapper input {
+        padding-right: 44px;
+    }
+
+    .auth-form .auth-password-toggle {
+        position: absolute;
+        top: 50%;
+        right: 12px;
+        display: grid;
+        width: auto;
+        margin: 0;
+        padding: 4px;
+        transform: translateY(-50%);
+        border: 0;
+        background: transparent;
+        color: #777;
+        cursor: pointer;
+    }
+
+    .auth-password-toggle:focus-visible {
+        outline: 2px solid #003366;
+        outline-offset: 2px;
+    }
+
     .auth-form button {
         width: 100%;
         margin-top: 22px;

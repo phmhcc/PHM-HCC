@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $report->title }} | PHM HCC Report</title>
+    <title>{{ $report->title }} | {{ __('PHM HCC Report') }}</title>
     <style>
         body {
             max-width: 800px;
@@ -71,7 +71,7 @@
 </head>
 <body>
     <div class="print-controls">
-        <button class="print-button" type="button" onclick="window.print()">Print report</button>
+        <button class="print-button" type="button" onclick="window.print()">{{ __('Print report') }}</button>
     </div>
 
     <main>
@@ -79,11 +79,11 @@
         <p>Pentecostal Holiness Mission Hope Christian Church</p>
 
         <div class="report-details">
-            <div><strong>Reporting period:</strong> {{ $report->reporting_period?->format('d M Y') ?? '—' }}</div>
-            <div><strong>Status:</strong> {{ str($report->status)->replace('_', ' ')->title() }}</div>
-            <div><strong>Department:</strong> {{ $report->department?->name ?? '—' }}</div>
-            <div><strong>Submitted by:</strong> {{ $report->submitter?->name ?? '—' }}</div>
-            <div><strong>Submitted on:</strong> {{ $report->created_at?->format('d M Y') ?? '—' }}</div>
+            <div><strong>{{ __('Reporting period') }}:</strong> {{ $report->reporting_period?->locale(app()->getLocale())->translatedFormat('d M Y') ?? '—' }}</div>
+            <div><strong>{{ __('Status') }}:</strong> {{ __(str($report->status)->replace('_', ' ')->title()->toString()) }}</div>
+            <div><strong>{{ __('Department') }}:</strong> {{ $report->department?->name ? __($report->department->name) : '—' }}</div>
+            <div><strong>{{ __('Submitted by') }}:</strong> {{ $report->submitter?->name ?? '—' }}</div>
+            <div><strong>{{ __('Submitted on') }}:</strong> {{ $report->created_at?->locale(app()->getLocale())->translatedFormat('d M Y') ?? '—' }}</div>
         </div>
     </main>
 </body>

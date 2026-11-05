@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -25,7 +26,7 @@ class AuthenticatedSessionController extends Controller
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return redirect()->route('login')
-                ->withErrors(['email' => 'Email or password do not match an account.'])
+                ->withErrors(['email' => __('Email or password do not match an account.')])
                 ->withInput($request->only('email'));
         }
 
@@ -34,18 +35,19 @@ class AuthenticatedSessionController extends Controller
             Auth::logout();
 
             return redirect()->route('login')
-                ->withErrors(['email' => 'This account does not have dashboard access. Please contact your administrator.'])
+                ->withErrors(['email' => __('This account does not have dashboard access. Please contact your administrator.')])
                 ->withInput($request->only('email'));
         }
 
         $request->session()->regenerate();
 
         $roleRoute = str_replace('_', '-', $user->role);
+        $dashboardRoute = 'dashboard.'.$roleRoute;
 
         return redirect()->intended(
-            in_array($user->role, ['admin'], true)
+            $user->role === 'admin' || ! Route::has($dashboardRoute)
                 ? route('dashboard')
-                : route('dashboard.'.$roleRoute)
+                : route($dashboardRoute)
         );
     }
 

@@ -32,6 +32,6 @@ class DashboardProfileController extends Controller
         }
         $user->save();
 
-        return back()->with('status', 'Profile updated.');
+        return back()->with('status', __('Profile updated.'));
     }
 }

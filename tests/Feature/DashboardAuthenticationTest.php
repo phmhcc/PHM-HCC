@@ -46,7 +46,28 @@ class DashboardAuthenticationTest extends TestCase
             ->assertSee('id="primaryNavigation"', false)
             ->assertSee('aria-controls="primaryNavigation"', false)
             ->assertSee('<footer class="site-footer">', false)
-            ->assertSee('src="'.asset('Images/images.jpg').'"', false);
+            ->assertSee('src="'.asset('Images/images.jpg').'"', false)
+            ->assertDontSee('aria-label="Breadcrumb"', false);
+
+        $this->get(route('leadership'))
+            ->assertOk()
+            ->assertDontSee('aria-label="Breadcrumb"', false)
+            ->assertSeeText('Home')
+            ->assertSeeText('Leadership');
+    }
+
+    public function test_gallery_uses_facebook_images_and_shared_public_layout(): void
+    {
+        $this->withSession(['locale' => 'sw'])
+            ->get(route('gallery'))
+            ->assertOk()
+            ->assertSeeText('Picha za Kanisa')
+            ->assertSeeText('Tazama Picha')
+            ->assertSee('Images/FB_IMG_1784717227063.jpg', false)
+            ->assertSee('Images/FB_IMG_1793876082431.jpg', false)
+            ->assertDontSee('Images/pastor.jpg', false)
+            ->assertSee('<nav class="navbar">', false)
+            ->assertSee('<footer class="site-footer">', false);
     }
 
     public function test_language_can_be_switched_and_persists_across_pages(): void
@@ -61,7 +82,14 @@ class DashboardAuthenticationTest extends TestCase
             ->assertSee('value="sw" selected', false);
 
         $this->get(route('ministries'))->assertOk()->assertSeeText('Huduma za Kanisa');
-        $this->get(route('gallery'))->assertOk()->assertSeeText('Picha za Kanisa');
+        $this->get(route('gallery'))
+            ->assertOk()
+            ->assertSeeText('Picha za Kanisa')
+            ->assertSeeText('Tazama Picha')
+            ->assertSee('Images/FB_IMG_1784717227063.jpg', false)
+            ->assertSee('Images/FB_IMG_1793876082431.jpg', false)
+            ->assertSee('<nav class="navbar">', false)
+            ->assertSee('<footer class="site-footer">', false);
         $this->get(route('leadership'))->assertOk()->assertSeeText('Uongozi wa Kanisa');
         $this->get(route('contact'))->assertOk()->assertSeeText('Wasiliana nasi');
         $this->get(route('home'))
@@ -74,6 +102,8 @@ class DashboardAuthenticationTest extends TestCase
         $this->actingAs($admin)
             ->get(route('dashboard'))
             ->assertOk()
+            ->assertSee('aria-label="Breadcrumb"', false)
+            ->assertSeeText('Dashboard')
             ->assertSeeText('Ufikiaji wa Haraka')
             ->assertSeeText('Shughuli')
             ->assertSeeText('Matangazo')
@@ -85,7 +115,8 @@ class DashboardAuthenticationTest extends TestCase
             ->post(route('language.update'), ['_token' => self::CSRF_TOKEN, 'locale' => 'en'])
             ->assertRedirect();
 
-        auth()->logout();
+        $this->flushSession();
+        $this->app['auth']->forgetGuards();
         $this->get(route('login'))
             ->assertOk()
             ->assertSeeText('Church Team Sign In')
@@ -229,6 +260,7 @@ class DashboardAuthenticationTest extends TestCase
             'elder' => 'elder',
             'department_leader' => 'department-leader',
             'treasurer' => 'treasurer',
+            'church_secretary' => 'dashboard',
         ] as $role => $routeRole) {
             $user = User::factory()->create([
                 'email' => $role.'@example.com',

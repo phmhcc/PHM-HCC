@@ -75,7 +75,7 @@ class DashboardRolePermissionController extends Controller
 
         return redirect()
             ->route('dashboard.roles.edit', $role)
-            ->with('status', 'Role created.');
+            ->with('status', __('Role created.'));
     }
 
     public function show(Role $role): View
@@ -130,7 +130,7 @@ class DashboardRolePermissionController extends Controller
 
         return redirect()
             ->route('dashboard.roles.edit', $role)
-            ->with('status', 'Role and permissions updated.');
+            ->with('status', __('Role and permissions updated.'));
     }
 
     public function destroy(Role $role): RedirectResponse
@@ -139,14 +139,14 @@ class DashboardRolePermissionController extends Controller
         abort_if(
             User::query()->where('role', $role->name)->exists(),
             422,
-            'This role is assigned to users. Reassign them before deleting the role.'
+            __('This role is assigned to users. Reassign them before deleting the role.')
         );
 
         $role->delete();
 
         return redirect()
             ->route('dashboard.roles.index')
-            ->with('status', 'Role deleted.');
+            ->with('status', __('Role deleted.'));
     }
 
     private function permissionGroups(): array

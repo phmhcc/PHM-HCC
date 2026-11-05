@@ -12,7 +12,7 @@
     </div>
     <div class="dashboard-welcome-meta">
         <div class="dashboard-user-chip"><span><i class="fas fa-user"></i></span>{{ auth()->user()->name }}</div>
-        <div class="date-display"><i class="far fa-calendar-alt"></i> {{ now()->format('l, d F Y') }}</div>
+        <div class="date-display"><i class="far fa-calendar-alt"></i> {{ now()->locale(app()->getLocale())->translatedFormat('l, d F Y') }}</div>
     </div>
 </header>
 
@@ -104,7 +104,7 @@
 
                 <div class="activity-date">
                     <strong>{{ \Carbon\Carbon::parse($event->start_date)->format('d') }}</strong>
-                    <small>{{ \Carbon\Carbon::parse($event->start_date)->format('M') }}</small>
+                    <small>{{ \Carbon\Carbon::parse($event->start_date)->locale(app()->getLocale())->translatedFormat('M') }}</small>
                 </div>
 
                 <div class="activity-details">
@@ -155,12 +155,10 @@
                 </div>
 
                 <div class="notification-text">
-                    <h4>{{ $notification->data['title'] ?? __('Church notification') }}</h4>
+                    <h4>{{ \App\Notifications\DashboardInformationPublished::localizedTitle($notification->data) }}</h4>
+                    <p>{{ \App\Notifications\DashboardInformationPublished::localizedMessage($notification->data) ?: __('You have a new notification.') }}</p>
                     <p>
-                        {{ $notification->data['message'] ?? __('You have a new notification.') }}
-                    </p>
-                    <p>
-                        {{ $notification->created_at->diffForHumans() }}
+                        {{ $notification->created_at->locale(app()->getLocale())->diffForHumans() }}
                     </p>
                 </div>
 
@@ -215,7 +213,7 @@
                             {{ \Carbon\Carbon::parse($duty->duty_date)->format('d M Y') }}
                         </td>
                         <td>
-                            {{ $duty->department->name ?? __('General') }}
+                            {{ isset($duty->department) ? __($duty->department->name) : __('General') }}
                         </td>
                         <td>
                             <span class="status-badge status-pending">

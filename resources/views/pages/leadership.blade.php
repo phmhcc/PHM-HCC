@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Leadership | PHM HCC')
+@section('title', __('Leadership | PHM HCC'))
 
 @push('styles')
 <style>
@@ -73,7 +73,7 @@
     <section class="leaders">
 
         <div class="leader-card">
-            <img src="{{ asset('Images/pastor.jpg') }}" alt="Pastor Happymacx">
+            <img src="{{ asset('Images/pastor.jpg') }}" alt="{{ __('Senior Pastor') }} Happymacx">
 
             <h3>Happymacx & Spora Mkomekwa</h3>
 
@@ -88,7 +88,7 @@
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/Tumsifu.jpg') }}" alt="Secretary Tumsifu Didas">
+            <img src="{{ asset('Images/Tumsifu.jpg') }}" alt="{{ __('Church Secretary') }} Tumsifu Didas">
 
             <h3> Tumsifu Didas</h3>
 
@@ -104,7 +104,7 @@
 
          <div class="leader-card">
 
-            <img src="{{ asset('Images/Kunjumu.jpg') }}" alt="Secretary Faustine Kunjumu">
+            <img src="{{ asset('Images/Kunjumu.jpg') }}" alt="{{ __('Church Secretary') }} Faustine Kunjumu">
 
             <h3> Faustine Kunjumu</h3>
 
@@ -120,7 +120,7 @@
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/Mkole.jpg') }}" alt="Elder Mkole">
+            <img src="{{ asset('Images/Mkole.jpg') }}" alt="{{ __('Church Elder') }} Mkole">
 
             <h3> Samson Mkole</h3>
 
@@ -137,7 +137,7 @@
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/Eliya.jpg') }}" alt="Elder Mhagama">
+            <img src="{{ asset('Images/Eliya.jpg') }}" alt="{{ __('Church Elder') }} Mhagama">
 
             <h3> Eliya Mhagama</h3>
 
@@ -153,7 +153,7 @@
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/Kikoti.jpg') }}" alt="Elder Kikoti">
+            <img src="{{ asset('Images/Kikoti.jpg') }}" alt="{{ __('Church Elder') }} Kikoti">
 
             <h3> Kasian Kikoti</h3>
 
@@ -169,155 +169,137 @@
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/Kasian.jpg') }}" alt="Elder Kasian">
+            <img src="{{ asset('Images/Kasian.jpg') }}" alt="{{ __('Church Elder') }} Kasian">
 
             <h3> Kasian Mkomekwa</h3>
 
             <p class="position">
-                Church Elder
+                {{ __('Church Elder') }}
             </p>
 
             <p>
-                Responsible for spiritual guidance,
-                discipleship,
-                and assisting in church administration.
+                {{ __('Responsible for spiritual guidance, discipleship, and assisting in church administration.') }}
             </p>
 
         </div>
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/Debora.jpg') }}" alt="Elder Majani">
+            <img src="{{ asset('Images/Debora.jpg') }}" alt="{{ __('Church Elder') }} Majani">
 
             <h3> Debora Majani</h3>
 
             <p class="position">
-                Church Elder
+                {{ __('Church Elder') }}
             </p>
 
             <p>
-                Responsible for spiritual guidance,
-                discipleship,
-                and assisting in church administration.
+                {{ __('Responsible for spiritual guidance, discipleship, and assisting in church administration.') }}
             </p>
 
         </div>
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/Elizabeth.jpg') }}" alt="Deaconess Elizabeth">
+            <img src="{{ asset('Images/Elizabeth.jpg') }}" alt="{{ __('Head Deaconess') }} Elizabeth">
 
             <h3> Elizabeth Batista</h3>
 
             <p class="position">
-                Head Deaconess
+                {{ __('Head Deaconess') }}
             </p>
 
             <p>
-                Coordinates church services,
-                welcomes visitors,
-                and oversees welfare ministries.
+                {{ __('Coordinates church services, welcomes visitors, and oversees welfare ministries.') }}
             </p>
         </div>
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/Comfort.jpg') }}" alt="Deacon Comfort">
+            <img src="{{ asset('Images/Comfort.jpg') }}" alt="{{ __('Deacon') }} Comfort">
 
             <h3>Comfort Edward</h3>
 
             <p class="position">
-                Deacon
+                {{ __('Deacon') }}
             </p>
 
             <p>
-                Coordinates church services,
-                welcomes visitors,
-                and oversees welfare ministries.
+                {{ __('Coordinates church services, welcomes visitors, and oversees welfare ministries.') }}
             </p>
         </div>
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/Rebecca.jpg') }}" alt="Deaconess Rebecca">
+            <img src="{{ asset('Images/Rebecca.jpg') }}" alt="{{ __('Deaconess') }} Rebecca">
 
             <h3>Rebecca Sulley</h3>
 
             <p class="position">
-                Deaconess
+                {{ __('Deaconess') }}
             </p>
 
             <p>
-                Coordinates church services,
-                welcomes visitors,
-                and oversees welfare ministries.
+                {{ __('Coordinates church services, welcomes visitors, and oversees welfare ministries.') }}
             </p>
         </div>
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/Tabby.jpg') }}" alt="Deaconess Tabiana">
+            <img src="{{ asset('Images/Tabby.jpg') }}" alt="{{ __('Deaconess') }} Tabiana">
 
             <h3>Tabiana Vitus</h3>
 
             <p class="position">
-                Deaconess
+                {{ __('Deaconess') }}
             </p>
 
             <p>
-                Coordinates church services,
-                welcomes visitors,
-                and oversees welfare ministries.
+                {{ __('Coordinates church services, welcomes visitors, and oversees welfare ministries.') }}
             </p>
         </div>
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/Ibrahim.jpg') }}" alt="Deacon Ibrahim">
+            <img src="{{ asset('Images/Ibrahim.jpg') }}" alt="{{ __('Deacon') }} Ibrahim">
 
             <h3>Ibrahim Kimaro</h3>
 
             <p class="position">
-                Deacon
+                {{ __('Deacon') }}
             </p>
 
             <p>
-                Coordinates church services,
-                welcomes visitors,
-                and oversees welfare ministries.
+                {{ __('Coordinates church services, welcomes visitors, and oversees welfare ministries.') }}
             </p>
         </div>
         <div class="leader-card">
 
-            <img src="{{ asset('Images/Emmanuel.jpg') }}" alt="Deacon Emmanuel">
+            <img src="{{ asset('Images/Emmanuel.jpg') }}" alt="{{ __('Deacon') }} Emmanuel">
 
             <h3>Emmanuel Andrew</h3>
 
             <p class="position">
-                Deacon
+                {{ __('Deacon') }}
             </p>
 
             <p>
-                Coordinates church services,
-                welcomes visitors,
-                and oversees welfare ministries.
+                {{ __('Coordinates church services, welcomes visitors, and oversees welfare ministries.') }}
             </p>
         </div>
 
         <div class="leader-card">
 
-            <img src="{{ asset('Images/Rachel.jpg') }}" alt="Deaconess Rachel">
+            <img src="{{ asset('Images/Rachel.jpg') }}" alt="{{ __('Deaconess') }} Rachel">
 
             <h3>Rachel Mkole</h3>
 
             <p class="position">
-                Deaconess
+                {{ __('Deaconess') }}
             </p>
 
             <p>
-                Coordinates church services,
-                welcomes visitors,
-                and oversees welfare ministries.
+                {{ __('Coordinates church services, welcomes visitors, and oversees welfare ministries.') }}
             </p>
         </div>
 <!-- 

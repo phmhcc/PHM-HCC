@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>@yield('title', 'Dashboard | PHM HCC')</title>
+    <title>@yield('title', __('Dashboard | PHM HCC'))</title>
 
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
@@ -663,6 +663,40 @@
             background: #fff;
             color: #333;
             font: inherit;
+        }
+
+        .resource-file-picker {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 36px;
+            font-weight: 400;
+        }
+
+        .resource-file-picker input[type="file"] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            clip-path: inset(50%);
+        }
+
+        .resource-file-picker input[type="file"]:focus-visible + label {
+            outline: 2px solid #3373ad;
+            outline-offset: 2px;
+        }
+
+        .resource-file-picker label {
+            flex: 0 0 auto;
+            cursor: pointer;
+        }
+
+        .resource-file-picker span {
+            overflow-wrap: anywhere;
         }
 
         .dashboard-action {
@@ -1529,7 +1563,7 @@
                 </div>
             </div>
 
-            <p class="sidebar-label">Main Menu</p>
+            <p class="sidebar-label">{{ __('Main Menu') }}</p>
 
             <ul class="sidebar-menu">
 
@@ -1593,7 +1627,7 @@
 
             </ul>
 
-            <p class="sidebar-label">Management</p>
+            <p class="sidebar-label">{{ __('Management') }}</p>
 
             <ul class="sidebar-menu">
 
@@ -1642,7 +1676,7 @@
                 <div class="topbar-left">
 
                     <button class="menu-toggle" id="menuToggle"
-                        type="button" aria-label="Toggle navigation">
+                        type="button" aria-label="{{ __('Toggle navigation') }}">
                         <i class="fas fa-bars"></i>
                     </button>
 
@@ -1661,13 +1695,13 @@
                     </a>
 
                     <div class="profile">
-                        <button class="profile-toggle" id="profileToggle" type="button" aria-expanded="false" aria-controls="profileMenu" aria-label="Open account menu">
+                        <button class="profile-toggle" id="profileToggle" type="button" aria-expanded="false" aria-controls="profileMenu" aria-label="{{ __('Open account menu') }}">
                             <span class="profile-avatar">
                                 <i class="fas fa-user" aria-hidden="true"></i>
                             </span>
                             <span class="profile-info">
-                                <strong>{{ auth()->user()->name ?? 'Church Leader' }}</strong>
-                                <small>{{ str(auth()->user()->role)->replace('_', ' ')->title() }}</small>
+                                <strong>{{ auth()->user()->name ?? __('Church Leader') }}</strong>
+                                <small>{{ __(str(auth()->user()->role)->replace('_', ' ')->title()->toString()) }}</small>
                             </span>
                             <i class="fas fa-chevron-down profile-chevron" aria-hidden="true"></i>
                         </button>
@@ -1694,6 +1728,8 @@
             <!-- PAGE CONTENT -->
             <main class="dashboard-content">
 
+                @include('layouts.partials.breadcrumbs')
+
                 @if(session('status'))
                 <div class="dashboard-alert" role="status">{{ session('status') }}</div>
                 @endif
@@ -1710,13 +1746,24 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
+    <script
+        data-delete-warning="{{ __('This action cannot be undone.') }}"
+        data-delete-question="{{ __('Delete this record?') }}"
+        data-delete-confirm="{{ __('Yes, delete it') }}"
+        data-delete-cancel="{{ __('Cancel') }}"
+        data-success-title="{{ __('Success') }}"
+        data-ok="{{ __('OK') }}"
+        data-no-file-chosen="{{ __('No file chosen') }}"
+    >
+        const script = document.currentScript;
+        const deleteWarning = script.dataset.deleteWarning;
+        const deleteQuestion = script.dataset.deleteQuestion;
         document.querySelectorAll('form[data-confirm-delete]').forEach((form) => {
             form.addEventListener('submit', (event) => {
                 event.preventDefault();
 
                 if (typeof Swal === 'undefined') {
-                    if (window.confirm('Are you sure you want to delete this record?')) {
+                    if (window.confirm(deleteQuestion + "\n" + deleteWarning)) {
                         form.submit();
                     }
 
@@ -1724,14 +1771,14 @@
                 }
 
                 Swal.fire({
-                    title: 'Delete this record?',
-                    text: 'This action cannot be undone.',
+                    title: deleteQuestion,
+                    text: deleteWarning,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#b42318',
                     cancelButtonColor: '#66758a',
-                    confirmButtonText: 'Yes, delete it',
-                    cancelButtonText: 'Cancel',
+                    confirmButtonText: script.dataset.deleteConfirm,
+                    cancelButtonText: script.dataset.deleteCancel,
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit();
@@ -1743,12 +1790,20 @@
         const statusMessage = document.querySelector('.dashboard-alert')?.textContent.trim();
         if (statusMessage && typeof Swal !== 'undefined') {
             Swal.fire({
-                title: 'Success',
+                title: script.dataset.successTitle,
                 text: statusMessage,
                 icon: 'success',
                 confirmButtonColor: '#003366',
+                confirmButtonText: script.dataset.ok,
             });
         }
+
+        document.querySelectorAll('.resource-file-picker input[type="file"]').forEach((input) => {
+            input.addEventListener('change', () => {
+                const fileName = input.files?.[0]?.name;
+                input.parentElement.querySelector('[data-file-name]').textContent = fileName || script.dataset.noFileChosen;
+            });
+        });
 
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');

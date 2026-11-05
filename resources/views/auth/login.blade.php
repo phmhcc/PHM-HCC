@@ -190,7 +190,7 @@
                     autocomplete="current-password"
                     required>
 
-                <button type="button" class="toggle-password" id="togglePasswordButton" aria-label="Show password" aria-controls="password" aria-pressed="false">
+                <button type="button" class="toggle-password" id="togglePasswordButton" aria-label="{{ __('Show password') }}" data-show-label="{{ __('Show password') }}" data-hide-label="{{ __('Hide password') }}" aria-controls="password" aria-pressed="false">
                     <i class="fa fa-eye" id="eyeIcon" aria-hidden="true"></i>
                 </button>
             </div>
@@ -216,7 +216,7 @@
         toggle.addEventListener('click', () => {
             const isHidden = password.type === 'password';
             password.type = isHidden ? 'text' : 'password';
-            toggle.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+            toggle.setAttribute('aria-label', isHidden ? toggle.dataset.hideLabel : toggle.dataset.showLabel);
             toggle.setAttribute('aria-pressed', String(isHidden));
             eyeIcon.classList.toggle('fa-eye', !isHidden);
             eyeIcon.classList.toggle('fa-eye-slash', isHidden);

@@ -42,11 +42,22 @@
                     @elseif($field[1] === 'select')
                         <select name="{{ $name }}" required>
                             @foreach($field[3] as $option)
-                                <option value="{{ $option }}" @selected(old($name, $option === ($field[3][0] ?? null) ? $option : '') === $option)>{{ __(str($option)->replace('_', ' ')->title()->toString()) }}</option>
+                                @php
+                                    $optionLabel = match ($resource === 'finance' && $name === 'category' ? $option : null) {
+                                        'Ujenzi' => 'Building',
+                                        'Supporting' => 'Supporting Expense',
+                                        default => str($option)->replace('_', ' ')->title()->toString(),
+                                    };
+                                @endphp
+                                <option value="{{ $option }}" @selected(old($name, $option === ($field[3][0] ?? null) ? $option : '') === $option)>{{ __($optionLabel) }}</option>
                             @endforeach
                         </select>
                     @elseif($field[1] === 'file')
-                        <input type="file" name="{{ $name }}" accept="{{ $resource === 'finance' ? '.pdf,.jpg,.jpeg,.png' : '.pdf,.xls,.xlsx' }}" {{ str_starts_with($field[2], 'required') ? 'required' : '' }}>
+                        <div class="resource-file-picker">
+                            <input id="create-{{ $name }}-file" type="file" name="{{ $name }}" accept="{{ $resource === 'finance' ? '.pdf,.jpg,.jpeg,.png' : '.pdf,.xls,.xlsx' }}" {{ str_starts_with($field[2], 'required') ? 'required' : '' }}>
+                            <label class="dashboard-action dashboard-action-secondary" for="create-{{ $name }}-file">{{ __('Choose file') }}</label>
+                            <span data-file-name>{{ __('No file chosen') }}</span>
+                        </div>
                         @if($resource === 'finance')
                             <small>{{ __('Optional receipt: PDF or image, up to 10 MB.') }}</small>
                         @else
@@ -59,7 +70,7 @@
                         <select name="{{ $name }}">
                             <option value="">{{ __('Not assigned') }}</option>
                             @foreach($options as $option)
-                                <option value="{{ $option->id }}" @selected(old($name) == $option->id)>{{ $option->name }}</option>
+                                <option value="{{ $option->id }}" @selected(old($name) == $option->id)>{{ $field[1] === 'department' ? __($option->name) : $option->name }}</option>
                             @endforeach
                         </select>
                     @else
@@ -109,10 +120,11 @@
                                     $value = $users->firstWhere('id', $value)?->name;
                                 } elseif ($column === 'department_id' && $value) {
                                     $value = $departments->firstWhere('id', $value)?->name;
+                                    $value = $value ? __($value) : null;
                                 } elseif (in_array($column, ['start_date', 'end_date'], true) && $value) {
-                                    $value = \Carbon\Carbon::parse($value)->format('d M Y, h:i A');
+                                    $value = \Carbon\Carbon::parse($value)->locale(app()->getLocale())->translatedFormat('d M Y, h:i A');
                                 } elseif (in_array($column, ['duty_date', 'meeting_date', 'reporting_period', 'transaction_date', 'published_at', 'created_at'], true) && $value) {
-                                    $value = \Carbon\Carbon::parse($value)->format('d M Y');
+                                    $value = \Carbon\Carbon::parse($value)->locale(app()->getLocale())->translatedFormat('d M Y');
                                 } elseif ($column === 'amount' && $value !== null) {
                                     $value = number_format((float) $value, 2);
                                 }
@@ -129,6 +141,12 @@
                                     <span class="status-badge {{ $statusClass }}">{{ __(ucfirst($value)) }}</span>
                                 @elseif($column === 'type' && $value)
                                     <span class="status-badge {{ $value === 'income' ? 'status-approved' : 'status-rejected' }}">{{ __(ucfirst($value)) }}</span>
+                                @elseif($column === 'role' && $value)
+                                    {{ __(str($value)->replace('_', ' ')->title()->toString()) }}
+                                @elseif($column === 'category' && $resource === 'finance' && $value)
+                                    {{ __($value === 'Ujenzi' ? 'Building' : ($value === 'Supporting' ? 'Supporting Expense' : $value)) }}
+                                @elseif($column === 'name' && $resource === 'departments' && $value)
+                                    {{ __($value) }}
                                 @else
                                     {{ $value ?: '—' }}
                                 @endif
@@ -188,7 +206,11 @@
                                                     @foreach($selectOptions as $option)<option value="{{ $option }}" @selected($value === $option)>{{ __(str($option)->replace('_', ' ')->title()->toString()) }}</option>@endforeach
                                                 </select>
                                             @elseif($field[1] === 'file')
-                                                <input type="file" name="{{ $name }}" accept="{{ $resource === 'finance' ? '.pdf,.jpg,.jpeg,.png' : '.pdf,.xls,.xlsx' }}">
+                                                <div class="resource-file-picker">
+                                                    <input id="edit-{{ $record->id }}-{{ $name }}-file" type="file" name="{{ $name }}" accept="{{ $resource === 'finance' ? '.pdf,.jpg,.jpeg,.png' : '.pdf,.xls,.xlsx' }}">
+                                                    <label class="dashboard-action dashboard-action-secondary" for="edit-{{ $record->id }}-{{ $name }}-file">{{ __('Choose file') }}</label>
+                                                    <span data-file-name>{{ __('No file chosen') }}</span>
+                                                </div>
                                                 @if($resource === 'finance')
                                                     @if($record->receipt_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($record->receipt_path))
                                                         <a href="{{ route('dashboard.finance.receipt', $record->id) }}">{{ __('Download current receipt') }}</a>
@@ -208,7 +230,7 @@
                                                 @endphp
                                                 <select name="{{ $name }}">
                                                     <option value="">{{ __('Not assigned') }}</option>
-                                                    @foreach($options as $option)<option value="{{ $option->id }}" @selected((string) $value === (string) $option->id)>{{ $option->name }}</option>@endforeach
+                                                    @foreach($options as $option)<option value="{{ $option->id }}" @selected((string) $value === (string) $option->id)>{{ $field[1] === 'department' ? __($option->name) : $option->name }}</option>@endforeach
                                                 </select>
                                             @else
                                                 <input type="{{ $field[1] }}" name="{{ $name }}" value="{{ $field[1] === 'password' ? '' : $value }}" {{ str_starts_with($field[2], 'required') && $field[1] !== 'password' ? 'required' : '' }}>

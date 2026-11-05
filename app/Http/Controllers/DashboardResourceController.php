@@ -121,7 +121,7 @@ class DashboardResourceController extends Controller
                 $record->notify(new AccountInvitation($token));
             });
 
-            return back()->with('status', 'User created and password setup invitation sent.');
+            return back()->with('status', __('User created and password setup invitation sent.'));
         }
 
         $record->save();
@@ -144,9 +144,15 @@ class DashboardResourceController extends Controller
                 'departments' => 'department',
             ][$resource];
             $itemTitle = $resource === 'departments' ? $record->name : $record->title;
+            $titleTranslation = 'New '.$noun.': :title';
+            $titleParameters = ['title' => $itemTitle];
+            $messageTranslation = 'An administrator added this to the church dashboard.';
             $notification = new DashboardInformationPublished(
-                'New '.$noun.': '.$itemTitle,
-                'An administrator added this to the church dashboard.',
+                __($titleTranslation, $titleParameters),
+                __($messageTranslation),
+                $titleTranslation,
+                $titleParameters,
+                $messageTranslation,
             );
         }
 
@@ -155,7 +161,7 @@ class DashboardResourceController extends Controller
                 ->each(fn (User $user) => $user->notify($notification));
         }
 
-        return back()->with('status', $definition['title'].' item created.');
+        return back()->with('status', __(':resource item created.', ['resource' => __($definition['title'])]));
     }
 
     public function update(Request $request, string $resource, int $record): RedirectResponse
@@ -180,7 +186,7 @@ class DashboardResourceController extends Controller
             $this->storeFinanceReceipt($item, $attachment);
         }
 
-        return back()->with('status', $definition['title'].' item updated.');
+        return back()->with('status', __(':resource item updated.', ['resource' => __($definition['title'])]));
     }
 
     public function downloadReportAttachment(int $record)
@@ -218,7 +224,7 @@ class DashboardResourceController extends Controller
     {
         $definition = $this->definition($resource, 'delete');
         $item = $this->findRecord($definition, $record, $resource);
-        abort_if($resource === 'users' && $item->is(request()->user()), 422, 'You cannot delete your own account.');
+        abort_if($resource === 'users' && $item->is(request()->user()), 422, __('You cannot delete your own account.'));
         $item->delete();
         if ($resource === 'reports') {
             $this->deleteReportAttachment($item);
@@ -226,7 +232,7 @@ class DashboardResourceController extends Controller
             Storage::disk('local')->delete($item->receipt_path);
         }
 
-        return back()->with('status', $definition['title'].' item deleted.');
+        return back()->with('status', __(':resource item deleted.', ['resource' => __($definition['title'])]));
     }
 
     private function findRecord(array $definition, int $id, string $resource): Model

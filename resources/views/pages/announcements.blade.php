@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Announcements | PHM HCC')
+@section('title', __('Announcements | PHM HCC'))
 
 @push('styles')
 <style>
@@ -130,7 +130,7 @@
     <p>{{ __('Updates and information for our church family') }}</p>
 </section>
 
-<section class="announcements-section" aria-label="Announcements">
+<section class="announcements-section" aria-label="{{ __('Announcements') }}">
     @forelse($announcements as $announcement)
         <article class="announcement-card">
             <i class="fas fa-bullhorn" aria-hidden="true"></i>
@@ -138,7 +138,7 @@
                 <h2>{{ $announcement->title }}</h2>
                 @if($announcement->published_at)
                     <p class="announcement-date">
-                        {{ __('Published') }} {{ $announcement->published_at->format('F j, Y') }}
+                        {{ __('Published') }} {{ $announcement->published_at->locale(app()->getLocale())->translatedFormat('F j, Y') }}
                     </p>
                 @endif
                 <p>{{ $announcement->message }}</p>

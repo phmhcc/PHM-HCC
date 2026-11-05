@@ -79,7 +79,7 @@
 
     <section class="pastor">
         <div class="pastor-image">
-            <img src="{{ asset('Images/pastor.jpg') }}" alt="Pastor">
+            <img src="{{ asset('Images/pastor.jpg') }}" alt="{{ __('Pastor') }}">
         </div>
         <div class="pastor-text">
             <h2>{{ __('Message from the Pastor') }}</h2>

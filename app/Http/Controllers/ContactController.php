@@ -31,7 +31,7 @@ class ContactController extends Controller
 
         return back()->with(
             'success',
-            'Thank you! Your message has been submitted successfully.'
+            __('Thank you! Your message has been submitted successfully.')
         );
     }
 }

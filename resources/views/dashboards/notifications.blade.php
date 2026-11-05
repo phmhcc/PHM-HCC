@@ -14,9 +14,9 @@
         <article class="notification-page-item {{ $notification->read_at ? '' : 'is-unread' }}">
             <div class="notification-icon"><i class="fas fa-bullhorn"></i></div>
             <div class="notification-text">
-                <h4>{{ $notification->data['title'] ?? __('Church notification') }}</h4>
-                <p>{{ $notification->data['message'] ?? '' }}</p>
-                <p><i class="far fa-clock"></i> {{ $notification->created_at->diffForHumans() }}</p>
+                <h4>{{ \App\Notifications\DashboardInformationPublished::localizedTitle($notification->data) }}</h4>
+                <p>{{ \App\Notifications\DashboardInformationPublished::localizedMessage($notification->data) }}</p>
+                <p><i class="far fa-clock"></i> {{ $notification->created_at->locale(app()->getLocale())->diffForHumans() }}</p>
                 @if(! $notification->read_at)
                     <form method="POST" action="{{ route('dashboard.notifications.read', $notification->id) }}">
                         @csrf

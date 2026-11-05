@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Ministries | PHM HCC')
+@section('title', __('Ministries | PHM HCC'))
 @push('styles')
 <style>
     .page-banner {
