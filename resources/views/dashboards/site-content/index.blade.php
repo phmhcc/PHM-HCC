@@ -11,17 +11,17 @@
 </header>
 
 @if(session('status'))
-    <div class="content-box" role="status" style="margin-bottom:20px;">{{ session('status') }}</div>
+<div class="content-box" role="status" style="margin-bottom:20px;">{{ session('status') }}</div>
 @endif
 
 @if($errors->any())
-    <div class="content-box" role="alert" style="margin-bottom:20px;">
-        <ul>
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
+<div class="content-box" role="alert" style="margin-bottom:20px;">
+    <ul>
+        @foreach($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
 @endif
 
 <section class="content-box" style="margin-bottom:24px;">
@@ -35,7 +35,7 @@
                 <select name="category_id">
                     <option value="">{{ __('Choose a category') }}</option>
                     @foreach($categories as $category)
-                        <option value="{{ $category->id }}" @selected(old('category_id') == $category->id)>{{ $category->name }} ({{ $category->images_count }})</option>
+                    <option value="{{ $category->id }}" @selected(old('category_id')==$category->id)>{{ __($category->name) }} ({{ $category->images_count }})</option>
                     @endforeach
                 </select>
             </label>
@@ -45,7 +45,11 @@
             </label>
             <label class="resource-field">
                 <span>{{ __('Photos') }}</span>
-                <input type="file" name="images[]" accept="image/jpeg,image/png,image/webp" multiple required>
+                <div class="resource-file-picker">
+                    <input id="gallery-images-file" type="file" name="images[]" accept="image/jpeg,image/png,image/webp" multiple required>
+                    <label class="dashboard-action dashboard-action-secondary" for="gallery-images-file">{{ __('Choose file') }}</label>
+                    <span data-file-name>{{ __('No file chosen') }}</span>
+                </div>
                 <small>{{ __('JPEG, PNG, or WebP; up to 10 MB per photo and 30 photos at a time.') }}</small>
             </label>
         </div>
@@ -61,27 +65,33 @@
     <div class="table-responsive">
         <table class="dashboard-table">
             <thead>
-                <tr><th>{{ __('Category') }}</th><th>{{ __('Photos') }}</th><th>{{ __('Actions') }}</th></tr>
+                <tr>
+                    <th>{{ __('Category') }}</th>
+                    <th>{{ __('Photos') }}</th>
+                    <th>{{ __('Actions') }}</th>
+                </tr>
             </thead>
             <tbody>
                 @forelse($categories as $category)
-                    <tr>
-                        <td>{{ $category->name }}</td>
-                        <td>{{ $category->images_count }}</td>
-                        <td>
-                            @if($category->images_count === 0)
-                                <form method="POST" action="{{ route('dashboard.site-content.gallery.categories.delete', $category) }}" onsubmit="return confirm('{{ __('Delete this empty category?') }}')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="dashboard-action dashboard-action-danger" type="submit">{{ __('Delete') }}</button>
-                                </form>
-                            @else
-                                <span>{{ __('Add photos to another category before deleting.') }}</span>
-                            @endif
-                        </td>
-                    </tr>
+                <tr>
+                    <td>{{ __($category->name) }}</td>
+                    <td>{{ $category->images_count }}</td>
+                    <td>
+                        @if($category->images_count === 0)
+                        <form method="POST" action="{{ route('dashboard.site-content.gallery.categories.delete', $category) }}" data-confirm="{{ __('Delete this empty category?') }}" onsubmit="return confirm(this.dataset.confirm);">
+                            @csrf
+                            @method('DELETE')
+                            <button class="dashboard-action dashboard-action-danger" type="submit">{{ __('Delete') }}</button>
+                        </form>
+                        @else
+                        <span>{{ __('Add photos to another category before deleting.') }}</span>
+                        @endif
+                    </td>
+                </tr>
                 @empty
-                    <tr><td colspan="3">{{ __('No gallery categories yet.') }}</td></tr>
+                <tr>
+                    <td colspan="3">{{ __('No gallery categories yet.') }}</td>
+                </tr>
                 @endforelse
             </tbody>
         </table>
@@ -96,24 +106,43 @@
     <div class="table-responsive">
         <table class="dashboard-table">
             <thead>
-                <tr><th>{{ __('Photo') }}</th><th>{{ __('Category') }}</th><th>{{ __('File') }}</th><th>{{ __('Actions') }}</th></tr>
+                <tr>
+                    <th>{{ __('Photo') }}</th>
+                    <th>{{ __('Category') }}</th>
+                    <th>{{ __('File') }}</th>
+                    <th>{{ __('Actions') }}</th>
+                </tr>
             </thead>
             <tbody>
                 @forelse($images as $image)
-                    <tr>
-                        <td><img src="{{ route('gallery.image', $image) }}" alt="" style="width:76px;height:56px;object-fit:cover;border-radius:6px;"></td>
-                        <td>{{ $image->category?->name ?? __('Uncategorized') }}</td>
-                        <td>{{ $image->original_name }}</td>
-                        <td>
-                            <form method="POST" action="{{ route('dashboard.site-content.gallery.images.delete', $image) }}" onsubmit="return confirm('{{ __('Delete this gallery photo?') }}')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="dashboard-action dashboard-action-danger" type="submit">{{ __('Delete') }}</button>
-                            </form>
-                        </td>
-                    </tr>
+                <tr>
+                    <td>
+                        <img
+                            src="{{ route('gallery.image', $image) }}"
+                            alt="Gallery image"
+                            width="60"
+                            height="45"
+                            style="
+                            display: block;
+                            width: 60px;
+                            height: 45px;
+                            object-fit: cover;
+                            border-radius: 4px;
+                       ">
+                    </td>
+                    <td>{{ $image->original_name }}</td>
+                    <td>
+                        <form method="POST" action="{{ route('dashboard.site-content.gallery.images.delete', $image) }}" data-confirm="{{ __('Delete this gallery photo?') }}" onsubmit="return confirm(this.dataset.confirm);">
+                            @csrf
+                            @method('DELETE')
+                            <button class="dashboard-action dashboard-action-danger" type="submit">{{ __('Delete') }}</button>
+                        </form>
+                    </td>
+                </tr>
                 @empty
-                    <tr><td colspan="4">{{ __('No gallery photos yet.') }}</td></tr>
+                <tr>
+                    <td colspan="4">{{ __('No gallery photos yet.') }}</td>
+                </tr>
                 @endforelse
             </tbody>
         </table>
@@ -143,22 +172,22 @@
 <section class="content-box">
     <h2 class="resource-panel-title"><i class="fas fa-share-nodes" aria-hidden="true"></i> {{ __('Social links') }}</h2>
     @foreach($socialLinks as $socialLink)
-        <form method="POST" action="{{ route('dashboard.site-content.social-links.update', $socialLink) }}" style="padding:16px 0;border-bottom:1px solid #e5e7eb;">
-            @csrf
-            @method('PUT')
-            <div class="resource-form-grid">
-                <label class="resource-field"><span>{{ __('Name') }}</span><input type="text" name="name" value="{{ $socialLink->name }}" maxlength="80" required></label>
-                <label class="resource-field"><span>{{ __('URL') }}</span><input type="url" name="url" value="{{ $socialLink->url }}" maxlength="2048" required></label>
-                <label class="resource-field"><span>{{ __('Icon class') }}</span><input type="text" name="icon" value="{{ $socialLink->icon }}" pattern="fa-[a-z0-9-]+" required><small>{{ __('Font Awesome icon class, for example fa-facebook.') }}</small></label>
-                <label class="resource-field"><span>{{ __('Display order') }}</span><input type="number" name="sort_order" value="{{ $socialLink->sort_order }}" min="0" max="65535" required></label>
-            </div>
-            <button class="dashboard-action" type="submit">{{ __('Save social link') }}</button>
-            <button class="dashboard-action dashboard-action-danger" type="submit" form="delete-social-{{ $socialLink->id }}">{{ __('Delete') }}</button>
-        </form>
-        <form id="delete-social-{{ $socialLink->id }}" method="POST" action="{{ route('dashboard.site-content.social-links.delete', $socialLink) }}" onsubmit="return confirm('{{ __('Delete this social link?') }}')">
-            @csrf
-            @method('DELETE')
-        </form>
+    <form method="POST" action="{{ route('dashboard.site-content.social-links.update', $socialLink) }}" style="padding:16px 0;border-bottom:1px solid #e5e7eb;">
+        @csrf
+        @method('PUT')
+        <div class="resource-form-grid">
+            <label class="resource-field"><span>{{ __('Name') }}</span><input type="text" name="name" value="{{ $socialLink->name }}" maxlength="80" required></label>
+            <label class="resource-field"><span>{{ __('URL') }}</span><input type="url" name="url" value="{{ $socialLink->url }}" maxlength="2048" required></label>
+            <label class="resource-field"><span>{{ __('Icon class') }}</span><input type="text" name="icon" value="{{ $socialLink->icon }}" pattern="fa-[a-z0-9-]+" required><small>{{ __('Font Awesome icon class, for example fa-facebook.') }}</small></label>
+            <label class="resource-field"><span>{{ __('Display order') }}</span><input type="number" name="sort_order" value="{{ $socialLink->sort_order }}" min="0" max="65535" required></label>
+        </div>
+        <button class="dashboard-action" type="submit">{{ __('Save social link') }}</button>
+        <button class="dashboard-action dashboard-action-danger" type="submit" form="delete-social-{{ $socialLink->id }}">{{ __('Delete') }}</button>
+    </form>
+    <form id="delete-social-{{ $socialLink->id }}" method="POST" action="{{ route('dashboard.site-content.social-links.delete', $socialLink) }}" data-confirm="{{ __('Delete this social link?') }}" onsubmit="return confirm(this.dataset.confirm);">
+        @csrf
+        @method('DELETE')
+    </form>
     @endforeach
 
     <h3 style="margin:22px 0 12px;">{{ __('Add a social link') }}</h3>

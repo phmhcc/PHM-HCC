@@ -1277,6 +1277,19 @@
             color: #fff;
         }
 
+        /* Laravel's default Tailwind paginator uses utility classes that are
+           not available in this layout, so size its inline arrow SVGs here. */
+        nav[role="navigation"] svg {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+        }
+
+        nav[role="navigation"] {
+            font-size: 13px;
+        }
+
         .role-hero {
             position: relative;
             display: flex;
@@ -1809,7 +1822,7 @@
 
         document.querySelectorAll('.resource-file-picker input[type="file"]').forEach((input) => {
             input.addEventListener('change', () => {
-                const fileName = input.files?.[0]?.name;
+                const fileName = Array.from(input.files || []).map((file) => file.name).join(', ');
                 input.parentElement.querySelector('[data-file-name]').textContent = fileName || script.dataset.noFileChosen;
             });
         });
