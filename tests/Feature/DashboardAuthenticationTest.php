@@ -70,6 +70,21 @@ class DashboardAuthenticationTest extends TestCase
             ->assertSee('<footer class="site-footer">', false);
     }
 
+    public function test_gallery_includes_every_facebook_image_in_the_public_images_folder(): void
+    {
+        $response = $this->get(route('gallery'))
+            ->assertOk()
+            ->assertSee('<nav class="navbar">', false)
+            ->assertSee('<footer class="site-footer">', false);
+
+        $images = glob(public_path('Images/FB_IMG_*.{jpg,jpeg,png,webp}'), GLOB_BRACE);
+        self::assertNotEmpty($images);
+
+        foreach ($images as $image) {
+            $response->assertSee(asset('Images/'.basename($image)), false);
+        }
+    }
+
     public function test_language_can_be_switched_and_persists_across_pages(): void
     {
         $this->withSession(['_token' => self::CSRF_TOKEN])

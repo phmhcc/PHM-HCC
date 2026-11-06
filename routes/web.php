@@ -12,6 +12,7 @@ use App\Http\Controllers\DashboardNotificationController;
 use App\Http\Controllers\DashboardProfileController;
 use App\Http\Controllers\DashboardResourceController;
 use App\Http\Controllers\DashboardRolePermissionController;
+use App\Http\Controllers\DashboardSiteContentController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\RoleDashboardController;
 
@@ -23,7 +24,13 @@ Route::view('/leadership', 'pages.leadership')->name('leadership');
 
 Route::view('/ministries', 'pages.ministries')->name('ministries');
 
-Route::view('/gallery', 'pages.gallery')->name('gallery');
+Route::get('/gallery/images/{galleryImage}', [PublicPageController::class, 'galleryImage'])
+    ->whereNumber('galleryImage')
+    ->name('gallery.image');
+
+Route::get('/gallery', [PublicPageController::class, 'gallery'])->name('gallery');
+
+Route::get('/giving', [PublicPageController::class, 'giving'])->name('giving');
 
 // Route::get('/events', [PublicPageController::class, 'events'])->name('events');
 
@@ -84,6 +91,15 @@ Route::middleware(['auth', 'can:dashboard.view'])->group(function () {
         Route::get('/finance/{record}/receipt', [DashboardResourceController::class, 'downloadFinanceReceipt'])
             ->whereNumber('record')
             ->name('finance.receipt');
+
+        Route::get('/site-content', [DashboardSiteContentController::class, 'index'])->name('site-content.index');
+        Route::post('/site-content/gallery/images', [DashboardSiteContentController::class, 'uploadImages'])->name('site-content.gallery.upload');
+        Route::delete('/site-content/gallery/images/{galleryImage}', [DashboardSiteContentController::class, 'deleteImage'])->whereNumber('galleryImage')->name('site-content.gallery.images.delete');
+        Route::delete('/site-content/gallery/categories/{galleryCategory}', [DashboardSiteContentController::class, 'deleteCategory'])->whereNumber('galleryCategory')->name('site-content.gallery.categories.delete');
+        Route::post('/site-content/social-links', [DashboardSiteContentController::class, 'storeSocialLink'])->name('site-content.social-links.store');
+        Route::put('/site-content/social-links/{socialLink}', [DashboardSiteContentController::class, 'updateSocialLink'])->whereNumber('socialLink')->name('site-content.social-links.update');
+        Route::delete('/site-content/social-links/{socialLink}', [DashboardSiteContentController::class, 'deleteSocialLink'])->whereNumber('socialLink')->name('site-content.social-links.delete');
+        Route::put('/site-content/giving', [DashboardSiteContentController::class, 'updateGiving'])->name('site-content.giving.update');
 
         Route::get('/{resource}', [DashboardResourceController::class, 'index'])->name('resource.index');
         Route::post('/{resource}', [DashboardResourceController::class, 'store'])->name('resource.store');

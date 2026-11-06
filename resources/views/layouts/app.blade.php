@@ -65,6 +65,12 @@
                     </a>
                 </li>
 
+                <li>
+                    <a href="{{ route('giving') }}"
+                        class="{{ request()->routeIs('giving') ? 'active' : '' }}">
+                        {{ __('Giving') }}
+                    </a>
+                </li>
 
                 <li>
                     <a href="{{ route('announcements') }}"

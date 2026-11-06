@@ -1661,6 +1661,15 @@
                 </li>
                 @endif
 
+                @if(auth()->user()->hasPermissionTo('site_content.manage'))
+                <li>
+                    <a href="{{ route('dashboard.site-content.index') }}"
+                        class="{{ request()->is('dashboard/site-content*') ? 'active' : '' }}">
+                        <i class="fas fa-globe"></i>
+                        {{ __('Website Content') }}
+                    </a>
+                </li>
+                @endif
 
             </ul>
         </aside>

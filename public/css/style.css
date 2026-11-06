@@ -157,6 +157,36 @@ header {
     cursor: pointer;
 }
 
+@media (min-width: 901px) and (max-width: 1200px) {
+    .navbar {
+        padding-right: 4%;
+        padding-left: 4%;
+    }
+
+    .logo {
+        gap: 6px;
+    }
+
+    .logo img {
+        width: 46px;
+        height: 46px;
+    }
+
+    .logo h2 {
+        font-size: 20px;
+        white-space: nowrap;
+    }
+
+    .nav-links {
+        gap: 12px;
+        padding-left: 0;
+    }
+
+    .nav-links a {
+        font-size: 14px;
+    }
+}
+
 .menu:focus-visible,
 .nav-links a:focus-visible {
     outline: 2px solid #FFD700;

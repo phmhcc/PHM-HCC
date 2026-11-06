@@ -3,26 +3,13 @@
     <p>{{ __('Pentecostal Holiness Mission Hope Christian Church (PHM HCC)') }}</p>
 
     <div class="social">
-        <a href="https://www.facebook.com/share/14kCi4Q2iXW/"
+        @foreach(\App\Models\SocialLink::query()->orderBy('sort_order')->orderBy('name')->get() as $socialLink)
+        <a href="{{ $socialLink->url }}"
             target="_blank" rel="noopener noreferrer"
-            aria-label="Facebook">
-            <i class="fab fa-facebook"></i>
+            aria-label="{{ $socialLink->name }}">
+            <i class="fab {{ $socialLink->icon }}" aria-hidden="true"></i>
         </a>
-        <a href="https://youtube.com/@pastor-happymacxmkomekwa?si=2UKZ1chgQAFkT2FI"
-            target="_blank" rel="noopener noreferrer"
-            aria-label="YouTube">
-            <i class="fab fa-youtube"></i>
-        </a>
-        <a href="https://www.instagram.com/pastor_mkomekwa?igsh=eHI1Y3VtbnQ5dTEz"
-            target="_blank" rel="noopener noreferrer"
-            aria-label="Instagram">
-            <i class="fab fa-instagram"></i>
-        </a>
-        <a href="https://wa.me/255754970421"
-            target="_blank" rel="noopener noreferrer"
-            aria-label="WhatsApp">
-            <i class="fab fa-whatsapp"></i>
-        </a>
+        @endforeach
     </div>
 
     <p>&copy; {{ date('Y') }} PHM HCC. {{ __('All Rights Reserved.') }}</p>
