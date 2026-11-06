@@ -160,8 +160,8 @@
 <div class="giving-page">
     <section class="giving-intro" aria-labelledby="giving-heading">
         <div class="giving-photo-stack" aria-label="{{ __('Giving and community outreach') }}">
-            <a class="giving-photo-link" href="{{ asset('Images/FB_IMG_1793878208435.jpg') }}" target="_blank" rel="noopener noreferrer" aria-label="{{ __('Open community outreach photo in a new tab') }}">
-                <img src="{{ asset('Images/FB_IMG_1793878208435.jpg') }}" alt="{{ __('Church members serving children in the community') }}">
+            <a class="giving-photo-link" href="{{ $givingImageUrl }}" target="_blank" rel="noopener noreferrer" aria-label="{{ __('Open community outreach photo in a new tab') }}">
+                <img src="{{ $givingImageUrl }}" alt="{{ __('Church members serving children in the community') }}">
             </a>
         </div>
 
@@ -181,6 +181,10 @@
                 <p>{{ __('LIPA NAMBA') }}</p>
                 <p class="giving-number">{{ $paymentNumber }}</p>
                 <p>{{ $paymentName }}</p>
+                @foreach($additionalPaymentMethods as $method)
+                    <h3 style="margin-top:24px;">{{ $method['name'] ?? '' }}</h3>
+                    <p>{{ $method['details'] ?? '' }}</p>
+                @endforeach
             </div>
             <div>
                 <h3>{{ __('Give in person') }}</h3>

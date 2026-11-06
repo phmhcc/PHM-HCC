@@ -156,6 +156,11 @@
         .login-card {
             padding: 28px 22px;
         }
+
+        .login-card h1 {
+            font-size: clamp(2rem, 5vw, 1.75rem);
+            white-space: nowrap;
+        }
     }
 </style>
 @endpush

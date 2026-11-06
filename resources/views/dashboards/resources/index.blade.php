@@ -184,6 +184,7 @@
                                     @csrf
                                     @method('PUT')
                                     @foreach($definition['fields'] as $name => $field)
+                                        @continue($resource === 'users' && $name === 'password')
                                         @php
                                             $value = old($name, $record->{$name} ?? '');
                                             if ($field[1] === 'datetime-local' && $value) {

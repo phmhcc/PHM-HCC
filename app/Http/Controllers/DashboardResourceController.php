@@ -175,9 +175,7 @@ class DashboardResourceController extends Controller
         $attachment = $data['attachment'] ?? $data['receipt'] ?? null;
         unset($data['attachment'], $data['receipt']);
         if ($resource === 'users') {
-            if (empty($data['password'])) {
-                unset($data['password']);
-            }
+            unset($data['password']);
         }
         $item->fill($data)->save();
         if ($resource === 'reports' && $attachment instanceof UploadedFile) {

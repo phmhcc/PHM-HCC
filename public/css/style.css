@@ -576,16 +576,17 @@ RESPONSIVE DESIGN
 
 @media(max-width:900px) {
     .nav-links {
-        position: fixed;
-        top: 80px;
+        position: absolute;
+        top: 100%;
         left: 0;
         z-index: 1001;
         display: flex;
         flex-direction: column;
         align-items: stretch;
         gap: 0;
-        width:415px;
-        max-height: calc(100vh - 80px);
+        width: min(415px, 100vw);
+        max-height: calc(100vh - 85px);
+        max-height: calc(100dvh - 85px);
         padding: 18px 16px 20px;
         overflow-y: auto;
         background: #014080;

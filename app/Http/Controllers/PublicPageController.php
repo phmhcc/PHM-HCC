@@ -75,10 +75,15 @@ class PublicPageController extends Controller
     public function giving(): View
     {
         $settings = DB::table('site_settings')->pluck('value', 'key');
+        $additionalPaymentMethods = json_decode($settings->get('giving.additional_methods', '[]'), true);
 
         return view('pages.giving', [
             'paymentNumber' => $settings->get('giving.payment_number', '5061162'),
             'paymentName' => $settings->get('giving.payment_name', 'VODACOM LIPA NAMBA SADAKA HCC'),
+            'additionalPaymentMethods' => is_array($additionalPaymentMethods) ? $additionalPaymentMethods : [],
+            'givingImageUrl' => filled($settings->get('giving.image_path'))
+                ? Storage::disk('public')->url($settings->get('giving.image_path'))
+                : asset('Images/FB_IMG_1793878208435.jpg'),
         ]);
     }
 }
