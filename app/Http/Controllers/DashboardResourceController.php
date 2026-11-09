@@ -71,6 +71,9 @@ class DashboardResourceController extends Controller
     public function index(string $resource): View
     {
         $definition = $this->definition($resource);
+        if ($resource === 'events') {
+            Event::markPastEventsAsCompleted();
+        }
         $query = $definition['model']::query()->latest('id');
         if (isset($definition['owner']) && ! request()->user()->hasPermissionTo($resource.'.view_all')) {
             if (in_array($resource, ['events', 'duties', 'meetings'], true)) {
@@ -153,6 +156,7 @@ class DashboardResourceController extends Controller
                 $titleTranslation,
                 $titleParameters,
                 $messageTranslation,
+                route('dashboard.resource.index', $resource, false),
             );
         }
 

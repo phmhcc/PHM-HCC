@@ -5,7 +5,7 @@
 @push('styles')
 <style>
     .role-form { display: grid; gap: 24px; }
-    .role-basic-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; max-width: 760px; }
+    .role-basic-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 18px; max-width: 760px; }
     .role-permission-groups { display: grid; gap: 0; }
     .role-permission-group {
         display: grid;
@@ -19,13 +19,16 @@
     .role-permission-select-all,
     .role-permission-option { display: flex; gap: 10px; align-items: flex-start; color: #34445a; }
     .role-permission-select-all { font-weight: 600; }
-    .role-permission-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 14px; }
+    .role-permission-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 155px), 1fr)); gap: 14px; }
     .role-permission-option input,
     .role-permission-select-all input { flex: 0 0 auto; width: 18px; height: 18px; margin: 1px 0 0; accent-color: #003366; }
     .role-form-actions { display: flex; flex-wrap: wrap; gap: 12px; }
-    @media (max-width: 760px) {
-        .role-permission-group { grid-template-columns: 1fr; gap: 14px; }
+    @media (max-width: 950px) {
+        .role-permission-group { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+        .role-permission-options { grid-template-columns: repeat(auto-fit, minmax(min(100%, 135px), 1fr)); }
     }
+    .role-permission-group,
+    .role-permission-option { min-width: 0; overflow-wrap: anywhere; }
 </style>
 @endpush
 

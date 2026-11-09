@@ -3,7 +3,7 @@
     <p>{{ __('Pentecostal Holiness Mission Hope Christian Church (PHM HCC)') }}</p>
 
     <div class="social">
-        @foreach(\App\Models\SocialLink::query()->orderBy('sort_order')->orderBy('name')->get() as $socialLink)
+        @foreach(\App\Models\SocialLink::query()->whereNotNull('url')->where('url', '!=', '')->orderBy('sort_order')->orderBy('name')->get() as $socialLink)
         <a href="{{ $socialLink->url }}"
             target="_blank" rel="noopener noreferrer"
             aria-label="{{ $socialLink->name }}">

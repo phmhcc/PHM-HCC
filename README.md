@@ -20,6 +20,20 @@ The seeder creates or updates the administrator account, including its password.
 
 The sidebar provides the modules allowed for the signed-in user's database role. Profile updates and announcement notifications are also available there. Administrator accounts use `/dashboard`; other role overview pages are available under `/dashboard/deacon`, `/dashboard/elder`, `/dashboard/department-leader`, and `/dashboard/treasurer`.
 
+## Contact message retention
+
+Contact messages and their notifications are deleted after one month by the scheduled `contact-messages:prune` command. Run Laravel's scheduler every minute on the server for the daily cleanup to execute:
+
+```cron
+* * * * * cd /path/to/project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+The cleanup is scheduled for midnight in the `Africa/Dar_es_Salaam` timezone.
+
+## Event completion
+
+Scheduled events are marked completed after their end time, or after their start time when no end time is provided. Cancelled events remain cancelled. This is checked when event pages are opened and by the scheduled `events:complete-past` command every five minutes.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

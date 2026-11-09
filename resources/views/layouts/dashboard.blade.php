@@ -213,6 +213,115 @@
             font-size: 19px;
         }
 
+        .notification-menu {
+            position: relative;
+        }
+
+        .notification-toggle {
+            display: grid;
+            width: 40px;
+            height: 40px;
+            place-items: center;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: #526276;
+            font-size: 19px;
+            cursor: pointer;
+        }
+
+        .notification-toggle:hover,
+        .notification-toggle[aria-expanded="true"] {
+            background: #f4f7fb;
+            color: #003366;
+        }
+
+        .notification-count {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            min-width: 17px;
+            height: 17px;
+            padding: 0 4px;
+            border: 1px solid #fff;
+            border-radius: 999px;
+            background: #dc3545;
+            color: #fff;
+            font-size: 9px;
+            line-height: 15px;
+            text-align: center;
+        }
+
+        .notification-menu-panel {
+            position: absolute;
+            top: calc(100% + 12px);
+            right: -12px;
+            z-index: 1300;
+            display: none;
+            width: min(360px, calc(100vw - 24px));
+            overflow: hidden;
+            border: 1px solid #e8edf4;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 10px 28px rgba(25, 45, 75, .16);
+        }
+
+        .notification-menu-panel.open {
+            display: block;
+        }
+
+        .notification-menu-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: #123b64;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .notification-menu-heading {
+            border-bottom: 1px solid #edf0f5;
+        }
+
+        .notification-menu-item {
+            display: block;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f2f6;
+            color: #34465c;
+            text-decoration: none;
+        }
+
+        .notification-menu-item:hover {
+            background: #f7faff;
+        }
+
+        .notification-menu-item strong,
+        .notification-menu-item span {
+            display: block;
+        }
+
+        .notification-menu-item strong {
+            margin-bottom: 4px;
+            color: #123b64;
+            font-size: 12px;
+        }
+
+        .notification-menu-item span {
+            overflow: hidden;
+            color: #718096;
+            font-size: 11px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .notification-menu-empty {
+            padding: 18px 15px;
+            color: #718096;
+            font-size: 12px;
+            text-align: center;
+        }
+
         .notification-dot {
             position: absolute;
             top: -5px;
@@ -1508,9 +1617,102 @@
             color: #8a6800;
         }
 
+        .dashboard-shell,
+        .main-area,
+        .dashboard-content,
+        .topbar {
+            min-width: 0;
+        }
+
+        .resource-records-heading {
+            flex-wrap: wrap;
+        }
+
+        @media(max-width: 850px) {
+            .main-area {
+                width: 100%;
+            }
+        }
+
         @media(max-width: 600px) {
+            body {
+                overflow-x: hidden;
+            }
+
+            .topbar {
+                height: 65px;
+                gap: 8px;
+                padding: 0 10px;
+            }
+
+            .topbar-left {
+                flex: 0 0 auto;
+                gap: 4px;
+            }
+
+            .menu-toggle {
+                padding: 7px;
+            }
+
+            .topbar-right {
+                min-width: 0;
+                gap: 6px;
+                margin-left: auto;
+            }
+
+            .language-switch select {
+                max-width: 104px;
+                min-height: 34px;
+                padding: 5px 4px;
+                font-size: 11px;
+            }
+
+            .notification-toggle {
+                width: 36px;
+                height: 36px;
+            }
+
+            .notification-menu-panel {
+                position: fixed;
+                top: 66px;
+                right: 10px;
+                left: auto;
+                width: min(320px, calc(100vw - 20px));
+            }
+
+            .profile-toggle {
+                gap: 4px;
+                padding: 3px;
+            }
+
+            .profile-avatar {
+                width: 34px;
+                height: 34px;
+            }
+
+            .profile-menu {
+                right: 0;
+                max-width: calc(100vw - 20px);
+            }
+
             .dashboard-content {
+                width: 100%;
                 padding: 20px 14px;
+            }
+
+            .content-box {
+                min-width: 0;
+                padding: 16px;
+            }
+
+            .resource-records-heading {
+                align-items: flex-start;
+                gap: 6px 12px;
+            }
+
+            .resource-records-heading span {
+                max-width: 100%;
+                overflow-wrap: anywhere;
             }
 
             .role-hero {
@@ -1684,6 +1886,26 @@
                 </li>
                 @endif
 
+                @if(auth()->user()->role === 'admin')
+                <li>
+                    <a href="{{ route('dashboard.roles.index') }}"
+                        class="{{ request()->is('dashboard/roles*') ? 'active' : '' }}">
+                        <i class="fas fa-user-lock"></i>
+                        {{ __('Roles and permissions') }}
+                    </a>
+                </li>
+                @endif
+
+                @if(auth()->user()->hasPermissionTo('contact_messages.view'))
+                <li>
+                    <a href="{{ route('dashboard.contact-messages.index') }}"
+                        class="{{ request()->is('dashboard/contact-messages*') ? 'active' : '' }}">
+                        <i class="fas fa-envelope"></i>
+                        {{ __('Contact messages') }}
+                    </a>
+                </li>
+                @endif
+
             </ul>
         </aside>
 
@@ -1708,13 +1930,27 @@
 
                     @include('layouts.partials.language-switch', ['id' => 'dashboard-language-switch'])
 
-                    <a href="{{ route('dashboard.notifications') }}"
-                        class="topbar-icon" title="{{ __('Notifications') }}">
-                        <i class="far fa-bell"></i>
-                        @if(auth()->user()->unreadNotifications()->exists())
-                        <span class="notification-dot"></span>
-                        @endif
-                    </a>
+                    @php($recentNotifications = auth()->user()->unreadNotifications()->latest()->take(5)->get())
+                    @php($unreadNotificationCount = auth()->user()->unreadNotifications()->count())
+                    <div class="notification-menu">
+                        <button class="notification-toggle" id="notificationToggle" type="button" aria-expanded="false" aria-controls="notificationMenu" aria-label="{{ __('Notifications') }}">
+                            <i class="far fa-bell" aria-hidden="true"></i>
+                            @if($unreadNotificationCount > 0)
+                            <span class="notification-count">{{ $unreadNotificationCount }}</span>
+                            @endif
+                        </button>
+                        <div class="notification-menu-panel" id="notificationMenu">
+                            <div class="notification-menu-heading">{{ __('Notifications') }}</div>
+                            @forelse($recentNotifications as $notification)
+                            <a class="notification-menu-item" href="{{ route('dashboard.notifications.open', $notification->id) }}">
+                                <strong>{{ \App\Notifications\DashboardInformationPublished::localizedTitle($notification->data) }}</strong>
+                                <span>{{ \App\Notifications\DashboardInformationPublished::localizedMessage($notification->data) }}</span>
+                            </a>
+                            @empty
+                            <div class="notification-menu-empty">{{ __('You’re all caught up.') }}</div>
+                            @endforelse
+                        </div>
+                    </div>
 
                     <div class="profile">
                         <button class="profile-toggle" id="profileToggle" type="button" aria-expanded="false" aria-controls="profileMenu" aria-label="{{ __('Open account menu') }}">
@@ -1820,11 +2056,17 @@
             });
         }
 
-        document.querySelectorAll('.resource-file-picker input[type="file"]').forEach((input) => {
-            input.addEventListener('change', () => {
-                const fileName = Array.from(input.files || []).map((file) => file.name).join(', ');
-                input.parentElement.querySelector('[data-file-name]').textContent = fileName || script.dataset.noFileChosen;
-            });
+        document.addEventListener('change', (event) => {
+            const input = event.target;
+            if (!(input instanceof HTMLInputElement) || !input.matches('.resource-file-picker input[type="file"]')) {
+                return;
+            }
+
+            const fileName = Array.from(input.files || []).map((file) => file.name).join(', ');
+            const fileNameLabel = input.parentElement.querySelector('[data-file-name]');
+            if (fileNameLabel) {
+                fileNameLabel.textContent = fileName || script.dataset.noFileChosen;
+            }
         });
 
         const menuToggle = document.getElementById('menuToggle');
@@ -1841,11 +2083,23 @@
 
         const profileToggle = document.getElementById('profileToggle');
         const profileMenu = document.getElementById('profileMenu');
+        const notificationToggle = document.getElementById('notificationToggle');
+        const notificationMenu = document.getElementById('notificationMenu');
 
         profileToggle.addEventListener('click', () => {
+            notificationToggle.setAttribute('aria-expanded', 'false');
+            notificationMenu.classList.remove('open');
             const isOpen = profileToggle.getAttribute('aria-expanded') === 'true';
             profileToggle.setAttribute('aria-expanded', String(!isOpen));
             profileMenu.classList.toggle('open', !isOpen);
+        });
+
+        notificationToggle.addEventListener('click', () => {
+            profileToggle.setAttribute('aria-expanded', 'false');
+            profileMenu.classList.remove('open');
+            const isOpen = notificationToggle.getAttribute('aria-expanded') === 'true';
+            notificationToggle.setAttribute('aria-expanded', String(!isOpen));
+            notificationMenu.classList.toggle('open', !isOpen);
         });
 
         document.addEventListener('click', (event) => {
@@ -1853,12 +2107,19 @@
                 profileToggle.setAttribute('aria-expanded', 'false');
                 profileMenu.classList.remove('open');
             }
+
+            if (!notificationToggle.contains(event.target) && !notificationMenu.contains(event.target)) {
+                notificationToggle.setAttribute('aria-expanded', 'false');
+                notificationMenu.classList.remove('open');
+            }
         });
 
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 profileToggle.setAttribute('aria-expanded', 'false');
                 profileMenu.classList.remove('open');
+                notificationToggle.setAttribute('aria-expanded', 'false');
+                notificationMenu.classList.remove('open');
                 profileToggle.focus();
             }
         });

@@ -38,7 +38,7 @@
                 @forelse($roles as $role)
                     <tr>
                         <td>{{ __(str($role->name)->replace('_', ' ')->title()->toString()) }}</td>
-                        <td>{{ $role->description ?: '—' }}</td>
+                        <td>{{ $role->description ? __($role->description) : '—' }}</td>
                         <td>{{ $role->permissions_count }}</td>
                         <td>{{ $role->users_count }}</td>
                         <td>

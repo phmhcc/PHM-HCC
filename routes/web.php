@@ -5,6 +5,7 @@ use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\DashboardContactMessageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -31,6 +32,8 @@ Route::get('/gallery/images/{galleryImage}', [PublicPageController::class, 'gall
 Route::get('/gallery', [PublicPageController::class, 'gallery'])->name('gallery');
 
 Route::get('/giving', [PublicPageController::class, 'giving'])->name('giving');
+
+Route::get('/videos', [PublicPageController::class, 'videos'])->name('videos');
 
 // Route::get('/events', [PublicPageController::class, 'events'])->name('events');
 
@@ -72,7 +75,9 @@ Route::middleware(['auth', 'can:dashboard.view'])->group(function () {
         Route::get('/treasurer', [RoleDashboardController::class, 'show'])->defaults('role', 'treasurer')->name('treasurer');
 
         Route::get('/notifications', [DashboardNotificationController::class, 'index'])->name('notifications');
+        Route::get('/notifications/{notification}/open', [DashboardNotificationController::class, 'open'])->name('notifications.open');
         Route::patch('/notifications/{notification}/read', [DashboardNotificationController::class, 'read'])->name('notifications.read');
+        Route::get('/contact-messages', [DashboardContactMessageController::class, 'index'])->name('contact-messages.index');
         Route::get('/profile', [DashboardProfileController::class, 'edit'])->name('profile');
         Route::put('/profile', [DashboardProfileController::class, 'update'])->name('profile.update');
         Route::get('/roles', [DashboardRolePermissionController::class, 'index'])->name('roles.index');
@@ -98,8 +103,9 @@ Route::middleware(['auth', 'can:dashboard.view'])->group(function () {
         Route::delete('/site-content/gallery/categories/{galleryCategory}', [DashboardSiteContentController::class, 'deleteCategory'])->whereNumber('galleryCategory')->name('site-content.gallery.categories.delete');
         Route::post('/site-content/social-links', [DashboardSiteContentController::class, 'storeSocialLink'])->name('site-content.social-links.store');
         Route::put('/site-content/social-links/{socialLink}', [DashboardSiteContentController::class, 'updateSocialLink'])->whereNumber('socialLink')->name('site-content.social-links.update');
-        Route::delete('/site-content/social-links/{socialLink}', [DashboardSiteContentController::class, 'deleteSocialLink'])->whereNumber('socialLink')->name('site-content.social-links.delete');
+
         Route::put('/site-content/giving', [DashboardSiteContentController::class, 'updateGiving'])->name('site-content.giving.update');
+        Route::put('/site-content/video', [DashboardSiteContentController::class, 'updateHomeVideo'])->name('site-content.video.update');
 
         Route::get('/{resource}', [DashboardResourceController::class, 'index'])->name('resource.index');
         Route::post('/{resource}', [DashboardResourceController::class, 'store'])->name('resource.store');

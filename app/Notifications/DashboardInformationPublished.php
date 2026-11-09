@@ -17,6 +17,7 @@ class DashboardInformationPublished extends Notification
         private readonly string $titleTranslation,
         private readonly array $titleParameters,
         private readonly string $messageTranslation,
+        private readonly string $url,
     ) {
     }
 
@@ -33,6 +34,7 @@ class DashboardInformationPublished extends Notification
             'title_translation' => $this->titleTranslation,
             'title_parameters' => $this->titleParameters,
             'message_translation' => $this->messageTranslation,
+            'url' => $this->url,
         ];
     }
 
@@ -53,9 +55,15 @@ class DashboardInformationPublished extends Notification
             }
         }
 
-        return $translation === null
-            ? $title
-            : __($translation, ['title' => __($parameters['title'] ?? '')]);
+        if ($translation === null) {
+            return $title;
+        }
+
+        if (array_key_exists('title', $parameters)) {
+            $parameters['title'] = __($parameters['title']);
+        }
+
+        return __($translation, $parameters);
     }
 
     public static function localizedMessage(array $data): string
@@ -64,7 +72,7 @@ class DashboardInformationPublished extends Notification
         $message = $data['message'] ?? '';
 
         if ($translation !== null) {
-            return __($translation);
+            return __($translation, $data['message_parameters'] ?? []);
         }
 
         return $message === 'An administrator added this to the church dashboard.'

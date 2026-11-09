@@ -19,6 +19,7 @@ class DashboardController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
+        Event::markPastEventsAsCompleted();
         $eventsQuery = Event::where('start_date', '>=', now());
         if (! $user->hasPermissionTo('events.view_all')) {
             $eventsQuery->where(function ($query) use ($user) {

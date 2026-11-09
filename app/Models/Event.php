@@ -23,6 +23,43 @@ class Event extends Model
         'end_date' => 'datetime',
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (Event $event): void {
+            if ($event->status === 'scheduled' && $event->hasEnded()) {
+                $event->status = 'completed';
+            }
+        });
+    }
+
+    public static function markPastEventsAsCompleted(): int
+    {
+        $now = now();
+
+        return static::query()
+            ->where('status', 'scheduled')
+            ->where(function ($query) use ($now): void {
+                $query->where(function ($query) use ($now): void {
+                    $query->whereNotNull('end_date')
+                        ->where('end_date', '<=', $now);
+                })->orWhere(function ($query) use ($now): void {
+                    $query->whereNull('end_date')
+                        ->where('start_date', '<=', $now);
+                });
+            })
+            ->update([
+                'status' => 'completed',
+                'updated_at' => $now,
+            ]);
+    }
+
+    private function hasEnded(): bool
+    {
+        $end = $this->end_date ?? $this->start_date;
+
+        return $end !== null && $end->lessThanOrEqualTo(now());
+    }
+
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);

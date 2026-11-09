@@ -24,6 +24,7 @@ class DashboardRolePermissionController extends Controller
         'Departments' => ['departments' => ['view', 'create', 'update', 'delete', 'view_all']],
         'Reports' => ['reports' => ['view', 'create', 'update', 'delete', 'view_all']],
         'Finance' => ['finance' => ['view', 'create', 'update', 'delete', 'view_all']],
+        'Contact messages' => ['contact_messages' => ['view']],
         'Website Content' => ['site_content' => ['view', 'create', 'update', 'delete', 'view_all']],
     ];
 

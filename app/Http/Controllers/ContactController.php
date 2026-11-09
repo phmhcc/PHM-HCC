@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ContactMessage;
+use App\Models\User;
+use App\Notifications\ContactMessageReceived;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -15,11 +18,19 @@ class ContactController extends Controller
             'message' => ['required', 'string', 'max:5000'],
         ]);
 
+        $contactMessage = ContactMessage::create($data);
+        $notification = new ContactMessageReceived($contactMessage);
 
-        $emailBody = "New Contact Form Message\n\n"
-            . "Name: {$data['name']}\n"
-            . "Email: {$data['email']}\n";
-       
+        User::query()
+            ->whereHas('roleRecord.permissions', fn ($query) => $query->whereIn('permissions.name', [
+                'contact_messages.view',
+                'contact_messages.*',
+                '*',
+            ]))
+            ->with('roleRecord.permissions')
+            ->get()
+            ->each(fn (User $user) => $user->notify($notification));
+
         Mail::send('emails.contact-message', [
             'data' => $data,
         ], function ($mail) use ($data) {

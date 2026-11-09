@@ -24,7 +24,7 @@ class AnnouncementPublished extends Notification
         return [
             'title' => $this->announcement->title,
             'message' => $this->announcement->message,
-            'url' => route('dashboard.resource.index', 'announcements'),
+            'url' => route('dashboard.resource.index', 'announcements', false),
         ];
     }
 }

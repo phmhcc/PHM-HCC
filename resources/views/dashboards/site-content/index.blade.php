@@ -419,20 +419,107 @@
 </section>
 
 <section class="content-box">
+    <h2 class="resource-panel-title"><i class="fas fa-video" aria-hidden="true"></i> {{ __('Home page video') }}</h2>
+    <p style="margin-bottom:16px;">{{ __('Add videos with their service title and date. YouTube thumbnails are loaded automatically; you can upload a thumbnail for Vimeo or MP4 videos.') }}</p>
+    <form method="POST" action="{{ route('dashboard.site-content.video.update') }}" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+        @error('videos')<small class="form-error" style="display:block;margin-bottom:12px;">{{ $message }}</small>@enderror
+        <div id="home-video-list" data-next-index="{{ $homeVideoNextIndex }}">
+            @foreach($homeVideoRows as $index => $video)
+            <div class="home-video-admin-row" data-home-video-row style="padding:16px 0;border-bottom:1px solid #e5e7eb;">
+                <input type="hidden" name="videos[{{ $index }}][id]" value="{{ $video['id'] ?? '' }}">
+                <div class="resource-form-grid">
+                    <label class="resource-field">
+                        <span>{{ __('Video URL') }}</span>
+                        <input type="url" name="videos[{{ $index }}][url]" value="{{ old("videos.$index.url", $video['url'] ?? '') }}" maxlength="2048">
+                        @error("videos.$index.id")<small class="form-error">{{ $message }}</small>@enderror
+                        @error("videos.$index.url")<small class="form-error">{{ $message }}</small>@enderror
+                    </label>
+                    <label class="resource-field">
+                        <span>{{ __('Video title') }}</span>
+                        <select name="videos[{{ $index }}][title]">
+                            <option value="">{{ __('Select a service') }}</option>
+                            @foreach($videoTitleOptions as $videoTitle)
+                            <option value="{{ $videoTitle }}" @selected(old("videos.$index.title", $video['title'] ?? '') === $videoTitle)>{{ __($videoTitle) }}</option>
+                            @endforeach
+                        </select>
+                        @error("videos.$index.title")<small class="form-error">{{ $message }}</small>@enderror
+                    </label>
+                    <label class="resource-field">
+                        <span>{{ __('Video date') }}</span>
+                        <input type="date" name="videos[{{ $index }}][date]" value="{{ old("videos.$index.date", $video['date'] ?? '') }}">
+                        @error("videos.$index.date")<small class="form-error">{{ $message }}</small>@enderror
+                    </label>
+                    <div class="resource-field">
+                        <span>{{ __('Video thumbnail') }}</span>
+                        @php($thumbnailPath = $homeVideoThumbnailById->get($video['id'] ?? ''))
+                        @if(filled($thumbnailPath))
+                        <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($thumbnailPath) }}" alt="{{ __('Current video thumbnail') }}" style="width:min(100%,320px);aspect-ratio:16/9;object-fit:cover;border-radius:8px;">
+                        @endif
+                        <div class="resource-file-picker">
+                            <input id="home-video-thumbnail-{{ $loop->index }}" type="file" name="videos[{{ $index }}][thumbnail]" accept="image/jpeg,image/png,image/webp">
+                            <label class="dashboard-action dashboard-action-secondary" for="home-video-thumbnail-{{ $loop->index }}">{{ __('Choose file') }}</label>
+                            <span data-file-name>{{ __('No file chosen') }}</span>
+                        </div>
+                        <small>{{ __('JPEG, PNG, or WebP; up to 10 MB. Leave empty to keep the current thumbnail.') }}</small>
+                        @error("videos.$index.thumbnail")<small class="form-error">{{ $message }}</small>@enderror
+                    </div>
+                </div>
+                <button class="dashboard-action dashboard-action-danger" type="button" data-remove-home-video>{{ __('Remove video') }}</button>
+            </div>
+            @endforeach
+        </div>
+        <template id="home-video-template">
+            <div class="home-video-admin-row" data-home-video-row style="padding:16px 0;border-bottom:1px solid #e5e7eb;">
+                <input type="hidden" name="videos[__INDEX__][id]" value="">
+                <div class="resource-form-grid">
+                    <label class="resource-field">
+                        <span>{{ __('Video URL') }}</span>
+                        <input type="url" name="videos[__INDEX__][url]" maxlength="2048">
+                    </label>
+                    <label class="resource-field">
+                        <span>{{ __('Video title') }}</span>
+                        <select name="videos[__INDEX__][title]">
+                            <option value="">{{ __('Select a service') }}</option>
+                            @foreach($videoTitleOptions as $videoTitle)
+                            <option value="{{ $videoTitle }}">{{ __($videoTitle) }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+                    <label class="resource-field">
+                        <span>{{ __('Video date') }}</span>
+                        <input type="date" name="videos[__INDEX__][date]">
+                    </label>
+                    <div class="resource-field">
+                        <span>{{ __('Video thumbnail') }}</span>
+                        <div class="resource-file-picker">
+                            <input id="home-video-thumbnail-__INDEX__" type="file" name="videos[__INDEX__][thumbnail]" accept="image/jpeg,image/png,image/webp">
+                            <label class="dashboard-action dashboard-action-secondary" for="home-video-thumbnail-__INDEX__">{{ __('Choose file') }}</label>
+                            <span data-file-name>{{ __('No file chosen') }}</span>
+                        </div>
+                        <small>{{ __('JPEG, PNG, or WebP; up to 10 MB. Leave empty to keep the current thumbnail.') }}</small>
+                    </div>
+                </div>
+                <button class="dashboard-action dashboard-action-danger" type="button" data-remove-home-video>{{ __('Remove video') }}</button>
+            </div>
+        </template>
+        <button class="dashboard-action dashboard-action-secondary" type="button" id="add-home-video">{{ __('Add another video') }}</button>
+        <button class="dashboard-action" type="submit">{{ __('Save home page video') }}</button>
+        <small style="display:block;margin-top:10px;">{{ __('Remove videos from this list and save to remove them from the home page.') }}</small>
+    </form>
+</section>
+
+<section class="content-box">
     <h2 class="resource-panel-title"><i class="fas fa-share-nodes" aria-hidden="true"></i> {{ __('Social links') }}</h2>
     @foreach($socialLinks as $socialLink)
     <form method="POST" action="{{ route('dashboard.site-content.social-links.update', $socialLink) }}" style="padding:16px 0;border-bottom:1px solid #e5e7eb;">
         @csrf
         @method('PUT')
         <div class="resource-form-grid">
-            <label class="resource-field"><span>{{ $socialLink->name }}</span><input type="url" name="url" value="{{ $socialLink->url }}" maxlength="2048" required></label>
+            <label class="resource-field"><span>{{ $socialLink->name }}</span><input type="url" name="url" value="{{ $socialLink->url }}" maxlength="2048"></label>
         </div>
         <button class="dashboard-action" type="submit">{{ __('Save social link') }}</button>
-        <button class="dashboard-action dashboard-action-danger" type="submit" form="delete-social-{{ $socialLink->id }}">{{ __('Delete') }}</button>
-    </form>
-    <form id="delete-social-{{ $socialLink->id }}" method="POST" action="{{ route('dashboard.site-content.social-links.delete', $socialLink) }}" data-confirm="{{ __('Delete this social link?') }}" onsubmit="return confirm(this.dataset.confirm);">
-        @csrf
-        @method('DELETE')
     </form>
     @endforeach
 
@@ -458,6 +545,9 @@
         const paymentMethods = document.getElementById('additional-payment-methods');
         const paymentMethodTemplate = document.getElementById('additional-payment-method-template');
         const addPaymentMethodButton = document.getElementById('add-payment-method');
+        const homeVideos = document.getElementById('home-video-list');
+        const homeVideoTemplate = document.getElementById('home-video-template');
+        const addHomeVideoButton = document.getElementById('add-home-video');
 
         if (categorySelect && newCategoryField && newCategoryInput) {
             const updateCategoryField = () => {
@@ -528,6 +618,37 @@
             });
 
             updateAddPaymentMethodButton();
+        }
+
+        if (homeVideos && homeVideoTemplate && addHomeVideoButton) {
+            let nextVideoIndex = Number(homeVideos.dataset.nextIndex || 0);
+
+            const updateAddHomeVideoButton = () => {
+                addHomeVideoButton.disabled = homeVideos.querySelectorAll('[data-home-video-row]').length >= 20;
+            };
+
+            addHomeVideoButton.addEventListener('click', () => {
+                if (homeVideos.querySelectorAll('[data-home-video-row]').length >= 20) {
+                    return;
+                }
+
+                const row = homeVideoTemplate.content.cloneNode(true);
+                row.querySelectorAll('[name]').forEach((input) => {
+                    input.name = input.name.replaceAll('__INDEX__', String(nextVideoIndex));
+                });
+                homeVideos.append(row);
+                nextVideoIndex += 1;
+                updateAddHomeVideoButton();
+            });
+
+            homeVideos.addEventListener('click', (event) => {
+                if (event.target instanceof Element && event.target.closest('[data-remove-home-video]')) {
+                    event.target.closest('[data-home-video-row]')?.remove();
+                    updateAddHomeVideoButton();
+                }
+            });
+
+            updateAddHomeVideoButton();
         }
     })();
 </script>

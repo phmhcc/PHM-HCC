@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class DashboardModulesTest extends TestCase
@@ -133,6 +134,55 @@ class DashboardModulesTest extends TestCase
             '_token' => self::CSRF_TOKEN,
         ])->assertRedirect();
         $this->assertDatabaseMissing('events', ['id' => $event->id]);
+    }
+
+    public function test_past_events_are_marked_completed_without_changing_cancelled_or_future_events(): void
+    {
+        $this->travelTo(now()->setDate(2026, 11, 9)->setTime(13, 0));
+        $admin = User::factory()->create(['email' => 'admin@example.com', 'role' => 'admin']);
+        $this->actingAs($admin);
+
+        $pastEventId = DB::table('events')->insertGetId([
+            'title' => 'Past event',
+            'start_date' => now()->subDay(),
+            'end_date' => now()->subHour(),
+            'status' => 'scheduled',
+            'created_by' => $admin->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $cancelledEvent = \App\Models\Event::create([
+            'title' => 'Cancelled event',
+            'start_date' => now()->subDay(),
+            'end_date' => now()->subHour(),
+            'status' => 'cancelled',
+            'created_by' => $admin->id,
+        ]);
+        $futureEvent = \App\Models\Event::create([
+            'title' => 'Future event',
+            'start_date' => now()->addDay(),
+            'end_date' => now()->addDays(2),
+            'status' => 'scheduled',
+            'created_by' => $admin->id,
+        ]);
+
+        $this->get(route('dashboard.resource.index', 'events'))
+            ->assertOk()
+            ->assertSeeText('Completed');
+
+        $this->assertDatabaseHas('events', ['id' => $pastEventId, 'status' => 'completed']);
+        $this->assertDatabaseHas('events', ['id' => $cancelledEvent->id, 'status' => 'cancelled']);
+        $this->assertDatabaseHas('events', ['id' => $futureEvent->id, 'status' => 'scheduled']);
+
+        $newPastEvent = \App\Models\Event::create([
+            'title' => 'New past event',
+            'start_date' => now()->subDay(),
+            'status' => 'scheduled',
+            'created_by' => $admin->id,
+        ]);
+        $this->assertSame('completed', $newPastEvent->status);
+
+        $this->travelBack();
     }
 
     public function test_new_announcement_notifies_the_other_users(): void

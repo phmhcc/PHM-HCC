@@ -6,7 +6,7 @@
 <header class="resource-page-heading">
     <div>
         <h1>{{ __(str($role->name)->replace('_', ' ')->title()->toString()) }}</h1>
-        <p>{{ $role->description ?: __('No description provided.') }}</p>
+        <p>{{ $role->description ? __($role->description) : __('No description provided.') }}</p>
     </div>
     <div class="role-form-actions">
         <a class="dashboard-action dashboard-action-secondary" href="{{ route('dashboard.roles.index') }}">{{ __('Back to roles') }}</a>
