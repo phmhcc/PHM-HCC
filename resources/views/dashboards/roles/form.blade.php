@@ -36,7 +36,6 @@
 <header class="resource-page-heading">
     <div>
         <h1>{{ __($heading) }}</h1>
-        <p>{{ __('Set the role details and choose the permissions assigned to it.') }}</p>
     </div>
     <a class="dashboard-action dashboard-action-secondary" href="{{ route('dashboard.roles.index') }}">
         <i class="fas fa-arrow-left" aria-hidden="true"></i> {{ __('Back to roles') }}

@@ -154,7 +154,6 @@
 <header class="resource-page-heading">
     <div>
         <h1>{{ __('Website Content') }}</h1>
-        <p>{{ __('Manage public gallery photos, social links, and giving details.') }}</p>
     </div>
 </header>
 
@@ -522,16 +521,6 @@
         <button class="dashboard-action" type="submit">{{ __('Save social link') }}</button>
     </form>
     @endforeach
-
-    <h3 style="margin:22px 0 12px;">{{ __('Add a social link') }}</h3>
-    <form method="POST" action="{{ route('dashboard.site-content.social-links.store') }}">
-        @csrf
-        <div class="resource-form-grid">
-            <label class="resource-field"><span>{{ __('Name') }}</span><input type="text" name="name" value="{{ old('name') }}" maxlength="80" required></label>
-            <label class="resource-field"><span>{{ __('URL') }}</span><input type="url" name="url" value="{{ old('url') }}" maxlength="2048" required></label>
-        </div>
-        <button class="dashboard-action" type="submit">{{ __('Add social link') }}</button>
-    </form>
 </section>
 
 @push('scripts')

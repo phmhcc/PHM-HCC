@@ -6,7 +6,6 @@
 <header class="resource-page-heading">
     <div>
         <h1>{{ __('Contact messages') }}</h1>
-        <p>{{ __('Messages submitted through the public contact form.') }}</p>
     </div>
 </header>
 
@@ -42,6 +41,7 @@
 @push('styles')
 <style>
     .contact-message {
+        min-width: 0;
         padding: 18px 0;
         border-bottom: 1px solid #edf0f5;
     }
@@ -52,10 +52,16 @@
 
     .contact-message header {
         display: flex;
+        min-width: 0;
         flex-wrap: wrap;
         justify-content: space-between;
         gap: 8px 18px;
         margin-bottom: 10px;
+    }
+
+    .contact-message header > div {
+        min-width: 0;
+        max-width: 100%;
     }
 
     .contact-message h3 {
@@ -71,10 +77,23 @@
     }
 
     .contact-message p {
+        max-width: 100%;
+        margin: 0;
         color: #34445a;
         line-height: 1.7;
         white-space: pre-wrap;
         overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 600px) {
+        .contact-message header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .contact-message time {
+            max-width: 100%;
+        }
     }
 </style>
 @endpush

@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -234,6 +235,6 @@ class DashboardRolePermissionController extends Controller
 
     private function ensureAdmin(): void
     {
-        abort_unless(auth()->user()->role === 'admin', 403);
+        abort_unless(Auth::user()?->role === 'admin', 403);
     }
 }

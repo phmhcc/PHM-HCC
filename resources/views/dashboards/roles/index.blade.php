@@ -6,7 +6,6 @@
 <header class="resource-page-heading">
     <div>
         <h1>{{ __('Roles and permissions') }}</h1>
-        <p>{{ __('Create roles and control their dashboard access.') }}</p>
     </div>
     <a class="dashboard-action" href="{{ route('dashboard.roles.create') }}">
         <i class="fas fa-plus" aria-hidden="true"></i> {{ __('Create role') }}

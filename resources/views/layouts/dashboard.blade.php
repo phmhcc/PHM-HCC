@@ -1246,14 +1246,24 @@
             display: flex;
             align-items: flex-end;
             justify-content: space-between;
+            flex-wrap: wrap;
             gap: 20px;
             margin-bottom: 22px;
         }
 
+        .resource-page-heading > div {
+            flex: 1 1 260px;
+            min-width: 0;
+        }
+
         .resource-page-heading p {
+            max-width: 65ch;
             margin-top: 6px;
             color: #78869a;
             font-size: 13px;
+            line-height: 1.6;
+            white-space: normal;
+            overflow-wrap: anywhere;
         }
 
         .resource-panel-title {
@@ -1628,6 +1638,13 @@
             flex-wrap: wrap;
         }
 
+        .content-box p {
+            max-width: 100%;
+            line-height: 1.6;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
         @media(max-width: 850px) {
             .main-area {
                 width: 100%;
@@ -1735,6 +1752,11 @@
             .resource-page-heading {
                 align-items: flex-start;
                 flex-direction: column;
+                gap: 12px;
+            }
+
+            .resource-page-heading > div {
+                flex-basis: 100%;
             }
 
             .resource-edit-form {
