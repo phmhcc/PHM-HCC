@@ -100,6 +100,20 @@
 
     }
 
+    .contact-map {
+        grid-column: 1 / -1;
+        overflow: hidden;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, .12);
+    }
+
+    .contact-map iframe {
+        display: block;
+        width: 100%;
+        height: 380px;
+        border: 0;
+    }
+
     .social a {
 
         font-size: 25px;
@@ -134,7 +148,6 @@
             Mbezi-Magari Saba,
             Dar es Salaam, Tanzania
         </p>
-
         <p>
             <i class="fas fa-phone"></i>
             <a href="tel:+255754970421">
@@ -222,6 +235,16 @@
             </form>
 
         </form>
+    </div>
+
+    <div class="contact-map">
+        <iframe
+            src="https://maps.google.com/maps?q=-6.79356%2C39.09436&amp;z=15&amp;output=embed"
+            title="{{ __('Church location on Google Maps') }}"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen>
+        </iframe>
     </div>
 </section>
 
